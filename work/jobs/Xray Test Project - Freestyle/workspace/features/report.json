@@ -1,0 +1,2938 @@
+[
+  {
+    "uri": "features/1_CALC-396.feature",
+    "id": "as-a-user,-i-can-calculate-the-sum-of-2-numbers",
+    "keyword": "Feature",
+    "name": "As a user, I can calculate the sum of 2 numbers",
+    "description": "",
+    "line": 2,
+    "tags": [
+      {
+        "name": "@REQ_CALC-396",
+        "line": 1
+      }
+    ],
+    "elements": [
+      {
+        "id": "as-a-user,-i-can-calculate-the-sum-of-2-numbers;add-two-numbers;;2",
+        "keyword": "Scenario Outline",
+        "name": "Add two numbers",
+        "description": "",
+        "line": 15,
+        "type": "scenario",
+        "tags": [
+          {
+            "name": "@REQ_CALC-396",
+            "line": 1
+          },
+          {
+            "name": "@TEST_CALC-1",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-5",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-141",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-143",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-173",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-181",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_DEMO-451",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-468",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-473",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-474",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-493",
+            "line": 6
+          }
+        ],
+        "comments": [
+          {
+            "value": "#This tests the addition of 2 numbers.",
+            "line": 4
+          },
+          {
+            "value": "#",
+            "line": 5
+          }
+        ],
+        "before": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:7"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 13700
+            }
+          }
+        ],
+        "steps": [
+          {
+            "keyword": "Given ",
+            "name": "I have entered 20 into the calculator",
+            "line": 15,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:14"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 36700
+            }
+          },
+          {
+            "keyword": "And ",
+            "name": "I have entered 30 into the calculator",
+            "line": 15,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:14"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 10900
+            }
+          },
+          {
+            "keyword": "When ",
+            "name": "I press add",
+            "line": 15,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:18"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 11500
+            }
+          },
+          {
+            "keyword": "Then ",
+            "name": "the result should be 50 on the screen",
+            "line": 15,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:22"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 1706498
+            }
+          }
+        ],
+        "after": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:11"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 10100
+            }
+          }
+        ]
+      },
+      {
+        "id": "as-a-user,-i-can-calculate-the-sum-of-2-numbers;add-two-numbers;;3",
+        "keyword": "Scenario Outline",
+        "name": "Add two numbers",
+        "description": "",
+        "line": 16,
+        "type": "scenario",
+        "tags": [
+          {
+            "name": "@REQ_CALC-396",
+            "line": 1
+          },
+          {
+            "name": "@TEST_CALC-1",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-5",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-141",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-143",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-173",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-181",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_DEMO-451",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-468",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-473",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-474",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-493",
+            "line": 6
+          }
+        ],
+        "comments": [
+          {
+            "value": "#This tests the addition of 2 numbers.",
+            "line": 4
+          },
+          {
+            "value": "#",
+            "line": 5
+          }
+        ],
+        "before": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:7"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 8700
+            }
+          }
+        ],
+        "steps": [
+          {
+            "keyword": "Given ",
+            "name": "I have entered 2 into the calculator",
+            "line": 16,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:14"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 17500
+            }
+          },
+          {
+            "keyword": "And ",
+            "name": "I have entered 5 into the calculator",
+            "line": 16,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:14"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 10300
+            }
+          },
+          {
+            "keyword": "When ",
+            "name": "I press add",
+            "line": 16,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:18"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 10600
+            }
+          },
+          {
+            "keyword": "Then ",
+            "name": "the result should be 7 on the screen",
+            "line": 16,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:22"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 21300
+            }
+          }
+        ],
+        "after": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:11"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 7000
+            }
+          }
+        ]
+      },
+      {
+        "id": "as-a-user,-i-can-calculate-the-sum-of-2-numbers;add-two-numbers;;4",
+        "keyword": "Scenario Outline",
+        "name": "Add two numbers",
+        "description": "",
+        "line": 17,
+        "type": "scenario",
+        "tags": [
+          {
+            "name": "@REQ_CALC-396",
+            "line": 1
+          },
+          {
+            "name": "@TEST_CALC-1",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-5",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-141",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-143",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-173",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-181",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_DEMO-451",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-468",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-473",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-474",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-493",
+            "line": 6
+          }
+        ],
+        "comments": [
+          {
+            "value": "#This tests the addition of 2 numbers.",
+            "line": 4
+          },
+          {
+            "value": "#",
+            "line": 5
+          }
+        ],
+        "before": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:7"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 9300
+            }
+          }
+        ],
+        "steps": [
+          {
+            "keyword": "Given ",
+            "name": "I have entered 0 into the calculator",
+            "line": 17,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:14"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 17800
+            }
+          },
+          {
+            "keyword": "And ",
+            "name": "I have entered 40 into the calculator",
+            "line": 17,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:14"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 10800
+            }
+          },
+          {
+            "keyword": "When ",
+            "name": "I press add",
+            "line": 17,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:18"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 11200
+            }
+          },
+          {
+            "keyword": "Then ",
+            "name": "the result should be 40 on the screen",
+            "line": 17,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:22"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 22900
+            }
+          }
+        ],
+        "after": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:11"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 7300
+            }
+          }
+        ]
+      },
+      {
+        "id": "as-a-user,-i-can-calculate-the-sum-of-2-numbers;add-two-numbers;;5",
+        "keyword": "Scenario Outline",
+        "name": "Add two numbers",
+        "description": "",
+        "line": 18,
+        "type": "scenario",
+        "tags": [
+          {
+            "name": "@REQ_CALC-396",
+            "line": 1
+          },
+          {
+            "name": "@TEST_CALC-1",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-5",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-141",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-143",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-173",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-181",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_DEMO-451",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-468",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-473",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-474",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-493",
+            "line": 6
+          }
+        ],
+        "comments": [
+          {
+            "value": "#This tests the addition of 2 numbers.",
+            "line": 4
+          },
+          {
+            "value": "#",
+            "line": 5
+          }
+        ],
+        "before": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:7"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 8600
+            }
+          }
+        ],
+        "steps": [
+          {
+            "keyword": "Given ",
+            "name": "I have entered 1 into the calculator",
+            "line": 18,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:14"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 15500
+            }
+          },
+          {
+            "keyword": "And ",
+            "name": "I have entered 40 into the calculator",
+            "line": 18,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:14"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 9800
+            }
+          },
+          {
+            "keyword": "When ",
+            "name": "I press add",
+            "line": 18,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:18"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 10400
+            }
+          },
+          {
+            "keyword": "Then ",
+            "name": "the result should be 41 on the screen",
+            "line": 18,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:22"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 42900
+            }
+          }
+        ],
+        "after": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:11"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 8100
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "uri": "features/2_CALC-3.feature",
+    "id": "addition-operation",
+    "keyword": "Feature",
+    "name": "Addition Operation",
+    "description": "",
+    "line": 2,
+    "tags": [
+      {
+        "name": "@REQ_CALC-3",
+        "line": 1
+      }
+    ],
+    "elements": [
+      {
+        "id": "addition-operation;add-two-numbers;;2",
+        "keyword": "Scenario Outline",
+        "name": "Add two numbers",
+        "description": "",
+        "line": 18,
+        "type": "scenario",
+        "tags": [
+          {
+            "name": "@REQ_CALC-3",
+            "line": 1
+          },
+          {
+            "name": "@TEST_CALC-1",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-5",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-141",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-143",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-173",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-181",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_DEMO-451",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-468",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-473",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-474",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-493",
+            "line": 9
+          }
+        ],
+        "comments": [
+          {
+            "value": "#In order to avoid silly mistakes",
+            "line": 3
+          },
+          {
+            "value": "#As a math idiot",
+            "line": 4
+          },
+          {
+            "value": "#I want to be told the sum or subtraction of two numbers",
+            "line": 5
+          },
+          {
+            "value": "#This tests the addition of 2 numbers.",
+            "line": 7
+          },
+          {
+            "value": "#",
+            "line": 8
+          }
+        ],
+        "before": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:7"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 8300
+            }
+          }
+        ],
+        "steps": [
+          {
+            "keyword": "Given ",
+            "name": "I have entered 20 into the calculator",
+            "line": 18,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:14"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 18800
+            }
+          },
+          {
+            "keyword": "And ",
+            "name": "I have entered 30 into the calculator",
+            "line": 18,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:14"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 10200
+            }
+          },
+          {
+            "keyword": "When ",
+            "name": "I press add",
+            "line": 18,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:18"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 10400
+            }
+          },
+          {
+            "keyword": "Then ",
+            "name": "the result should be 50 on the screen",
+            "line": 18,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:22"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 21200
+            }
+          }
+        ],
+        "after": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:11"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 7100
+            }
+          }
+        ]
+      },
+      {
+        "id": "addition-operation;add-two-numbers;;3",
+        "keyword": "Scenario Outline",
+        "name": "Add two numbers",
+        "description": "",
+        "line": 19,
+        "type": "scenario",
+        "tags": [
+          {
+            "name": "@REQ_CALC-3",
+            "line": 1
+          },
+          {
+            "name": "@TEST_CALC-1",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-5",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-141",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-143",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-173",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-181",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_DEMO-451",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-468",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-473",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-474",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-493",
+            "line": 9
+          }
+        ],
+        "comments": [
+          {
+            "value": "#In order to avoid silly mistakes",
+            "line": 3
+          },
+          {
+            "value": "#As a math idiot",
+            "line": 4
+          },
+          {
+            "value": "#I want to be told the sum or subtraction of two numbers",
+            "line": 5
+          },
+          {
+            "value": "#This tests the addition of 2 numbers.",
+            "line": 7
+          },
+          {
+            "value": "#",
+            "line": 8
+          }
+        ],
+        "before": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:7"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 8200
+            }
+          }
+        ],
+        "steps": [
+          {
+            "keyword": "Given ",
+            "name": "I have entered 2 into the calculator",
+            "line": 19,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:14"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 25200
+            }
+          },
+          {
+            "keyword": "And ",
+            "name": "I have entered 5 into the calculator",
+            "line": 19,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:14"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 12100
+            }
+          },
+          {
+            "keyword": "When ",
+            "name": "I press add",
+            "line": 19,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:18"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 12400
+            }
+          },
+          {
+            "keyword": "Then ",
+            "name": "the result should be 7 on the screen",
+            "line": 19,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:22"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 23400
+            }
+          }
+        ],
+        "after": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:11"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 7600
+            }
+          }
+        ]
+      },
+      {
+        "id": "addition-operation;add-two-numbers;;4",
+        "keyword": "Scenario Outline",
+        "name": "Add two numbers",
+        "description": "",
+        "line": 20,
+        "type": "scenario",
+        "tags": [
+          {
+            "name": "@REQ_CALC-3",
+            "line": 1
+          },
+          {
+            "name": "@TEST_CALC-1",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-5",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-141",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-143",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-173",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-181",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_DEMO-451",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-468",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-473",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-474",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-493",
+            "line": 9
+          }
+        ],
+        "comments": [
+          {
+            "value": "#In order to avoid silly mistakes",
+            "line": 3
+          },
+          {
+            "value": "#As a math idiot",
+            "line": 4
+          },
+          {
+            "value": "#I want to be told the sum or subtraction of two numbers",
+            "line": 5
+          },
+          {
+            "value": "#This tests the addition of 2 numbers.",
+            "line": 7
+          },
+          {
+            "value": "#",
+            "line": 8
+          }
+        ],
+        "before": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:7"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 8400
+            }
+          }
+        ],
+        "steps": [
+          {
+            "keyword": "Given ",
+            "name": "I have entered 0 into the calculator",
+            "line": 20,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:14"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 15300
+            }
+          },
+          {
+            "keyword": "And ",
+            "name": "I have entered 40 into the calculator",
+            "line": 20,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:14"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 9500
+            }
+          },
+          {
+            "keyword": "When ",
+            "name": "I press add",
+            "line": 20,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:18"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 11199
+            }
+          },
+          {
+            "keyword": "Then ",
+            "name": "the result should be 40 on the screen",
+            "line": 20,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:22"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 20500
+            }
+          }
+        ],
+        "after": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:11"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 6600
+            }
+          }
+        ]
+      },
+      {
+        "id": "addition-operation;add-two-numbers;;5",
+        "keyword": "Scenario Outline",
+        "name": "Add two numbers",
+        "description": "",
+        "line": 21,
+        "type": "scenario",
+        "tags": [
+          {
+            "name": "@REQ_CALC-3",
+            "line": 1
+          },
+          {
+            "name": "@TEST_CALC-1",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-5",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-141",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-143",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-173",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-181",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_DEMO-451",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-468",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-473",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-474",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-493",
+            "line": 9
+          }
+        ],
+        "comments": [
+          {
+            "value": "#In order to avoid silly mistakes",
+            "line": 3
+          },
+          {
+            "value": "#As a math idiot",
+            "line": 4
+          },
+          {
+            "value": "#I want to be told the sum or subtraction of two numbers",
+            "line": 5
+          },
+          {
+            "value": "#This tests the addition of 2 numbers.",
+            "line": 7
+          },
+          {
+            "value": "#",
+            "line": 8
+          }
+        ],
+        "before": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:7"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 9300
+            }
+          }
+        ],
+        "steps": [
+          {
+            "keyword": "Given ",
+            "name": "I have entered 1 into the calculator",
+            "line": 21,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:14"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 17100
+            }
+          },
+          {
+            "keyword": "And ",
+            "name": "I have entered 40 into the calculator",
+            "line": 21,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:14"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 11000
+            }
+          },
+          {
+            "keyword": "When ",
+            "name": "I press add",
+            "line": 21,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:18"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 13100
+            }
+          },
+          {
+            "keyword": "Then ",
+            "name": "the result should be 41 on the screen",
+            "line": 21,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:22"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 23200
+            }
+          }
+        ],
+        "after": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:11"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 6700
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "uri": "features/3_CALC-393.feature",
+    "id": "as-a-user,-i-can-calculate-the-sum-of-2-numbers",
+    "keyword": "Feature",
+    "name": "As a user, I can calculate the sum of 2 numbers",
+    "description": "",
+    "line": 2,
+    "tags": [
+      {
+        "name": "@REQ_CALC-393",
+        "line": 1
+      }
+    ],
+    "elements": [
+      {
+        "id": "as-a-user,-i-can-calculate-the-sum-of-2-numbers;add-two-numbers;;2",
+        "keyword": "Scenario Outline",
+        "name": "Add two numbers",
+        "description": "",
+        "line": 15,
+        "type": "scenario",
+        "tags": [
+          {
+            "name": "@REQ_CALC-393",
+            "line": 1
+          },
+          {
+            "name": "@TEST_CALC-1",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-5",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-141",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-143",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-173",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-181",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_DEMO-451",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-468",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-473",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-474",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-493",
+            "line": 6
+          }
+        ],
+        "comments": [
+          {
+            "value": "#This tests the addition of 2 numbers.",
+            "line": 4
+          },
+          {
+            "value": "#",
+            "line": 5
+          }
+        ],
+        "before": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:7"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 8400
+            }
+          }
+        ],
+        "steps": [
+          {
+            "keyword": "Given ",
+            "name": "I have entered 20 into the calculator",
+            "line": 15,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:14"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 14900
+            }
+          },
+          {
+            "keyword": "And ",
+            "name": "I have entered 30 into the calculator",
+            "line": 15,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:14"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 9400
+            }
+          },
+          {
+            "keyword": "When ",
+            "name": "I press add",
+            "line": 15,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:18"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 10200
+            }
+          },
+          {
+            "keyword": "Then ",
+            "name": "the result should be 50 on the screen",
+            "line": 15,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:22"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 33700
+            }
+          }
+        ],
+        "after": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:11"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 6800
+            }
+          }
+        ]
+      },
+      {
+        "id": "as-a-user,-i-can-calculate-the-sum-of-2-numbers;add-two-numbers;;3",
+        "keyword": "Scenario Outline",
+        "name": "Add two numbers",
+        "description": "",
+        "line": 16,
+        "type": "scenario",
+        "tags": [
+          {
+            "name": "@REQ_CALC-393",
+            "line": 1
+          },
+          {
+            "name": "@TEST_CALC-1",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-5",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-141",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-143",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-173",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-181",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_DEMO-451",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-468",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-473",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-474",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-493",
+            "line": 6
+          }
+        ],
+        "comments": [
+          {
+            "value": "#This tests the addition of 2 numbers.",
+            "line": 4
+          },
+          {
+            "value": "#",
+            "line": 5
+          }
+        ],
+        "before": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:7"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 9000
+            }
+          }
+        ],
+        "steps": [
+          {
+            "keyword": "Given ",
+            "name": "I have entered 2 into the calculator",
+            "line": 16,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:14"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 16900
+            }
+          },
+          {
+            "keyword": "And ",
+            "name": "I have entered 5 into the calculator",
+            "line": 16,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:14"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 10500
+            }
+          },
+          {
+            "keyword": "When ",
+            "name": "I press add",
+            "line": 16,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:18"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 11700
+            }
+          },
+          {
+            "keyword": "Then ",
+            "name": "the result should be 7 on the screen",
+            "line": 16,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:22"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 20800
+            }
+          }
+        ],
+        "after": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:11"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 6600
+            }
+          }
+        ]
+      },
+      {
+        "id": "as-a-user,-i-can-calculate-the-sum-of-2-numbers;add-two-numbers;;4",
+        "keyword": "Scenario Outline",
+        "name": "Add two numbers",
+        "description": "",
+        "line": 17,
+        "type": "scenario",
+        "tags": [
+          {
+            "name": "@REQ_CALC-393",
+            "line": 1
+          },
+          {
+            "name": "@TEST_CALC-1",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-5",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-141",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-143",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-173",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-181",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_DEMO-451",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-468",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-473",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-474",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-493",
+            "line": 6
+          }
+        ],
+        "comments": [
+          {
+            "value": "#This tests the addition of 2 numbers.",
+            "line": 4
+          },
+          {
+            "value": "#",
+            "line": 5
+          }
+        ],
+        "before": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:7"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 8200
+            }
+          }
+        ],
+        "steps": [
+          {
+            "keyword": "Given ",
+            "name": "I have entered 0 into the calculator",
+            "line": 17,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:14"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 15400
+            }
+          },
+          {
+            "keyword": "And ",
+            "name": "I have entered 40 into the calculator",
+            "line": 17,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:14"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 10100
+            }
+          },
+          {
+            "keyword": "When ",
+            "name": "I press add",
+            "line": 17,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:18"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 10400
+            }
+          },
+          {
+            "keyword": "Then ",
+            "name": "the result should be 40 on the screen",
+            "line": 17,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:22"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 20500
+            }
+          }
+        ],
+        "after": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:11"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 6500
+            }
+          }
+        ]
+      },
+      {
+        "id": "as-a-user,-i-can-calculate-the-sum-of-2-numbers;add-two-numbers;;5",
+        "keyword": "Scenario Outline",
+        "name": "Add two numbers",
+        "description": "",
+        "line": 18,
+        "type": "scenario",
+        "tags": [
+          {
+            "name": "@REQ_CALC-393",
+            "line": 1
+          },
+          {
+            "name": "@TEST_CALC-1",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-5",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-141",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-143",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-173",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-181",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_DEMO-451",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-468",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-473",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-474",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-493",
+            "line": 6
+          }
+        ],
+        "comments": [
+          {
+            "value": "#This tests the addition of 2 numbers.",
+            "line": 4
+          },
+          {
+            "value": "#",
+            "line": 5
+          }
+        ],
+        "before": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:7"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 8900
+            }
+          }
+        ],
+        "steps": [
+          {
+            "keyword": "Given ",
+            "name": "I have entered 1 into the calculator",
+            "line": 18,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:14"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 16900
+            }
+          },
+          {
+            "keyword": "And ",
+            "name": "I have entered 40 into the calculator",
+            "line": 18,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:14"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 21600
+            }
+          },
+          {
+            "keyword": "When ",
+            "name": "I press add",
+            "line": 18,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:18"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 10300
+            }
+          },
+          {
+            "keyword": "Then ",
+            "name": "the result should be 41 on the screen",
+            "line": 18,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:22"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 21700
+            }
+          }
+        ],
+        "after": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:11"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 6500
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "uri": "features/4_CALC-13.feature",
+    "id": "multiplication-and-division-operations",
+    "keyword": "Feature",
+    "name": "Multiplication and Division Operations",
+    "description": "",
+    "line": 2,
+    "tags": [
+      {
+        "name": "@REQ_CALC-13",
+        "line": 1
+      }
+    ],
+    "elements": [
+      {
+        "id": "multiplication-and-division-operations;divide-two-numbers;;2",
+        "keyword": "Scenario Outline",
+        "name": "Divide two numbers",
+        "description": "",
+        "line": 18,
+        "type": "scenario",
+        "tags": [
+          {
+            "name": "@REQ_CALC-13",
+            "line": 1
+          },
+          {
+            "name": "@TEST_CALC-10",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-11",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-141",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-143",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-152",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-173",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-181",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_DEMO-451",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-468",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-473",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-474",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-493",
+            "line": 9
+          }
+        ],
+        "comments": [
+          {
+            "value": "#In order to avoid silly mistakes",
+            "line": 3
+          },
+          {
+            "value": "#As a math idiot",
+            "line": 4
+          },
+          {
+            "value": "#I want to be told the multiplication or division of two numbers",
+            "line": 5
+          },
+          {
+            "value": "#This tests the division of 2 numbers.",
+            "line": 7
+          },
+          {
+            "value": "#",
+            "line": 8
+          }
+        ],
+        "before": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:7"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 8800
+            }
+          }
+        ],
+        "steps": [
+          {
+            "keyword": "Given ",
+            "name": "I have entered 8 into the calculator",
+            "line": 18,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:14"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 16200
+            }
+          },
+          {
+            "keyword": "And ",
+            "name": "I have entered 4 into the calculator",
+            "line": 18,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:14"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 25000
+            }
+          },
+          {
+            "keyword": "When ",
+            "name": "I press divide",
+            "line": 18,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:18"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 12100
+            }
+          },
+          {
+            "keyword": "Then ",
+            "name": "the result should be 2 on the screen",
+            "line": 18,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:22"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 27999
+            }
+          }
+        ],
+        "after": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:11"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 7900
+            }
+          }
+        ]
+      },
+      {
+        "id": "multiplication-and-division-operations;divide-two-numbers;;3",
+        "keyword": "Scenario Outline",
+        "name": "Divide two numbers",
+        "description": "",
+        "line": 19,
+        "type": "scenario",
+        "tags": [
+          {
+            "name": "@REQ_CALC-13",
+            "line": 1
+          },
+          {
+            "name": "@TEST_CALC-10",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-11",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-141",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-143",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-152",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-173",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-181",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_DEMO-451",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-468",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-473",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-474",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-493",
+            "line": 9
+          }
+        ],
+        "comments": [
+          {
+            "value": "#In order to avoid silly mistakes",
+            "line": 3
+          },
+          {
+            "value": "#As a math idiot",
+            "line": 4
+          },
+          {
+            "value": "#I want to be told the multiplication or division of two numbers",
+            "line": 5
+          },
+          {
+            "value": "#This tests the division of 2 numbers.",
+            "line": 7
+          },
+          {
+            "value": "#",
+            "line": 8
+          }
+        ],
+        "before": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:7"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 8400
+            }
+          }
+        ],
+        "steps": [
+          {
+            "keyword": "Given ",
+            "name": "I have entered 12 into the calculator",
+            "line": 19,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:14"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 15400
+            }
+          },
+          {
+            "keyword": "And ",
+            "name": "I have entered 3 into the calculator",
+            "line": 19,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:14"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 9900
+            }
+          },
+          {
+            "keyword": "When ",
+            "name": "I press divide",
+            "line": 19,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:18"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 10000
+            }
+          },
+          {
+            "keyword": "Then ",
+            "name": "the result should be 4 on the screen",
+            "line": 19,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:22"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 21100
+            }
+          }
+        ],
+        "after": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:11"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 6500
+            }
+          }
+        ]
+      },
+      {
+        "id": "multiplication-and-division-operations;divide-two-numbers;;4",
+        "keyword": "Scenario Outline",
+        "name": "Divide two numbers",
+        "description": "",
+        "line": 20,
+        "type": "scenario",
+        "tags": [
+          {
+            "name": "@REQ_CALC-13",
+            "line": 1
+          },
+          {
+            "name": "@TEST_CALC-10",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-11",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-141",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-143",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-152",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-173",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-181",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_DEMO-451",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-468",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-473",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-474",
+            "line": 9
+          },
+          {
+            "name": "@TESTSET_CALC-493",
+            "line": 9
+          }
+        ],
+        "comments": [
+          {
+            "value": "#In order to avoid silly mistakes",
+            "line": 3
+          },
+          {
+            "value": "#As a math idiot",
+            "line": 4
+          },
+          {
+            "value": "#I want to be told the multiplication or division of two numbers",
+            "line": 5
+          },
+          {
+            "value": "#This tests the division of 2 numbers.",
+            "line": 7
+          },
+          {
+            "value": "#",
+            "line": 8
+          }
+        ],
+        "before": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:7"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 10000
+            }
+          }
+        ],
+        "steps": [
+          {
+            "keyword": "Given ",
+            "name": "I have entered 3 into the calculator",
+            "line": 20,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:14"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 17100
+            }
+          },
+          {
+            "keyword": "And ",
+            "name": "I have entered 1 into the calculator",
+            "line": 20,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:14"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 10900
+            }
+          },
+          {
+            "keyword": "When ",
+            "name": "I press divide",
+            "line": 20,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:18"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 11400
+            }
+          },
+          {
+            "keyword": "Then ",
+            "name": "the result should be 3 on the screen",
+            "line": 20,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:22"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 33300
+            }
+          }
+        ],
+        "after": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:11"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 6600
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "uri": "features/5_CALC-34.feature",
+    "id": "factorial-operation",
+    "keyword": "Feature",
+    "name": "Factorial operation",
+    "description": "",
+    "line": 2,
+    "tags": [
+      {
+        "name": "@REQ_CALC-34",
+        "line": 1
+      }
+    ],
+    "elements": [
+      {
+        "id": "factorial-operation;factorial-of-integers;;2",
+        "keyword": "Scenario Outline",
+        "name": "Factorial of Integers",
+        "description": "",
+        "line": 14,
+        "type": "scenario",
+        "tags": [
+          {
+            "name": "@REQ_CALC-34",
+            "line": 1
+          },
+          {
+            "name": "@TEST_CALC-42",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-48",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-141",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-143",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-152",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-173",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-181",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_DEMO-451",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-468",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-473",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-474",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-493",
+            "line": 6
+          }
+        ],
+        "comments": [
+          {
+            "value": "#The calculator must provide a factorial button",
+            "line": 3
+          },
+          {
+            "value": "#This tests the factorial operation on integers",
+            "line": 5
+          }
+        ],
+        "before": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:7"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 8600
+            }
+          }
+        ],
+        "steps": [
+          {
+            "keyword": "Given ",
+            "name": "I have entered 0 into the calculator",
+            "line": 14,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:14"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 14800
+            }
+          },
+          {
+            "keyword": "When ",
+            "name": "I press factorial",
+            "line": 14,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:18"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 11600
+            }
+          },
+          {
+            "keyword": "Then ",
+            "name": "the result should be 1 on the screen",
+            "line": 14,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:22"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 36600
+            }
+          }
+        ],
+        "after": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:11"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 6900
+            }
+          }
+        ]
+      },
+      {
+        "id": "factorial-operation;factorial-of-integers;;3",
+        "keyword": "Scenario Outline",
+        "name": "Factorial of Integers",
+        "description": "",
+        "line": 15,
+        "type": "scenario",
+        "tags": [
+          {
+            "name": "@REQ_CALC-34",
+            "line": 1
+          },
+          {
+            "name": "@TEST_CALC-42",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-48",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-141",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-143",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-152",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-173",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-181",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_DEMO-451",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-468",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-473",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-474",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-493",
+            "line": 6
+          }
+        ],
+        "comments": [
+          {
+            "value": "#The calculator must provide a factorial button",
+            "line": 3
+          },
+          {
+            "value": "#This tests the factorial operation on integers",
+            "line": 5
+          }
+        ],
+        "before": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:7"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 9500
+            }
+          }
+        ],
+        "steps": [
+          {
+            "keyword": "Given ",
+            "name": "I have entered 1 into the calculator",
+            "line": 15,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:14"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 15700
+            }
+          },
+          {
+            "keyword": "When ",
+            "name": "I press factorial",
+            "line": 15,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:18"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 11300
+            }
+          },
+          {
+            "keyword": "Then ",
+            "name": "the result should be 1 on the screen",
+            "line": 15,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:22"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 21500
+            }
+          }
+        ],
+        "after": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:11"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 6600
+            }
+          }
+        ]
+      },
+      {
+        "id": "factorial-operation;factorial-of-integers;;4",
+        "keyword": "Scenario Outline",
+        "name": "Factorial of Integers",
+        "description": "",
+        "line": 16,
+        "type": "scenario",
+        "tags": [
+          {
+            "name": "@REQ_CALC-34",
+            "line": 1
+          },
+          {
+            "name": "@TEST_CALC-42",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-48",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-141",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-143",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-152",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-173",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-181",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_DEMO-451",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-468",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-473",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-474",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-493",
+            "line": 6
+          }
+        ],
+        "comments": [
+          {
+            "value": "#The calculator must provide a factorial button",
+            "line": 3
+          },
+          {
+            "value": "#This tests the factorial operation on integers",
+            "line": 5
+          }
+        ],
+        "before": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:7"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 8000
+            }
+          }
+        ],
+        "steps": [
+          {
+            "keyword": "Given ",
+            "name": "I have entered 2 into the calculator",
+            "line": 16,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:14"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 15000
+            }
+          },
+          {
+            "keyword": "When ",
+            "name": "I press factorial",
+            "line": 16,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:18"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 12600
+            }
+          },
+          {
+            "keyword": "Then ",
+            "name": "the result should be 2 on the screen",
+            "line": 16,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:22"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 20700
+            }
+          }
+        ],
+        "after": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:11"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 6800
+            }
+          }
+        ]
+      },
+      {
+        "id": "factorial-operation;factorial-of-integers;;5",
+        "keyword": "Scenario Outline",
+        "name": "Factorial of Integers",
+        "description": "",
+        "line": 17,
+        "type": "scenario",
+        "tags": [
+          {
+            "name": "@REQ_CALC-34",
+            "line": 1
+          },
+          {
+            "name": "@TEST_CALC-42",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-48",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-141",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-143",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-152",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-173",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-181",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_DEMO-451",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-468",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-473",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-474",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-493",
+            "line": 6
+          }
+        ],
+        "comments": [
+          {
+            "value": "#The calculator must provide a factorial button",
+            "line": 3
+          },
+          {
+            "value": "#This tests the factorial operation on integers",
+            "line": 5
+          }
+        ],
+        "before": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:7"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 8400
+            }
+          }
+        ],
+        "steps": [
+          {
+            "keyword": "Given ",
+            "name": "I have entered 3 into the calculator",
+            "line": 17,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:14"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 15100
+            }
+          },
+          {
+            "keyword": "When ",
+            "name": "I press factorial",
+            "line": 17,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:18"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 11000
+            }
+          },
+          {
+            "keyword": "Then ",
+            "name": "the result should be 6 on the screen",
+            "line": 17,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:22"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 23800
+            }
+          }
+        ],
+        "after": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:11"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 7000
+            }
+          }
+        ]
+      },
+      {
+        "id": "factorial-operation;factorial-of-integers;;6",
+        "keyword": "Scenario Outline",
+        "name": "Factorial of Integers",
+        "description": "",
+        "line": 18,
+        "type": "scenario",
+        "tags": [
+          {
+            "name": "@REQ_CALC-34",
+            "line": 1
+          },
+          {
+            "name": "@TEST_CALC-42",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-48",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-141",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-143",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-152",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-173",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-181",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_DEMO-451",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-468",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-473",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-474",
+            "line": 6
+          },
+          {
+            "name": "@TESTSET_CALC-493",
+            "line": 6
+          }
+        ],
+        "comments": [
+          {
+            "value": "#The calculator must provide a factorial button",
+            "line": 3
+          },
+          {
+            "value": "#This tests the factorial operation on integers",
+            "line": 5
+          }
+        ],
+        "before": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:7"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 8300
+            }
+          }
+        ],
+        "steps": [
+          {
+            "keyword": "Given ",
+            "name": "I have entered 4 into the calculator",
+            "line": 18,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:14"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 15200
+            }
+          },
+          {
+            "keyword": "When ",
+            "name": "I press factorial",
+            "line": 18,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:18"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 24900
+            }
+          },
+          {
+            "keyword": "Then ",
+            "name": "the result should be 24 on the screen",
+            "line": 18,
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:22"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 43700
+            }
+          }
+        ],
+        "after": [
+          {
+            "match": {
+              "location": "features/step_definitions/calculator_steps.rb:11"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 7900
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

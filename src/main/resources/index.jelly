@@ -1,0 +1,4 @@
+<?jelly escape-by-default='true'?>
+<div>
+  This plugin allows the usage of Xray Export and Import tasks
+</div>
