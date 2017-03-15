@@ -12,11 +12,19 @@
   <triggers/>
   <concurrentBuild>false</concurrentBuild>
   <builders>
+    <com.xpandit.plugins.xrayjenkins.task.XrayExportBuilder plugin="xray-jenkins@1.0-SNAPSHOT">
+      <serverUrl>http://xraydemo.xpand-it.com</serverUrl>
+      <serverUsername>admin</serverUsername>
+      <serverPassword>admin</serverPassword>
+      <issues>CALC-1003</issues>
+      <filter></filter>
+      <filePath>features</filePath>
+    </com.xpandit.plugins.xrayjenkins.task.XrayExportBuilder>
     <com.xpandit.plugins.xrayjenkins.task.XrayImportBuilder plugin="xray-jenkins@1.0-SNAPSHOT">
       <serverUrl>http://xraydemo.xpand-it.com</serverUrl>
       <serverUsername>admin</serverUsername>
       <serverPassword>admin</serverPassword>
-      <format>/cucumber</format>
+      <format></format>
       <importFilePath>/features/report.json</importFilePath>
     </com.xpandit.plugins.xrayjenkins.task.XrayImportBuilder>
   </builders>

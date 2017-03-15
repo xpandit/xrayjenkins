@@ -26,6 +26,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
+import com.xpandit.plugins.xrayjenkins.model.Format;
 import com.xpandit.plugins.xrayjenkins.model.XrayInstance;
 import com.xpandit.plugins.xrayjenkins.service.XrayRestClient;
 
@@ -40,7 +41,7 @@ import hudson.model.Descriptor.FormException;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.FormValidation;
-
+import hudson.util.ListBoxModel;
 import jenkins.tasks.SimpleBuildStep;
 import net.sf.json.JSONObject;
 
@@ -197,6 +198,15 @@ public class XrayImportBuilder extends Builder implements SimpleBuildStep {
             else{
                 return FormValidation.ok();
             }
+        }
+        
+        public ListBoxModel doFillFormatItems() {
+            ListBoxModel items = new ListBoxModel();
+            
+            for(Format format : Format.values())
+            	items.add(format.getName(), format.getSuffix());
+  
+            return items;
         }
 
         public String getServerUrl() {

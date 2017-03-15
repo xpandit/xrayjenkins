@@ -1,5 +1,29 @@
+  <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
   
+  <script src="${resURL}/plugin/xray-jenkins/handlebars-v4.0.5.amd.min.js"></script>
+  <script>
+    (function(){
+	   Q(document).ready(function() {
+	   		Q('#selectFormat').on('change',function(){
+	
+	   		var source = "<p>Hello, my name is {{name}}. I am from {{hometown}}. I have " +
+             "{{kids.length}} kids:</p>" +
+             "<ul>{{#kids}}<li>{{name}} is {{age}}</li>{{/kids}}</ul>";
+			
+			var template = Handlebars.compile(source);
+
+			var data = { "name": "Alan", "hometown": "Somewhere, TX",
+             "kids": [{"name": "Jimmy", "age": "12"}, {"name": "Sally", "age": "4"}]};
+			
+			var result = template(data);
+	   			
+	   		Q('#additionalFields').html(result);
+	   		});
+   		})
+   	})();
+   	    		
+</script>
   <f:entry title="${%Xray Server Instance:}">
         <f:textbox field="serverUrl"/>
   </f:entry>
@@ -11,17 +35,19 @@
   </f:entry>
   <f:validateButton title="${%Test Connection}" progress="${%Testing...}"
    method="testConnection" with="serverUrl,serverUsername,serverPassword" />
-   
-   <f:entry name="format" title="Format" field="format">
-       <select name="format">
-        <option value="">Xray Json</option>
-        <option value="/behave">Behave Json</option>
-        <option value="/cucumber">Cucumber Json</option>
-        <option value="/bundle">Bundle</option>
-       </select>
-    </f:entry>
+      
+   <f:entry field="format" title="Choose Format">
+   		<f:select name="format" id="selectFormat"/>
+   </f:entry>
 
    <f:entry title="${%File Path with file name:}" field="importFilePath">
         <f:textbox field="importFilePath"/>
    </f:entry>
+   
+   <f:entry>
+	   <div id="additionalFields">
+	   </div>
+   </f:entry>
+	   
+   
 </j:jelly>
