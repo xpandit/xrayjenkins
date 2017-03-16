@@ -1,29 +1,94 @@
-  <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
-  
+
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
+         xmlns:t="/lib/hudson" xmlns:f="/lib/form">
   <script src="${resURL}/plugin/xray-jenkins/handlebars-v4.0.5.amd.min.js"></script>
+  
+  <!--Renders an HTML element for each additional field-->
+  <script id="addFields" type="text/x-handlebars-template">
+  		{{#each additionalFields}}
+	  		{{#ifEquals key "importInfo_switcher"}}
+	  			{{>addSwitcher}}
+		  	 {{else}}
+		  	 
+	  			{{#ifEquals key "importInfo"}}
+	  				<div id="switchContainer">
+	  					{{>addField}}
+	  				</div>
+	  			{{else}}
+	  				{{>addField}}
+	  			{{/ifEquals}}
+	  			
+	  		{{/ifEquals}}
+  		{{/each}}
+  </script>
+  
+  <script id="addField" type="text/x-handlebars-template">  		
+  		{{#ifEquals type "input"}}
+  			{{>addInput}}
+  		{{/ifEquals}}
+  		
+		{{#ifEquals type "textarea"}}
+  			{{>addTextarea}}
+  		{{/ifEquals}}
+  </script>
+  
+  <script id="addInput" type="text/x-handlebars-template">
+		<f:entry title="${%{{i18nProperty}}}">
+    		<f:textbox field="{{key}}" />
+  		</f:entry>
+  </script>
+  
+  <script id="addTextarea" type="text/x-handlebars-template">
+		<f:entry title="${%{{i18nProperty}}}">
+    		<f:textarea field="{{key}}" />
+  		</f:entry>
+  </script>
+  
+  <script id="addSwitcher" type="text/x-handlebars-template">
+  		<f:entry name="goalType" title="${%{{i18nProperty}}}" field="{{key}}">
+		    <select name="{{key}}">
+		        <option value="fileContent">${%import-parameter.content-type-filecontent}</option>
+		        <option value="file Path">${%import-parameter.content-type-filepath}</option>
+		    </select>
+		</f:entry>
+  </script>
+  
   <script>
     (function(){
+		
 	   Q(document).ready(function() {
+		   	
+		   	//Handlebars is somewhat 'logic-less' like mustache, so it does not provide the equals operator
+	    	Handlebars.registerHelper('ifEquals', function(arg1, arg2, options) {
+	   			return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+			});
+			
+			//Register partial templates, used for call templates inside templates
+			Handlebars.registerPartial("addField", Q("#addField").html());
+			Handlebars.registerPartial("addInput", Q("#addInput").html());
+			Handlebars.registerPartial("addTextarea", Q("#addTextarea").html());
+			Handlebars.registerPartial("addSwitcher", Q("#addSwitcher").html());
+		   
 	   		Q('#selectFormat').on('change',function(){
-	
-	   		var source = "<p>Hello, my name is {{name}}. I am from {{hometown}}. I have " +
-             "{{kids.length}} kids:</p>" +
-             "<ul>{{#kids}}<li>{{name}} is {{age}}</li>{{/kids}}</ul>";
-			
-			var template = Handlebars.compile(source);
-
-			var data = { "name": "Alan", "hometown": "Somewhere, TX",
-             "kids": [{"name": "Jimmy", "age": "12"}, {"name": "Sally", "age": "4"}]};
-			
-			var result = template(data);
-	   			
-	   		Q('#additionalFields').html(result);
-	   		});
-   		})
+				var formats = ${instance.getFormats()};
+				console.info(formats);
+				var key = Q("#selectFormat").find('option:selected').text();
+				console.info(formats[key]);
+				var selectedFormat = formats[key];
+				
+				//Three steps: fetch template, compile it, generate result with the context data
+				var source = Q('#addFields').html(); 
+				var template = Handlebars.compile(source);		
+				var result = template(selectedFormat);
+		   			
+		   		Q('#additionalFields').html(result);   		
+		   		});
+   			})
    	})();
    	    		
 </script>
+
   <f:entry title="${%Xray Server Instance:}">
         <f:textbox field="serverUrl"/>
   </f:entry>
@@ -36,18 +101,18 @@
   <f:validateButton title="${%Test Connection}" progress="${%Testing...}"
    method="testConnection" with="serverUrl,serverUsername,serverPassword" />
       
-   <f:entry field="format" title="Choose Format">
-   		<f:select name="format" id="selectFormat"/>
+   <f:entry title="${%Choose Format:}" field="format">
+   		<f:select id="selectFormat"/>
    </f:entry>
 
    <f:entry title="${%File Path with file name:}" field="importFilePath">
         <f:textbox field="importFilePath"/>
    </f:entry>
    
-   <f:entry>
+  <f:block>
 	   <div id="additionalFields">
 	   </div>
-   </f:entry>
+   </f:block>
 	   
    
 </j:jelly>

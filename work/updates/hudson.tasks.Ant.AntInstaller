@@ -1,6 +1,26 @@
 {
   "list":   [
         {
+      "id": "1.10.1",
+      "name": "1.10.1",
+      "url": "https://archive.apache.org/dist/ant/binaries/apache-ant-1.10.1-bin.zip"
+    },
+        {
+      "id": "1.10.0",
+      "name": "1.10.0",
+      "url": "https://archive.apache.org/dist/ant/binaries/apache-ant-1.10.0-bin.zip"
+    },
+        {
+      "id": "1.9.9",
+      "name": "1.9.9",
+      "url": "https://archive.apache.org/dist/ant/binaries/apache-ant-1.9.9-bin.zip"
+    },
+        {
+      "id": "1.9.8",
+      "name": "1.9.8",
+      "url": "https://archive.apache.org/dist/ant/binaries/apache-ant-1.9.8-bin.zip"
+    },
+        {
       "id": "1.9.7",
       "name": "1.9.7",
       "url": "https://archive.apache.org/dist/ant/binaries/apache-ant-1.9.7-bin.zip"
@@ -147,9 +167,9 @@
     }
   ],
   "signature":   {
-    "certificates": ["MIIC3TCCAcUCBQDerb73MA0GCSqGSIb3DQEBDQUAMIGKMQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTERMA8GA1UEBxMIU2FuIEpvc2UxGDAWBgNVBAoTD0plbmtpbnMgUHJvamVjdDEaMBgGA1UEAxMRS29oc3VrZSBLYXdhZ3VjaGkxHTAbBgkqhkiG9w0BCQEWDmtrQGtvaHN1a2Uub3JnMB4XDTE2MDEyOTEwNDYwMloXDTE3MDEyODEwNDYwMlowXjELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExGDAWBgNVBAoTD0plbmtpbnMgUHJvamVjdDEgMB4GA1UEAxMXQ29tbXVuaXR5IFVwZGF0ZSBDZW50ZXIwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAKTDDxjInVBgniu4TpRQoI29ci8lwzXsPX4anFI+1LiPsPk2RmIg05WEohD6RCzldgiNtaPGujyeR/+xXYd8Gev3Abm1OjlN6bZbzZHAX8FoDr4PJJWftq0LDg+YVki1p8eF65ByoHIVHmNeE7NH09kAnbT4w2DNGstwHcFO90RbAgMBAAEwDQYJKoZIhvcNAQENBQADggEBAH96iGUruYwF4Pv/DffI3AmCOlE4/hG/2uqacBrRN52LjIbVWEOOUesEIFMmyjbFcGKMzMwndOF+f8N6MAA4/EONvbLgJyC0VrL66VX0OrTfk1NZcfZkIMh5rrPoCpuIi8TF5GGM9ulwa82o50POjbdjInFvbW7L927Zil2dP/UvugeRnGYKCi9o62h96foJu/N1e3aSzEKA8KUwoW4peCPiv6LJ2xrnQXbYG1UN0hO4n4Cdw3Vebgewl31qRUJGFLKF6tslt/LAGk66y5XcKhel2guCfUa1Dhz4/6UlEK1NrnldiAsYBa4pnp4BcZ0RJcEdCiYe0b9D6BplUx1DDTo="],
-    "correct_digest": "soMIti8+D9RDCivndSvFjlhZR5I=",
-    "correct_signature": "HT+jx8SXNmWCM5my747c6h3TRYKjx8VvbbP22GTS61Q8zz02Ww+T4IpviOZUyKiomWf0iuILNV7oHyo6zZLnBq8aw3OVkJWEFr4vuNRWO79dqwvr3jiWs0uC7Wc3sJFTR8skKr2ncOnnFBO0hwFaaE6w4FViQhcdOunqyjwpDtE=",
+    "certificates": ["MIIC3TCCAcUCBQDerb74MA0GCSqGSIb3DQEBCwUAMIGKMQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTERMA8GA1UEBxMIU2FuIEpvc2UxGDAWBgNVBAoTD0plbmtpbnMgUHJvamVjdDEaMBgGA1UEAxMRS29oc3VrZSBLYXdhZ3VjaGkxHTAbBgkqhkiG9w0BCQEWDmtrQGtvaHN1a2Uub3JnMB4XDTE3MDEwNjAwMDEyNFoXDTE4MDEwNjAwMDEyNFowXjELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExGDAWBgNVBAoTD0plbmtpbnMgUHJvamVjdDEgMB4GA1UEAxMXQ29tbXVuaXR5IFVwZGF0ZSBDZW50ZXIwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAKTDDxjInVBgniu4TpRQoI29ci8lwzXsPX4anFI+1LiPsPk2RmIg05WEohD6RCzldgiNtaPGujyeR/+xXYd8Gev3Abm1OjlN6bZbzZHAX8FoDr4PJJWftq0LDg+YVki1p8eF65ByoHIVHmNeE7NH09kAnbT4w2DNGstwHcFO90RbAgMBAAEwDQYJKoZIhvcNAQELBQADggEBAJrDKF0DViGn1eKILYI7p4yzHyCmT+x2ToqAXIsOBAbq9l7Xm7woG5AQ8jF9369IsGpMOVlHNFd/Gi1L9JN48Sz1KAADMOI+sWp5pGbP6J+6LTgTA0m/oPpVL9rmaRwMd3fdHjRFXiG9LMoQ+5XqIhNrWJsupGX9eMT4sECyP0gikywYGMPKYu9pnUttVsfTJ564rk3+cz4YGDHQBdg3MrohuuG1k4Q4GXqUv3EhBZrVRCI+8cnjaeJooEMgAiGxj/s5bsDPgj9MZWyQuZSoboZRDZOf6NXFlUSt6kk1qZ2A8+oli6cUMpEsUNQs5OZOwITwfis5vrLa8m9mr3xdKdk="],
+    "correct_digest": "ZMvbbrQmLm5TvKysZMG6t59SdY0=",
+    "correct_signature": "FOYuK/9z+1pYXg7fllu5MD7eqVnb+PVAdQam8nDTY9n/xURugRAEW+dU1ciPzbd3XQA46AZm9EIGeMc8lkyjSKdE7YrPurerMKTSyhVqiXxzQGjmOCEUFvamku3WUdLX+vc+ZYN2ng1c02VHgRoCXeX8Gv0zGK4rJSdaTv4Su+U=",
     "digest": "2jmj7l5rSw0yVb/vlWAYkK/YBwk=",
     "signature": "m6UxuBwiblfpmbZ8b4ynXnYj0dH66giB7qdFN0oU6saZcP5Nx3dZPcZa27Ac6K8LSiuz7Yq88NeQCusKTHGoWDd16X6+DNxcOQQg+UyTlUc3Mq+7D21DuYYYaiHGNhesg5gzyql4P9afxyM6hCKb3il1AX8eJJq74CiXVAz9WlM="
   }

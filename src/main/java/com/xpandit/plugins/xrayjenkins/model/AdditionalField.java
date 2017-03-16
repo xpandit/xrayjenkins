@@ -10,13 +10,13 @@ package com.xpandit.plugins.xrayjenkins.model;
  */
 public enum AdditionalField {
 	
-	PROJECT_KEY("projectKey","import-cucumber-features.parameter.projectkey",false),
-	TEST_EXEC_KEY("testExecKey","import-cucumber-features.parameter.testexeckey",false),
-	TEST_PLAN_KEY("testPlanKey","import-cucumber-features.parameter.testplankey",false),
-	TEST_ENVIRONMENTS("testEnvironments","import-cucumber-features.parameter.testenvironments",false),
-	REVISION("revision","import-cucumber-features.parameter.revision",false),
+	PROJECT_KEY("projectKey","import-parameter.projectkey",false),
+	TEST_EXEC_KEY("testExecKey","import-parameter.testexeckey",false),
+	TEST_PLAN_KEY("testPlanKey","import-parameter.testplankey",false),
+	TEST_ENVIRONMENTS("testEnvironments","import-parameter.testenvironments",false),
+	REVISION("revision","import.parameter.revision",false),
 	INFO("importInfo","",true),
-	INFO_INPUT_TYPE_SWITCH("importInfo_switcher","import-info-selector-content-type","select",false);
+	INFO_INPUT_TYPE_SWITCH("importInfo_switcher","import-parameter.selector-content-type","select",false);
 	
 	public static final String INPUT = "input"; 
 	public static final String TEXTAREA = "textarea";

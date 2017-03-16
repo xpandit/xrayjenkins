@@ -6,51 +6,278 @@
                 {
           "files":           [
                         {
+              "MD5": "ba6417ff462ed659e44e16e357dc574c",
+              "SHA256": "134c73db663b1fb0f3d771a383dbea1a7cfeaa00e4d2872e0a6df94d242cf2f6",
+              "filepath": "http://download.oracle.com/otn-pub/java/jdk/8u121-b13/e9e7ea248e2c4826b92b3f075a80e441/jdk-8u121-linux-arm32-vfp-hflt.tar.gz",
+              "name": "jdk-8u121-linux-arm32-vfp-hflt.tar.gz",
+              "title": "Linux ARM 32 Hard Float ABI"
+            },
+                        {
+              "MD5": "2da4b8645d2e43dda0ac0458141d4c75",
+              "SHA256": "acd84c59aa0c3fa8cfb2e3c51bbd9ebf979b4ed9b5f15b343821c31af2ce3573",
+              "filepath": "http://download.oracle.com/otn-pub/java/jdk/8u121-b13/e9e7ea248e2c4826b92b3f075a80e441/jdk-8u121-linux-arm64-vfp-hflt.tar.gz",
+              "name": "jdk-8u121-linux-arm64-vfp-hflt.tar.gz",
+              "title": "Linux ARM 64 Hard Float ABI"
+            },
+                        {
+              "MD5": "9e0e84f36427ce258abfca35fbeb0c55",
+              "SHA256": "f7d6cf1468c5e71ff097bec0189caccdd8e709a2a88a2c9849ad6200c0f33d4c",
+              "filepath": "http://download.oracle.com/otn-pub/java/jdk/8u121-b13/e9e7ea248e2c4826b92b3f075a80e441/jdk-8u121-linux-i586.tar.gz",
+              "name": "jdk-8u121-linux-i586.tar.gz",
+              "title": "Linux x86"
+            },
+                        {
+              "MD5": "91972fb4e753f1b6674c2b952d974320",
+              "SHA256": "97e30203f1aef324a07c94d9d078f5d19bb6c50e638e4492722debca588210bc",
+              "filepath": "http://download.oracle.com/otn-pub/java/jdk/8u121-b13/e9e7ea248e2c4826b92b3f075a80e441/jdk-8u121-linux-x64.tar.gz",
+              "name": "jdk-8u121-linux-x64.tar.gz",
+              "title": "Linux x64"
+            },
+                        {
+              "MD5": "053951fc1fa47569ff42a99d147cfa07",
+              "SHA256": "82ff2493cd4b9ebdaeb9135abaffc9a37b71d341b007a83f73aa6ff3df1b6a3a",
+              "filepath": "http://download.oracle.com/otn-pub/java/jdk/8u121-b13/e9e7ea248e2c4826b92b3f075a80e441/jdk-8u121-macosx-x64.dmg",
+              "name": "jdk-8u121-macosx-x64.dmg",
+              "title": "Mac OS X"
+            },
+                        {
+              "MD5": "6e3087d03df90dfd35b87c6fc48c6bd7",
+              "SHA256": "6c9ff068e2c6e0c0d41cc18b7ac5ec88a4e45285aa2eed3158287df017aecf81",
+              "filepath": "http://download.oracle.com/otn-pub/java/jdk/8u121-b13/e9e7ea248e2c4826b92b3f075a80e441/jdk-8u121-solaris-sparcv9.tar.gz",
+              "name": "jdk-8u121-solaris-sparcv9.tar.gz",
+              "title": "Solaris SPARC 64-bit"
+            },
+                        {
+              "MD5": "f1d545c52b9c9a8caf1b98ee6b833609",
+              "SHA256": "eb5d6f7d7804b3e8bc6dc46676a017368e402724f9a5747b6145e1e305c9ffa6",
+              "filepath": "http://download.oracle.com/otn-pub/java/jdk/8u121-b13/e9e7ea248e2c4826b92b3f075a80e441/jdk-8u121-solaris-x64.tar.gz",
+              "name": "jdk-8u121-solaris-x64.tar.gz",
+              "title": "Solaris x64"
+            },
+                        {
+              "MD5": "e20c7989978374f37534563948125dcb",
+              "SHA256": "b57abcfbcdd42d15626775fb214811328f614a9a9e623d4904bbfd6bb2aac79f",
+              "filepath": "http://download.oracle.com/otn-pub/java/jdk/8u121-b13/e9e7ea248e2c4826b92b3f075a80e441/jdk-8u121-windows-i586.exe",
+              "name": "jdk-8u121-windows-i586.exe",
+              "title": "Windows x86"
+            },
+                        {
+              "MD5": "63dafed9eb86fd7be52bc3fc09f5a571",
+              "SHA256": "3e39f87441841a152cd327e95d09755fbe4b443316dac94a0494d68910b0994e",
+              "filepath": "http://download.oracle.com/otn-pub/java/jdk/8u121-b13/e9e7ea248e2c4826b92b3f075a80e441/jdk-8u121-windows-x64.exe",
+              "name": "jdk-8u121-windows-x64.exe",
+              "title": "Windows x64"
+            }
+          ],
+          "licpath": "/technetwork/java/javase/terms/license",
+          "lictitle": "Oracle Binary Code License Agreement for Java SE",
+          "name": "jdk-8u121-oth-JPR",
+          "title": "Java SE Development Kit 8u121"
+        },
+                {
+          "files":           [
+                        {
+              "MD5": "6b4659b0e21593d5b56f6fefb4ff1439",
+              "SHA256": "d495e71970261c0b52e4e761e4e2cc49e3f27d998258835ccf951200ce1838b4",
+              "filepath": "http://download.oracle.com/otn/java/jdk/8u112-b15/jdk-8u112-linux-arm32-vfp-hflt.tar.gz",
+              "name": "jdk-8u112-linux-arm32-vfp-hflt.tar.gz",
+              "title": "Linux ARM 32 Hard Float ABI"
+            },
+                        {
+              "MD5": "ad8dae3a2c2d2262648d42582a9640ee",
+              "SHA256": "826c1d9beac5fe1d23c45b5d8dbb87c51dc8e4bf816960dc2a1e2eb94da4cdd5",
+              "filepath": "http://download.oracle.com/otn/java/jdk/8u112-b15/jdk-8u112-linux-arm64-vfp-hflt.tar.gz",
+              "name": "jdk-8u112-linux-arm64-vfp-hflt.tar.gz",
+              "title": "Linux ARM 64 Hard Float ABI"
+            },
+                        {
+              "MD5": "66ccf8e7c28969d56863034d030134bf",
+              "SHA256": "1e7c2fb80b339dd65f261d37e26ffd5f3136e5ff8778026ed227b47516df69a5",
+              "filepath": "http://download.oracle.com/otn/java/jdk/8u112-b15/jdk-8u112-linux-i586.tar.gz",
+              "name": "jdk-8u112-linux-i586.tar.gz",
+              "title": "Linux x86"
+            },
+                        {
+              "MD5": "de9b7a90f0f5a13cfcaa3b01451d0337",
+              "SHA256": "777bd7d5268408a5a94f5e366c2e43e720c6ce4fe8c59d9a71e2961e50d774a5",
+              "filepath": "http://download.oracle.com/otn/java/jdk/8u112-b15/jdk-8u112-linux-x64.tar.gz",
+              "name": "jdk-8u112-linux-x64.tar.gz",
+              "title": "Linux x64"
+            },
+                        {
+              "MD5": "1aea88117c550c648940c25a84bf3059",
+              "SHA256": "c9ebb729acb0ee8e6fbeda85751be20b024c45e3ebb83cc7c624908ffb8a466d",
+              "filepath": "http://download.oracle.com/otn/java/jdk/8u112-b16/jdk-8u112-macosx-x64.dmg",
+              "name": "jdk-8u112-macosx-x64.dmg",
+              "title": "Mac OS X"
+            },
+                        {
+              "MD5": "e8501b8b3dc78552b6c07a95c586bc9e",
+              "SHA256": "f01739d94564eced651ea93ce5d98d1ccbb63fa99a4b7a7c3db99d03e30cf475",
+              "filepath": "http://download.oracle.com/otn/java/jdk/8u112-b15/jdk-8u112-solaris-sparcv9.tar.gz",
+              "name": "jdk-8u112-solaris-sparcv9.tar.gz",
+              "title": "Solaris SPARC 64-bit"
+            },
+                        {
+              "MD5": "bf5ef313853e916a8204b4f9b7678232",
+              "SHA256": "8adb58456c1860be9e73e28a4d249b478918d331f2dbcbbbac7c558708b8b754",
+              "filepath": "http://download.oracle.com/otn/java/jdk/8u112-b15/jdk-8u112-solaris-x64.tar.gz",
+              "name": "jdk-8u112-solaris-x64.tar.gz",
+              "title": "Solaris x64"
+            },
+                        {
+              "MD5": "77cd6345acbe738cc3a7ec3976cec82b",
+              "SHA256": "c2126bb16b85ee47f44124d318155c329194e1a60a3a5562a6a4672ca5989c85",
+              "filepath": "http://download.oracle.com/otn/java/jdk/8u112-b15/jdk-8u112-windows-i586.exe",
+              "name": "jdk-8u112-windows-i586.exe",
+              "title": "Windows x86"
+            },
+                        {
+              "MD5": "1c765b83260c3e691a7b716e21b290c7",
+              "SHA256": "6c3504185dd06f50b0578766bd913b277fd1ff444023aacd20b969ae76f20f5e",
+              "filepath": "http://download.oracle.com/otn/java/jdk/8u112-b15/jdk-8u112-windows-x64.exe",
+              "name": "jdk-8u112-windows-x64.exe",
+              "title": "Windows x64"
+            }
+          ],
+          "licpath": "/technetwork/java/javase/terms/license",
+          "lictitle": "Oracle Binary Code License Agreement for Java SE",
+          "name": "jdk-8u112-oth-JPR",
+          "title": "Java SE Development Kit 8u112"
+        },
+                {
+          "files":           [
+                        {
+              "MD5": "e74f9808168fb41570ee727e8e3f3366",
+              "SHA256": "add3f9685161337fd31e433ea9b19231d6b40561dc40826057930fa2d76d7925",
+              "filepath": "http://download.oracle.com/otn/java/jdk/8u111-b14/jdk-8u111-linux-arm32-vfp-hflt.tar.gz",
+              "name": "jdk-8u111-linux-arm32-vfp-hflt.tar.gz",
+              "title": "Linux ARM 32 Hard Float ABI"
+            },
+                        {
+              "MD5": "2f428b30b713542e3ed48fb7668bcfe2",
+              "SHA256": "8fd6be278b1d312c53897de66e9bd2e6eb5ce0d5b62da8bbd9b1333dc190ed15",
+              "filepath": "http://download.oracle.com/otn/java/jdk/8u111-b14/jdk-8u111-linux-arm64-vfp-hflt.tar.gz",
+              "name": "jdk-8u111-linux-arm64-vfp-hflt.tar.gz",
+              "title": "Linux ARM 64 Hard Float ABI"
+            },
+                        {
+              "MD5": "f3399a2c00560a8f5f9a652f7c67e493",
+              "SHA256": "9a8e8fcf7b6fbe53d6312195be87ce00f3beaab9dfbaa020b96e305174f39e1f",
+              "filepath": "http://download.oracle.com/otn/java/jdk/8u111-b14/jdk-8u111-linux-i586.tar.gz",
+              "name": "jdk-8u111-linux-i586.tar.gz",
+              "title": "Linux x86"
+            },
+                        {
+              "MD5": "2d48badebe05c848cc3b4d6e0c53a457",
+              "SHA256": "187eda2235f812ddb35c352b5f9aa6c5b184d611c2c9d0393afb8031d8198974",
+              "filepath": "http://download.oracle.com/otn/java/jdk/8u111-b14/jdk-8u111-linux-x64.tar.gz",
+              "name": "jdk-8u111-linux-x64.tar.gz",
+              "title": "Linux x64"
+            },
+                        {
+              "MD5": "d2a9ad8bbb06adba470b5c89be8b3874",
+              "SHA256": "a1c9308b625827ecdf870eab578ced1c5c61bbf2c16195fc5c9ffc25439e673d",
+              "filepath": "http://download.oracle.com/otn/java/jdk/8u111-b14/jdk-8u111-macosx-x64.dmg",
+              "name": "jdk-8u111-macosx-x64.dmg",
+              "title": "Mac OS X"
+            },
+                        {
+              "MD5": "c08f09782cb0698dd580e3e59accb69d",
+              "SHA256": "4cf165f6b455bba88424171e9b9429b2b02411961d56acc56a3b1532ca0c42c1",
+              "filepath": "http://download.oracle.com/otn/java/jdk/8u111-b14/jdk-8u111-solaris-sparcv9.tar.gz",
+              "name": "jdk-8u111-solaris-sparcv9.tar.gz",
+              "title": "Solaris SPARC 64-bit"
+            },
+                        {
+              "MD5": "a58227d0cbbb7d7b0622928a1f31cf7c",
+              "SHA256": "2a460d662392f240cae53cd9693354957b9ad2cae1ec09c8178d82fc71274de7",
+              "filepath": "http://download.oracle.com/otn/java/jdk/8u111-b14/jdk-8u111-solaris-x64.tar.gz",
+              "name": "jdk-8u111-solaris-x64.tar.gz",
+              "title": "Solaris x64"
+            },
+                        {
+              "MD5": "9a06a6ca8582d13a1f85a024e1a19244",
+              "SHA256": "2bc788869fe09b073067592021ab9f93d2407a078826138a49297badb6b0a06d",
+              "filepath": "http://download.oracle.com/otn/java/jdk/8u111-b14/jdk-8u111-windows-i586.exe",
+              "name": "jdk-8u111-windows-i586.exe",
+              "title": "Windows x86"
+            },
+                        {
+              "MD5": "a9183da6df9ec38d196f0cd2b420a8aa",
+              "SHA256": "259caf1052673573096bb27b0ee10a8e97734461483856be1a81aa4130c3fe29",
+              "filepath": "http://download.oracle.com/otn/java/jdk/8u111-b14/jdk-8u111-windows-x64.exe",
+              "name": "jdk-8u111-windows-x64.exe",
+              "title": "Windows x64"
+            }
+          ],
+          "licpath": "/technetwork/java/javase/terms/license",
+          "lictitle": "Oracle Binary Code License Agreement for Java SE",
+          "name": "jdk-8u111-oth-JPR",
+          "title": "Java SE Development Kit 8u111"
+        },
+                {
+          "files":           [
+                        {
+              "MD5": "060cedf5682812302a46cf69b7931803",
+              "SHA256": "7ece52a711a3e2ef82576edb3d45063a48dd71e3e1742288cd438e5ee3492ca3",
+              "filepath": "http://download.oracle.com/otn/java/jdk/8u102-b14/jdk-8u102-linux-arm32-vfp-hflt.tar.gz",
+              "name": "jdk-8u102-linux-arm32-vfp-hflt.tar.gz",
+              "title": "Linux ARM 32 Hard Float ABI"
+            },
+                        {
+              "MD5": "f8cf71a932be6c7f6c3069b5cfe609a1",
+              "SHA256": "dc86e309c6292871b21075dae3c401b2891022f8f1a7084150a26bcd37a83b66",
+              "filepath": "http://download.oracle.com/otn/java/jdk/8u102-b14/jdk-8u102-linux-arm64-vfp-hflt.tar.gz",
+              "name": "jdk-8u102-linux-arm64-vfp-hflt.tar.gz",
+              "title": "Linux ARM 64 Hard Float ABI"
+            },
+                        {
               "MD5": "13ca2f1c15a71dde4e57436d5ce671f8",
               "SHA256": "ed08112bad8e63c1c102ab52fccef930849b6cbadc5e9a816e12a99ddcbb5eaf",
-              "filepath": "http://download.oracle.com/otn-pub/java/jdk/8u102-b14/jdk-8u102-linux-i586.tar.gz",
+              "filepath": "http://download.oracle.com/otn/java/jdk/8u102-b14/jdk-8u102-linux-i586.tar.gz",
               "name": "jdk-8u102-linux-i586.tar.gz",
               "title": "Linux x86"
             },
                         {
               "MD5": "bac58dcec9bb85859810a2a6acba740b",
               "SHA256": "7cfbe0bc0391a4abe60b3e9eb2a541d2315b99b9cb3a24980e618a89229e04b7",
-              "filepath": "http://download.oracle.com/otn-pub/java/jdk/8u102-b14/jdk-8u102-linux-x64.tar.gz",
+              "filepath": "http://download.oracle.com/otn/java/jdk/8u102-b14/jdk-8u102-linux-x64.tar.gz",
               "name": "jdk-8u102-linux-x64.tar.gz",
               "title": "Linux x64"
             },
                         {
               "MD5": "9652fdf0b3387f1897369c7ec642f546",
               "SHA256": "9f53b71af203502da4ff416b5ab1a217a655006786bcbb8f8d8ad501debda748",
-              "filepath": "http://download.oracle.com/otn-pub/java/jdk/8u102-b14/jdk-8u102-macosx-x64.dmg",
+              "filepath": "http://download.oracle.com/otn/java/jdk/8u102-b14/jdk-8u102-macosx-x64.dmg",
               "name": "jdk-8u102-macosx-x64.dmg",
               "title": "Mac OS X"
             },
                         {
               "MD5": "f96282ad50d4d47ab35ffe2521f87ff9",
               "SHA256": "8a720552ee679b7a4d207b16c8fa5d30222f7be3f9a0081a71a913b73b4f35a5",
-              "filepath": "http://download.oracle.com/otn-pub/java/jdk/8u102-b14/jdk-8u102-solaris-sparcv9.tar.gz",
+              "filepath": "http://download.oracle.com/otn/java/jdk/8u102-b14/jdk-8u102-solaris-sparcv9.tar.gz",
               "name": "jdk-8u102-solaris-sparcv9.tar.gz",
               "title": "Solaris SPARC 64-bit"
             },
                         {
               "MD5": "d997b1515ffe8465639b444d02584303",
               "SHA256": "a3842c793a894beb0c836ffaf385e569b76d51a4efb9d0476cc26f0a02342684",
-              "filepath": "http://download.oracle.com/otn-pub/java/jdk/8u102-b14/jdk-8u102-solaris-x64.tar.gz",
+              "filepath": "http://download.oracle.com/otn/java/jdk/8u102-b14/jdk-8u102-solaris-x64.tar.gz",
               "name": "jdk-8u102-solaris-x64.tar.gz",
               "title": "Solaris x64"
             },
                         {
               "MD5": "15f064b894765af4df8e58c440895119",
               "SHA256": "07b528a12fd89777ba351b7d420ba0c3b325249c0d0ffab6580b357a34ca875c",
-              "filepath": "http://download.oracle.com/otn-pub/java/jdk/8u102-b14/jdk-8u102-windows-i586.exe",
+              "filepath": "http://download.oracle.com/otn/java/jdk/8u102-b14/jdk-8u102-windows-i586.exe",
               "name": "jdk-8u102-windows-i586.exe",
               "title": "Windows x86"
             },
                         {
               "MD5": "e28268413fe901b46c40c56f4c0dbf88",
               "SHA256": "57c9088c60c2a95c8cf86997a7cd51d6eaa86e048dec72b6184c237cc5b7b594",
-              "filepath": "http://download.oracle.com/otn-pub/java/jdk/8u102-b14/jdk-8u102-windows-x64.exe",
+              "filepath": "http://download.oracle.com/otn/java/jdk/8u102-b14/jdk-8u102-windows-x64.exe",
               "name": "jdk-8u102-windows-x64.exe",
               "title": "Windows x64"
             }
@@ -65,63 +292,63 @@
                         {
               "MD5": "c75a48928e1039b6d7466e0a9358a8ca",
               "SHA256": "9819bd28af551589c8ea599c5b8b5cdf1aa86dacc9a75c31dd611bda27ae38a4",
-              "filepath": "http://download.oracle.com/otn-pub/java/jdk/8u101-b13/jdk-8u101-linux-arm32-vfp-hflt.tar.gz",
+              "filepath": "http://download.oracle.com/otn/java/jdk/8u101-b13/jdk-8u101-linux-arm32-vfp-hflt.tar.gz",
               "name": "jdk-8u101-linux-arm32-vfp-hflt.tar.gz",
               "title": "Linux ARM 32 Hard Float ABI"
             },
                         {
               "MD5": "fb8b20cf4b30622e6044303a2c99ffbd",
               "SHA256": "795df50a2991e84866ccd251111cfa1cf72d1859aa77d4cc1a8fa2419d254bcf",
-              "filepath": "http://download.oracle.com/otn-pub/java/jdk/8u101-b13/jdk-8u101-linux-arm64-vfp-hflt.tar.gz",
+              "filepath": "http://download.oracle.com/otn/java/jdk/8u101-b13/jdk-8u101-linux-arm64-vfp-hflt.tar.gz",
               "name": "jdk-8u101-linux-arm64-vfp-hflt.tar.gz",
               "title": "Linux ARM 64 Hard Float ABI"
             },
                         {
               "MD5": "4f4600815aa1adb5294278d471e890e3",
               "SHA256": "b11212ef06235296cad2f9b80a22f2d853a2d2f66ce55b993eb686e5a2da365d",
-              "filepath": "http://download.oracle.com/otn-pub/java/jdk/8u101-b13/jdk-8u101-linux-i586.tar.gz",
+              "filepath": "http://download.oracle.com/otn/java/jdk/8u101-b13/jdk-8u101-linux-i586.tar.gz",
               "name": "jdk-8u101-linux-i586.tar.gz",
               "title": "Linux x86"
             },
                         {
               "MD5": "a7ab8014716b0dac3adcaf5342167699",
               "SHA256": "467f323ba38df2b87311a7818bcbf60fe0feb2139c455dfa0e08ba7ed8581328",
-              "filepath": "http://download.oracle.com/otn-pub/java/jdk/8u101-b13/jdk-8u101-linux-x64.tar.gz",
+              "filepath": "http://download.oracle.com/otn/java/jdk/8u101-b13/jdk-8u101-linux-x64.tar.gz",
               "name": "jdk-8u101-linux-x64.tar.gz",
               "title": "Linux x64"
             },
                         {
               "MD5": "1f05ea58128676d538318f9eb097b99f",
               "SHA256": "680de8ddead3867fc34e7ff380f437c7ddb8dc75eb606186a3e8ae7e3b8c7fbc",
-              "filepath": "http://download.oracle.com/otn-pub/java/jdk/8u101-b13/jdk-8u101-macosx-x64.dmg",
+              "filepath": "http://download.oracle.com/otn/java/jdk/8u101-b13/jdk-8u101-macosx-x64.dmg",
               "name": "jdk-8u101-macosx-x64.dmg",
               "title": "Mac OS X"
             },
                         {
               "MD5": "9dc29504687d34ee143bc5065aed1f06",
               "SHA256": "d4536abe4400dccea7fa9bfc3c2f94857957f0f41886165678964304dfaa8c60",
-              "filepath": "http://download.oracle.com/otn-pub/java/jdk/8u101-b13/jdk-8u101-solaris-sparcv9.tar.gz",
+              "filepath": "http://download.oracle.com/otn/java/jdk/8u101-b13/jdk-8u101-solaris-sparcv9.tar.gz",
               "name": "jdk-8u101-solaris-sparcv9.tar.gz",
               "title": "Solaris SPARC 64-bit"
             },
                         {
               "MD5": "eb1b2b911071c7f41759cd79fb9eea43",
               "SHA256": "6fb76c330b495d79d4f6686498b9683238ce9799f41992da7f448c935f2af437",
-              "filepath": "http://download.oracle.com/otn-pub/java/jdk/8u101-b13/jdk-8u101-solaris-x64.tar.gz",
+              "filepath": "http://download.oracle.com/otn/java/jdk/8u101-b13/jdk-8u101-solaris-x64.tar.gz",
               "name": "jdk-8u101-solaris-x64.tar.gz",
               "title": "Solaris x64"
             },
                         {
               "MD5": "d48f342e55c66a4b7d0fcfccad036655",
               "SHA256": "5b9c0fcdd270f475a43f900346906b55b674cfd4f7744f032b65cb7cb4098d8c",
-              "filepath": "http://download.oracle.com/otn-pub/java/jdk/8u101-b13/jdk-8u101-windows-i586.exe",
+              "filepath": "http://download.oracle.com/otn/java/jdk/8u101-b13/jdk-8u101-windows-i586.exe",
               "name": "jdk-8u101-windows-i586.exe",
               "title": "Windows x86"
             },
                         {
               "MD5": "a1eb90c4152787567ab2af80d3beb34c",
               "SHA256": "cbd29f09cc3c3320e300d7e587d2ffa5a3bd5fe0b9b7f70926909ab806ef0b1d",
-              "filepath": "http://download.oracle.com/otn-pub/java/jdk/8u101-b13/jdk-8u101-windows-x64.exe",
+              "filepath": "http://download.oracle.com/otn/java/jdk/8u101-b13/jdk-8u101-windows-x64.exe",
               "name": "jdk-8u101-windows-x64.exe",
               "title": "Windows x64"
             }
@@ -1031,47 +1258,47 @@
                 {
           "files":           [
                         {
-              "filepath": "http://download.oracle.com/otn-pub/java/jdk/7u80-b15/jdk-7u80-linux-i586.tar.gz",
+              "filepath": "http://download.oracle.com/otn/java/jdk/7u80-b15/jdk-7u80-linux-i586.tar.gz",
               "name": "jdk-7u80-linux-i586.tar.gz",
               "title": "Linux x86"
             },
                         {
-              "filepath": "http://download.oracle.com/otn-pub/java/jdk/7u80-b15/jdk-7u80-linux-x64.tar.gz",
+              "filepath": "http://download.oracle.com/otn/java/jdk/7u80-b15/jdk-7u80-linux-x64.tar.gz",
               "name": "jdk-7u80-linux-x64.tar.gz",
               "title": "Linux x64"
             },
                         {
-              "filepath": "http://download.oracle.com/otn-pub/java/jdk/7u80-b15/jdk-7u80-macosx-x64.dmg",
+              "filepath": "http://download.oracle.com/otn/java/jdk/7u80-b15/jdk-7u80-macosx-x64.dmg",
               "name": "jdk-7u80-macosx-x64.dmg",
               "title": "Mac OS X x64"
             },
                         {
-              "filepath": "http://download.oracle.com/otn-pub/java/jdk/7u80-b15/jdk-7u80-solaris-i586.tar.gz",
+              "filepath": "http://download.oracle.com/otn/java/jdk/7u80-b15/jdk-7u80-solaris-i586.tar.gz",
               "name": "jdk-7u80-solaris-i586.tar.gz",
               "title": "Solaris x86"
             },
                         {
-              "filepath": "http://download.oracle.com/otn-pub/java/jdk/7u80-b15/jdk-7u80-solaris-sparc.tar.gz",
+              "filepath": "http://download.oracle.com/otn/java/jdk/7u80-b15/jdk-7u80-solaris-sparc.tar.gz",
               "name": "jdk-7u80-solaris-sparc.tar.gz",
               "title": "Solaris SPARC"
             },
                         {
-              "filepath": "http://download.oracle.com/otn-pub/java/jdk/7u80-b15/jdk-7u80-solaris-sparcv9.tar.gz",
+              "filepath": "http://download.oracle.com/otn/java/jdk/7u80-b15/jdk-7u80-solaris-sparcv9.tar.gz",
               "name": "jdk-7u80-solaris-sparcv9.tar.gz",
               "title": "Solaris SPARC 64-bit"
             },
                         {
-              "filepath": "http://download.oracle.com/otn-pub/java/jdk/7u80-b15/jdk-7u80-solaris-x64.tar.gz",
+              "filepath": "http://download.oracle.com/otn/java/jdk/7u80-b15/jdk-7u80-solaris-x64.tar.gz",
               "name": "jdk-7u80-solaris-x64.tar.gz",
               "title": "Solaris x64"
             },
                         {
-              "filepath": "http://download.oracle.com/otn-pub/java/jdk/7u80-b15/jdk-7u80-windows-i586.exe",
+              "filepath": "http://download.oracle.com/otn/java/jdk/7u80-b15/jdk-7u80-windows-i586.exe",
               "name": "jdk-7u80-windows-i586.exe",
               "title": "Windows x86"
             },
                         {
-              "filepath": "http://download.oracle.com/otn-pub/java/jdk/7u80-b15/jdk-7u80-windows-x64.exe",
+              "filepath": "http://download.oracle.com/otn/java/jdk/7u80-b15/jdk-7u80-windows-x64.exe",
               "name": "jdk-7u80-windows-x64.exe",
               "title": "Windows x64"
             }
@@ -1084,47 +1311,47 @@
                 {
           "files":           [
                         {
-              "filepath": "http://download.oracle.com/otn-pub/java/jdk/7u79-b15/jdk-7u79-linux-i586.tar.gz",
+              "filepath": "http://download.oracle.com/otn/java/jdk/7u79-b15/jdk-7u79-linux-i586.tar.gz",
               "name": "jdk-7u79-linux-i586.tar.gz",
               "title": "Linux x86"
             },
                         {
-              "filepath": "http://download.oracle.com/otn-pub/java/jdk/7u79-b15/jdk-7u79-linux-x64.tar.gz",
+              "filepath": "http://download.oracle.com/otn/java/jdk/7u79-b15/jdk-7u79-linux-x64.tar.gz",
               "name": "jdk-7u79-linux-x64.tar.gz",
               "title": "Linux x64"
             },
                         {
-              "filepath": "http://download.oracle.com/otn-pub/java/jdk/7u79-b15/jdk-7u79-macosx-x64.dmg",
+              "filepath": "http://download.oracle.com/otn/java/jdk/7u79-b15/jdk-7u79-macosx-x64.dmg",
               "name": "jdk-7u79-macosx-x64.dmg",
               "title": "Mac OS X x64"
             },
                         {
-              "filepath": "http://download.oracle.com/otn-pub/java/jdk/7u79-b15/jdk-7u79-solaris-i586.tar.gz",
+              "filepath": "http://download.oracle.com/otn/java/jdk/7u79-b15/jdk-7u79-solaris-i586.tar.gz",
               "name": "jdk-7u79-solaris-i586.tar.gz",
               "title": "Solaris x86"
             },
                         {
-              "filepath": "http://download.oracle.com/otn-pub/java/jdk/7u79-b15/jdk-7u79-solaris-sparc.tar.gz",
+              "filepath": "http://download.oracle.com/otn/java/jdk/7u79-b15/jdk-7u79-solaris-sparc.tar.gz",
               "name": "jdk-7u79-solaris-sparc.tar.gz",
               "title": "Solaris SPARC"
             },
                         {
-              "filepath": "http://download.oracle.com/otn-pub/java/jdk/7u79-b15/jdk-7u79-solaris-sparcv9.tar.gz",
+              "filepath": "http://download.oracle.com/otn/java/jdk/7u79-b15/jdk-7u79-solaris-sparcv9.tar.gz",
               "name": "jdk-7u79-solaris-sparcv9.tar.gz",
               "title": "Solaris SPARC 64-bit"
             },
                         {
-              "filepath": "http://download.oracle.com/otn-pub/java/jdk/7u79-b15/jdk-7u79-solaris-x64.tar.gz",
+              "filepath": "http://download.oracle.com/otn/java/jdk/7u79-b15/jdk-7u79-solaris-x64.tar.gz",
               "name": "jdk-7u79-solaris-x64.tar.gz",
               "title": "Solaris x64"
             },
                         {
-              "filepath": "http://download.oracle.com/otn-pub/java/jdk/7u79-b15/jdk-7u79-windows-i586.exe",
+              "filepath": "http://download.oracle.com/otn/java/jdk/7u79-b15/jdk-7u79-windows-i586.exe",
               "name": "jdk-7u79-windows-i586.exe",
               "title": "Windows x86"
             },
                         {
-              "filepath": "http://download.oracle.com/otn-pub/java/jdk/7u79-b15/jdk-7u79-windows-x64.exe",
+              "filepath": "http://download.oracle.com/otn/java/jdk/7u79-b15/jdk-7u79-windows-x64.exe",
               "name": "jdk-7u79-windows-x64.exe",
               "title": "Windows x64"
             }
@@ -7528,11 +7755,11 @@
     }
   ],
   "signature":   {
-    "certificates": ["MIIC3TCCAcUCBQDerb73MA0GCSqGSIb3DQEBDQUAMIGKMQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTERMA8GA1UEBxMIU2FuIEpvc2UxGDAWBgNVBAoTD0plbmtpbnMgUHJvamVjdDEaMBgGA1UEAxMRS29oc3VrZSBLYXdhZ3VjaGkxHTAbBgkqhkiG9w0BCQEWDmtrQGtvaHN1a2Uub3JnMB4XDTE2MDEyOTEwNDYwMloXDTE3MDEyODEwNDYwMlowXjELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExGDAWBgNVBAoTD0plbmtpbnMgUHJvamVjdDEgMB4GA1UEAxMXQ29tbXVuaXR5IFVwZGF0ZSBDZW50ZXIwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAKTDDxjInVBgniu4TpRQoI29ci8lwzXsPX4anFI+1LiPsPk2RmIg05WEohD6RCzldgiNtaPGujyeR/+xXYd8Gev3Abm1OjlN6bZbzZHAX8FoDr4PJJWftq0LDg+YVki1p8eF65ByoHIVHmNeE7NH09kAnbT4w2DNGstwHcFO90RbAgMBAAEwDQYJKoZIhvcNAQENBQADggEBAH96iGUruYwF4Pv/DffI3AmCOlE4/hG/2uqacBrRN52LjIbVWEOOUesEIFMmyjbFcGKMzMwndOF+f8N6MAA4/EONvbLgJyC0VrL66VX0OrTfk1NZcfZkIMh5rrPoCpuIi8TF5GGM9ulwa82o50POjbdjInFvbW7L927Zil2dP/UvugeRnGYKCi9o62h96foJu/N1e3aSzEKA8KUwoW4peCPiv6LJ2xrnQXbYG1UN0hO4n4Cdw3Vebgewl31qRUJGFLKF6tslt/LAGk66y5XcKhel2guCfUa1Dhz4/6UlEK1NrnldiAsYBa4pnp4BcZ0RJcEdCiYe0b9D6BplUx1DDTo="],
-    "correct_digest": "J5d4rrhePn9QX6miSC0bXGCYIbI=",
-    "correct_signature": "lO2auz7jEQUUOvm5MrzWz6SCG0q0pM1VNCiLt2rBfe6eCqDsakpVhMBZllt1jjNNCr0yDqwb/fcJSID5wQTFKKDUZklM2rHUKOHqNAmnIh/Gsv57pWr9+sHdBOhnNy0YnJYkbykDRrjYnyDDtnSW8qRE9KEdTPxCIEX8HvqyllM=",
-    "digest": "gwINzw6UZRyE9I3jwKJHchhLYRY=",
-    "signature": "Ry+6LhX7l4PtXbRbr1P65OQDJWUQOFkUFxG7YLsw6N5lAYcn0nBs8qI1uAkVw2nVnrR9MET36CIPCwOIN41dLldO9hJ9TP6PpvjOz70jxZoiZY6Cztfobz7f4r7xIs2f4j1n1DaYYQAyik0dibFmgSM0h30P1W6nFCrp+CEUPTs="
+    "certificates": ["MIIC3TCCAcUCBQDerb74MA0GCSqGSIb3DQEBCwUAMIGKMQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTERMA8GA1UEBxMIU2FuIEpvc2UxGDAWBgNVBAoTD0plbmtpbnMgUHJvamVjdDEaMBgGA1UEAxMRS29oc3VrZSBLYXdhZ3VjaGkxHTAbBgkqhkiG9w0BCQEWDmtrQGtvaHN1a2Uub3JnMB4XDTE3MDEwNjAwMDEyNFoXDTE4MDEwNjAwMDEyNFowXjELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExGDAWBgNVBAoTD0plbmtpbnMgUHJvamVjdDEgMB4GA1UEAxMXQ29tbXVuaXR5IFVwZGF0ZSBDZW50ZXIwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAKTDDxjInVBgniu4TpRQoI29ci8lwzXsPX4anFI+1LiPsPk2RmIg05WEohD6RCzldgiNtaPGujyeR/+xXYd8Gev3Abm1OjlN6bZbzZHAX8FoDr4PJJWftq0LDg+YVki1p8eF65ByoHIVHmNeE7NH09kAnbT4w2DNGstwHcFO90RbAgMBAAEwDQYJKoZIhvcNAQELBQADggEBAJrDKF0DViGn1eKILYI7p4yzHyCmT+x2ToqAXIsOBAbq9l7Xm7woG5AQ8jF9369IsGpMOVlHNFd/Gi1L9JN48Sz1KAADMOI+sWp5pGbP6J+6LTgTA0m/oPpVL9rmaRwMd3fdHjRFXiG9LMoQ+5XqIhNrWJsupGX9eMT4sECyP0gikywYGMPKYu9pnUttVsfTJ564rk3+cz4YGDHQBdg3MrohuuG1k4Q4GXqUv3EhBZrVRCI+8cnjaeJooEMgAiGxj/s5bsDPgj9MZWyQuZSoboZRDZOf6NXFlUSt6kk1qZ2A8+oli6cUMpEsUNQs5OZOwITwfis5vrLa8m9mr3xdKdk="],
+    "correct_digest": "FfcB4xGzhI5pA4yx+Zy5Ey48RHY=",
+    "correct_signature": "S0THYdbm5UnoO49hA3NvT7/zit9fbNZ0wV2virsux0Osjirpfq9rIIjKQfCD1b0UGCY71rQHehexJ2frr6MSqjeONqhajENAd6J45V63lo9j/5K+g+8WIcXI4fZvSpV4SfL6AW+x8qr88x1W7+t8yXxjMMLoxhLHqJ4x7aks5Yc=",
+    "digest": "ElaijnYlHHn1btgFLXzrE9tTtoo=",
+    "signature": "DkbA7Yb7WesrlJxG4aWyfep/cwcdPbtSsAF1M4hpzIf+/pd0SogD0ty3+N+ct1rT86Ysev4P1lZ8/6eZAUG9szLxHMh2fDjL8MufM8+MLRNL7WcPNmXlWGYzgPeTjfbSou1RlgTxoiPnxUBvx/tezCohEMlmUBN456MSYZ+ms+E="
   },
   "version": 2
 }
