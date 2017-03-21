@@ -20,10 +20,11 @@ import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.xpandit.plugins.xrayjenkins.model.Format;
 import com.xpandit.plugins.xrayjenkins.model.XrayInstance;
 import com.xpandit.plugins.xrayjenkins.service.XrayRestClient;
-import com.xpandit.plugins.xrayjenkins.model.FormatBean;
+import com.xpandit.xray.model.Endpoint;
+import com.xpandit.xray.model.FormatBean;
+
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -48,36 +49,35 @@ import net.sf.json.JSONObject;
 public class XrayImportBuilder extends Builder implements SimpleBuildStep {
 
     private static final String IMPORT_CUCUMBER_FEATURES_URL_SUFIX= "/rest/raven/1.0/import/execution";
+    
 
     private final String serverUrl;
     private final String serverUsername;
     private final String serverPassword;
-    private final String format;
-    private String importFilePath;
+    private final String formatSuffix;
+    private String formatName;
     private String formats;
-    
+    private String importFilePath;
     private static Gson gson = new GsonBuilder().create();
     
     @DataBoundConstructor
     public XrayImportBuilder(String serverUrl,String serverUsername, 
-            String serverPassword, String format, String importFilePath) {
+            String serverPassword, String formatSuffix, String importFilePath) {
+    	
+    	
         this.serverUrl = serverUrl;
         this.serverUsername = serverUsername;
         this.serverPassword = serverPassword;
-        this.format = format;
         this.importFilePath = importFilePath;
+        this.formatSuffix = formatSuffix;
+        this.formatName = Endpoint.lookupBySuffix(formatSuffix).getName();
+        
+        //TODO only save if changes ocurred in Endpoints Enum
         Map<String,FormatBean> formats = new HashMap<String,FormatBean>();
+        for(Endpoint e : Endpoint.values())
+        	formats.put(e.getName(),e.toBean());
         
-        for(Format f: Format.values()){ //Populate with the defined formats
-        	FormatBean formatBean = createFormatBean(f);//A temporary bean to hold necessary info
-        
-        	//if(formatConfiguration.equals(format.getSuffix()))//populate the dynamic fields given the last chosen format
-        		//formatBean.setFieldsConfiguration(taskDefinition.getConfiguration());
-        		
-        	formats.put(f.getName(),formatBean); 
-        }
-        this.formats = gson.toJson(formats);
-        
+        this.formats = gson.toJson(formats);	
     }
 
     public String getServerUrl() {
@@ -96,24 +96,17 @@ public class XrayImportBuilder extends Builder implements SimpleBuildStep {
         return importFilePath;
     }
 
-    public String getFormat() {
-        return format;
+    public String getFormatSuffix() {
+        return formatSuffix;
+    }
+    
+    public String getFormatName(){
+    	return formatName;
     }
     
     public String getFormats(){
-    	return formats;
+    	return this.formats;
     }
-    
-    /**
-     * Creates a Bean
-     * @param format Format definition
-     * @param i18nResolver i18n property resolver
-     * @return Bean
-     */
-    private FormatBean createFormatBean(Format format){
-    	return new FormatBean(format.getName(), format.getSuffix(),format.getOptionalFields());
-    }
-    
 
     @Override
     public void perform(Run<?,?> build, FilePath workspace, Launcher launcher, TaskListener listener) {
@@ -140,7 +133,7 @@ public class XrayImportBuilder extends Builder implements SimpleBuildStep {
                 throw new IOException("File path is a directory or the file doesn't exist");
             }
             
-            String restCall = IMPORT_CUCUMBER_FEATURES_URL_SUFIX + format;
+            String restCall = IMPORT_CUCUMBER_FEATURES_URL_SUFIX + formatSuffix;
             
             HttpResponse response = client.httpPost(restCall, file.getAbsolutePath());
 
@@ -161,12 +154,14 @@ public class XrayImportBuilder extends Builder implements SimpleBuildStep {
 
     @Extension
     public static class Descriptor extends BuildStepDescriptor<Builder> {
-        
-        private String serverUrl;
+        private static int SEED = 0;
+    	private String serverUrl;
         private String serverUsername;
         private String serverPassword;
-        private String format;
         private String importFilePath;
+        private String formatSuffix;
+        private String formatName;
+        
         
         public Descriptor() {
             load();
@@ -174,15 +169,15 @@ public class XrayImportBuilder extends Builder implements SimpleBuildStep {
         
         @Override
         public boolean configure(StaplerRequest req, JSONObject formData) throws FormException {
+            this.serverUrl = formData.getString("serverUrl");
+            this.serverUsername = formData.getString("serverUsername");
+            this.serverPassword = formData.getString("serverPassword");
+            this.formatSuffix = formData.getString("formatSuffix");
+            this.importFilePath = formData.getString("importFilePath");
             
-            serverUrl = formData.getString("serverUrl");
-            serverUsername = formData.getString("serverUsername");
-            serverPassword = formData.getString("serverPassword");
-            format = formData.getString("format");
-            importFilePath = formData.getString("importFilePath");
-            		
             save();
             return super.configure(req,formData);
+            
         }
         
         @Override
@@ -222,15 +217,28 @@ public class XrayImportBuilder extends Builder implements SimpleBuildStep {
             }
         }
         
-        public ListBoxModel doFillFormatItems() {
+        public ListBoxModel doFillFormatSuffixItems() {
+        	
             ListBoxModel items = new ListBoxModel();
+            for(Endpoint e : Endpoint.values())
+            	items.add(e.getName(), e.getSuffix());
             
-            for(Format format : Format.values())
-            	items.add(format.getName(), format.getSuffix());
-  
             return items;
         }
-
+        
+        public ListBoxModel doFillDefaultFormatItems(){
+        	
+        	ListBoxModel items = new ListBoxModel();
+        	
+            Map<String,FormatBean> formats = new HashMap<String,FormatBean>();
+            for(Endpoint e : Endpoint.values())
+            	formats.put(e.getName(),e.toBean());
+        	
+            items.add(gson.toJson(formats));
+            
+        	return items;
+        }
+        
         public String getServerUrl() {
             return serverUrl;
         }
@@ -243,16 +251,35 @@ public class XrayImportBuilder extends Builder implements SimpleBuildStep {
             return serverPassword;
         }
 
-        public String getFormat() {
-            return format;
-        }
-
         public String getImportFilePath() {
             return importFilePath;
         }
         
-        public String defaultValue(){     
-        	return "hello boss";
+        public String getFormatSuffix() {
+            return formatSuffix;
+        }
+        
+        public String getFormatName(){
+        	return formatName;
+        }
+        
+        public int defaultUid(){
+        	return ++SEED;
+        }
+        
+        public String defaultFormats(){
+            Map<String,FormatBean> formats = new HashMap<String,FormatBean>();
+            for(Endpoint e : Endpoint.values())
+            	formats.put(e.getName(),e.toBean());
+            
+            return gson.toJson(formats);	
+        }
+        
+        public String defaultValue(){ 
+        	//Endpoint e = Endpoint.lookupBySuffix(this.formatSuffix);
+        	//return e != null ? e.getName() : "";
+        	
+        	return this.formatSuffix;
         }
         
     }
