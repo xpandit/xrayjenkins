@@ -2,11 +2,13 @@
 <?jelly escape-by-default='false'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
          xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-         
+  
+  ${descriptor.setUid()}       
+  
   <script src="${resURL}/plugin/xray-jenkins/handlebars-v4.0.5.amd.min.js"></script>
 
-  <div id="templates"></div>
-  
+  <div id="templates">
+  </div>
   
   <j:file xmlns:j="jelly:core" var="addInput" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='XML'>
  		<f:entry title='{{label}}'>
@@ -21,44 +23,57 @@
   </j:file>
   
   <j:file xmlns:j="jelly:core" var="addSwitcher" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='HTML'>
-  		<f:entry name='goalType' title='{{label}}' field='{{key}}'>
-		    <select name='inputInfoSwitcher'>
+  		<f:entry name='goalType' field='inputInfoSwitcher'>
+		    <select class="setting-input  select" onchange='switchInput("#switchContainer")'>
 		        <option value='fileContent'>${%import-parameter.content-type-filecontent}</option>
 		        <option value='file Path'>${%import-parameter.content-type-filepath}</option>
-		   </select>
+		    </select>
 		</f:entry>
   </j:file>
   
 
-  <script>
+  <script id="_${descriptor.defaultUid()}">
     (function(){
     
-	   addXrayFields = function(){
-	  		var instance = '${instance}';
+	   addXrayFields_${descriptor.defaultUid()} = function(){
+	   		
+			var dynamicFields = '${instance.getDynamicFields()}';
 	  		var formats = '${descriptor.defaultFormats()}';
-			formats = JSON.parse(formats);
+			
+			if(formats !== '')
+				formats = JSON.parse(formats);
+			else
+				return;
+				
+			console.info(formats);
 			
 			var selectedFormat;
-			if(arguments.length > 0){
+			if(arguments.length > 0)
 				selectedFormat = formats[arguments[0]];
-			}
-			else{
+			else
 				selectedFormat = formats[Object.keys(formats)[0]];
-			}
-			
-			console.info(selectedFormat);
 			
 			//Three steps: fetch template, compile it, generate result with the context data
 			var source = Q('#main').text(); 
 			var template = Handlebars.compile(source);	
 			var result = template(selectedFormat);
 	   		
-	   		Q('#configurableFields').html(result); 
+	   		Q('#configurableFields_${descriptor.defaultUid()}').html(result); 
+	   		
+	   		console.info('hey');
 
 		}
 		
+	  /*
+	   * Switches the HTML element for the importInfo field
+	   */
+	  switchInput = function(container){
+	  	console.info(container);
+	  }
+		
 		
 	  Q(document).ready(function() {
+	  
 	    //template loading
 	    Q('#templates').load('${resURL}/plugin/xray-jenkins/xray-import-buildstepconfig.html',function(){
 		    
@@ -67,30 +82,25 @@
 	   			return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
 			});
 			
-			
 			//Register partial templates, used for call templates inside templates
 			Handlebars.registerPartial("addInput",'${addInput}');
 			Handlebars.registerPartial("addTextarea", '${addTextarea}');
 			Handlebars.registerPartial("addSwitcher", '${addSwitcher}');
 			
 			//register event-handler
-	    	Q('#selectFormat').on('change',addXrayFields);
-			addXrayFields();	
-			//get last chose format
+	    	Q('#selectFormat_${descriptor.defaultUid()}').on('change',function(e){
+	    		addXrayFields_${descriptor.defaultUid()}(e.currentTarget.options[e.currentTarget.selectedIndex].text);
+	    	});
+			
+			//get last chosen format
 			var formatName = '${instance.getFormatName()}';
 			
 			//if no format was chosen, select the first one from the formats/endpoints list
-			if(formatName == ''){
-				console.info('No format name selected, picking the first one...');
-				addXrayFields();
-			}else{
-				console.info('Selected: '+formatName);
-			    addXrayFields(formatName); //making sure that the select gets the last configuration value
-			}
-			
-		   
+			if(formatName == '')
+				addXrayFields_${descriptor.defaultUid()}();
+			else
+			    addXrayFields_${descriptor.defaultUid()}(formatName); //making sure that the select gets the last configuration value
 	    });
-    	
     	
 	 });
    			
@@ -114,8 +124,11 @@
       
    <f:entry title="${%Choose Format:}" field="formatSuffix">
    		<f:select id="selectFormat_${descriptor.defaultUid()}"/>
-   		<p id="configurableFields" style="border-left:solid;border-color:#00a3ac;width:50vw"></p>
+   		<f:section>
+   			<p id="configurableFields_${descriptor.defaultUid()}" style="border-left:solid;border-color:#00a3ac;width:50vw"></p>
+   		</f:section>
    </f:entry>
+
    
 </j:jelly>
 

@@ -12,22 +12,19 @@
   <triggers/>
   <concurrentBuild>false</concurrentBuild>
   <builders>
-    <com.xpandit.plugins.xrayjenkins.task.XrayExportBuilder plugin="xray-jenkins@1.0-SNAPSHOT">
-      <serverUrl>http://xraydemo.xpand-it.com</serverUrl>
+    <com.xpandit.plugins.xrayjenkins.task.XrayImportBuilder plugin="xray-jenkins@1.0-SNAPSHOT">
+      <serverUrl>http://localhost:8080</serverUrl>
       <serverUsername>admin</serverUsername>
       <serverPassword>admin</serverPassword>
-      <issues>CALC-1003</issues>
-      <filter></filter>
-      <filePath>features</filePath>
-    </com.xpandit.plugins.xrayjenkins.task.XrayExportBuilder>
-    <com.xpandit.plugins.xrayjenkins.task.XrayImportBuilder plugin="xray-jenkins@1.0-SNAPSHOT">
-      <serverUrl></serverUrl>
-      <serverUsername></serverUsername>
-      <serverPassword></serverPassword>
-      <formatSuffix>/behave/multipart</formatSuffix>
-      <formatName>Behave JSON multipart</formatName>
-      <formats>{&quot;Behave JSON&quot;:{&quot;name&quot;:&quot;Behave JSON&quot;,&quot;suffix&quot;:&quot;/behave&quot;,&quot;configurableFields&quot;:[{&quot;key&quot;:&quot;importFilePath&quot;,&quot;label&quot;:&quot;Execution Report File (file path with file name)&quot;,&quot;required&quot;:true}]},&quot;NUnit XML&quot;:{&quot;name&quot;:&quot;NUnit XML&quot;,&quot;suffix&quot;:&quot;/nunit&quot;,&quot;configurableFields&quot;:[{&quot;key&quot;:&quot;importFilePath&quot;,&quot;label&quot;:&quot;Execution Report File (file path with file name)&quot;,&quot;required&quot;:true},{&quot;key&quot;:&quot;projectKey&quot;,&quot;label&quot;:&quot;Project Key&quot;,&quot;required&quot;:false},{&quot;key&quot;:&quot;testExecKey&quot;,&quot;label&quot;:&quot;Test Execution Key&quot;,&quot;required&quot;:false},{&quot;key&quot;:&quot;testPlanKey&quot;,&quot;label&quot;:&quot;Test Plan Key&quot;,&quot;required&quot;:false},{&quot;key&quot;:&quot;testEnvironments&quot;,&quot;label&quot;:&quot;Test Environments&quot;,&quot;required&quot;:false},{&quot;key&quot;:&quot;revision&quot;,&quot;label&quot;:&quot;Revision&quot;,&quot;required&quot;:false}]},&quot;Cucumber JSON&quot;:{&quot;name&quot;:&quot;Cucumber JSON&quot;,&quot;suffix&quot;:&quot;/cucumber&quot;,&quot;configurableFields&quot;:[{&quot;key&quot;:&quot;importFilePath&quot;,&quot;label&quot;:&quot;Execution Report File (file path with file name)&quot;,&quot;required&quot;:true}]},&quot;Behave JSON multipart&quot;:{&quot;name&quot;:&quot;Behave JSON multipart&quot;,&quot;suffix&quot;:&quot;/behave/multipart&quot;,&quot;configurableFields&quot;:[{&quot;key&quot;:&quot;importFilePath&quot;,&quot;label&quot;:&quot;Execution Report File (file path with file name)&quot;,&quot;required&quot;:true},{&quot;key&quot;:&quot;importInfo&quot;,&quot;label&quot;:&quot;Test Execution fields&quot;,&quot;required&quot;:true}]},&quot;Cucumber JSON Multipart&quot;:{&quot;name&quot;:&quot;Cucumber JSON Multipart&quot;,&quot;suffix&quot;:&quot;/cucumber/multipart&quot;,&quot;configurableFields&quot;:[{&quot;key&quot;:&quot;importFilePath&quot;,&quot;label&quot;:&quot;Execution Report File (file path with file name)&quot;,&quot;required&quot;:true},{&quot;key&quot;:&quot;importInfo&quot;,&quot;label&quot;:&quot;Test Execution fields&quot;,&quot;required&quot;:true}]},&quot;Compressed .zip file&quot;:{&quot;name&quot;:&quot;Compressed .zip file&quot;,&quot;suffix&quot;:&quot;/bundle&quot;,&quot;configurableFields&quot;:[{&quot;key&quot;:&quot;importFilePath&quot;,&quot;label&quot;:&quot;Execution Report File (file path with file name)&quot;,&quot;required&quot;:true}]},&quot;Robot XML&quot;:{&quot;name&quot;:&quot;Robot XML&quot;,&quot;suffix&quot;:&quot;/robot&quot;,&quot;configurableFields&quot;:[{&quot;key&quot;:&quot;importFilePath&quot;,&quot;label&quot;:&quot;Execution Report File (file path with file name)&quot;,&quot;required&quot;:true},{&quot;key&quot;:&quot;projectKey&quot;,&quot;label&quot;:&quot;Project Key&quot;,&quot;required&quot;:false},{&quot;key&quot;:&quot;testExecKey&quot;,&quot;label&quot;:&quot;Test Execution Key&quot;,&quot;required&quot;:false},{&quot;key&quot;:&quot;testPlanKey&quot;,&quot;label&quot;:&quot;Test Plan Key&quot;,&quot;required&quot;:false},{&quot;key&quot;:&quot;testEnvironments&quot;,&quot;label&quot;:&quot;Test Environments&quot;,&quot;required&quot;:false},{&quot;key&quot;:&quot;revision&quot;,&quot;label&quot;:&quot;Revision&quot;,&quot;required&quot;:false}]},&quot;JUnit XML&quot;:{&quot;name&quot;:&quot;JUnit XML&quot;,&quot;suffix&quot;:&quot;/junit&quot;,&quot;configurableFields&quot;:[{&quot;key&quot;:&quot;importFilePath&quot;,&quot;label&quot;:&quot;Execution Report File (file path with file name)&quot;,&quot;required&quot;:true},{&quot;key&quot;:&quot;projectKey&quot;,&quot;label&quot;:&quot;Project Key&quot;,&quot;required&quot;:false},{&quot;key&quot;:&quot;testExecKey&quot;,&quot;label&quot;:&quot;Test Execution Key&quot;,&quot;required&quot;:false},{&quot;key&quot;:&quot;testPlanKey&quot;,&quot;label&quot;:&quot;Test Plan Key&quot;,&quot;required&quot;:false},{&quot;key&quot;:&quot;testEnvironments&quot;,&quot;label&quot;:&quot;Test Environments&quot;,&quot;required&quot;:false},{&quot;key&quot;:&quot;revision&quot;,&quot;label&quot;:&quot;Revision&quot;,&quot;required&quot;:false}]},&quot;Xray JSON&quot;:{&quot;name&quot;:&quot;Xray JSON&quot;,&quot;suffix&quot;:&quot;&quot;,&quot;configurableFields&quot;:[{&quot;key&quot;:&quot;importFilePath&quot;,&quot;label&quot;:&quot;Execution Report File (file path with file name)&quot;,&quot;required&quot;:true}]}}</formats>
-      <importFilePath></importFilePath>
+      <formatSuffix>/junit</formatSuffix>
+      <formatName>JUnit XML</formatName>
+      <importFilePath>aaa</importFilePath>
+      <projectKey>aaa</projectKey>
+      <testExecKey></testExecKey>
+      <testPlanKey>aaaaa</testPlanKey>
+      <testEnvironments></testEnvironments>
+      <revision></revision>
+      <endpoint>JUNIT</endpoint>
     </com.xpandit.plugins.xrayjenkins.task.XrayImportBuilder>
   </builders>
   <publishers/>

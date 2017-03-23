@@ -43,7 +43,6 @@ public class XrayRestClient {
 
     private static String AUTHORIZATION_HEADER_PREFIX = "Basic ";
 
-
     private final XrayInstance xrayInstance;
 
     public static XrayRestClient createXrayRestClient(XrayInstance xrayInstance) {
@@ -76,8 +75,6 @@ public class XrayRestClient {
         if (xrayInstance == null) {
             throw new IllegalStateException("Null Xray instance");
         }
-        List<Header> headers = createHeaders();
-        
         HttpGet get = new HttpGet(this.xrayInstance.getServerAddress());
         HttpResponse response;
         try {
