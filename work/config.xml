@@ -39,8 +39,8 @@
             <comparator class="hudson.util.CaseInsensitiveComparator"/>
           </default>
           <int>1</int>
-          <string>BATATA</string>
-          <string>hello world</string>
+          <string>JUNIT_REPORT</string>
+          <string>JUnit/TestResult.xml</string>
         </tree-map>
       </envVars>
     </hudson.slaves.EnvironmentVariablesNodeProperty>

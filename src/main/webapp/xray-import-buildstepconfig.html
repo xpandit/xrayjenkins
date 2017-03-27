@@ -1,38 +1,14 @@
   <!--Renders an HTML element for each additional field-->
-  
-  
- <script id="main" type="text/x-handlebars-template">
-	  		{{#each configurableFields}}
-		  		{{#ifEquals key "importInfo"}}
-	  				{{>addSwitcher}}
-					<div id="switchContainer">
-						{{>addInput}}
-					</div>
-		  		{{else}}
-		  			{{>addInput}}
-		  		{{/ifEquals}}
-	  		{{/each}}
-  </script>
-  
-  <script id="addInput2" type="text/x-handlebars-template">
- 	(function(){
- 	 	return  '<label>{{label}}</label>'+
-  	 			'<input name="_.{{key}}" type="text" class="setting-input"/>'
-  	})();	  	 
-  </script>
-  
-  <script id="addTextarea2" type="text/x-handlebars-template">
-		<f:entry title="{{label}}">
-    		<f:textarea field="{{key}}"/>
-  		</f:entry>
-  </script>
-  
-  <script id="addSwitcher2" type="text/x-handlebars-template">
-  		<f:entry name="goalType" title="{{label}}" field="{{key}}">
-		    <select name="inputInfoSwitcher">
-		        <option value="fileContent">${%import-parameter.content-type-filecontent}</option>
-		        <option value="file Path">${%import-parameter.content-type-filepath}</option>
-		    </select>
-		</f:entry>
-  </script>
+
+	{{#each configurableFields}}
+		{{#ifEquals key "importInfo"}}
+			{{>addSwitcher}}
+	<div id="switchContainer">
+		{{>addInput}}
+	</div>
+		{{else}}
+			{{>addInput}}
+		{{/ifEquals}}
+	{{/each}}
+
   

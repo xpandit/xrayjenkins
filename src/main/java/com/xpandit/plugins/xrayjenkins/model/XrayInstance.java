@@ -8,57 +8,90 @@
 package com.xpandit.plugins.xrayjenkins.model;
 
 import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
-
+import java.util.UUID;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.http.Header;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContextBuilder;
-import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicHeader;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
  * Represents a JIRA/Xray instance.
  */
 public class XrayInstance {
 	
-	private static String AUTHORIZATION_HEADER_PREFIX = "Basic ";
-	
-    private final String serverAddress;
-    private final String username;
-    private final String password;
+	private String configID;
+	private String alias;
+	private String serverAddress;
+    private String username;
+    private String password;
     private CloseableHttpClient httpclient;
 
     public XrayInstance(String serverAddress, String username, String password) {
+    	this.configID =  "";
+    	this.alias = serverAddress;
         this.serverAddress = serverAddress;
         this.username = username;
         this.password = password;
     }
-
-    public String getServerAddress() {
-        return serverAddress;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
     
+    @DataBoundConstructor
+ 	public XrayInstance(String configID, String alias,String serverAddress,
+ 			String username,String password){
+ 		
+    	this(serverAddress,username,password);
+    	
+    	
+ 		this.configID = StringUtils.isBlank(configID) ? UUID.randomUUID().toString() : configID;
+ 		this.alias = alias;
+ 		
+ 	}
+
+    public String getConfigID(){
+			return this.configID;
+		}
+		
+	public void setConfigID(String configID){
+		this.configID = configID;
+	}
+		
+	public String getAlias() {
+		return alias;
+	}
+
+	public void setAlias(String alias) {
+		this.alias = alias;
+	}
+
+	public String getServerAddress() {
+		return serverAddress;
+	}
+
+	public void setServerAddress(String serverAddress) {
+		this.serverAddress = serverAddress;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
     
     public Boolean testConnection(){
-    	createHttpClient();
-        HttpGet get = new HttpGet(this.getServerAddress());
+        HttpGet get = prepareHTTPGET();
         HttpResponse response;
         try {
             response = this.httpclient.execute(get);
@@ -77,34 +110,14 @@ public class XrayInstance {
         }
     }
     
-    private void createHttpClient() {
-
-    	String basicAuthorizationHeaderValue = getBasicAuthorizationHeaderValue(this.getUsername(),this.getPassword());
-        Header header = new BasicHeader("Authorization", basicAuthorizationHeaderValue);
-
-        List<Header> headers = new ArrayList<>();
-        headers.add(header);
-        
-        try {
-            SSLContextBuilder builder = new SSLContextBuilder();
-            builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
-            SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(builder.build(), SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-            this.httpclient = HttpClients.custom().setSSLSocketFactory(sslsf).setDefaultHeaders(headers).build();
-        } catch (KeyManagementException e1) {
-            e1.printStackTrace();
-        } catch (NoSuchAlgorithmException e1) {
-            e1.printStackTrace();
-        } catch (KeyStoreException e1) {
-            e1.printStackTrace();
-        }
+    private HttpGet prepareHTTPGET() {
+    	 HttpGet get = new HttpGet(this.getServerAddress());
+    	 this.httpclient = new DefaultHttpClient();
+         String encoding = Base64.encodeBase64String((username + ":" + password).getBytes());
+         get.setHeader("Authorization", "Basic " + encoding);     
+         return get;
     }
     
-    
-    private static String getBasicAuthorizationHeaderValue(String userName, String password) {
-        byte[] bytesEncoded = Base64.encodeBase64((userName + ":" + password).getBytes());
-        String authorizationHeader = AUTHORIZATION_HEADER_PREFIX + new String(bytesEncoded);
-        return authorizationHeader;
-    }
     
     public void destroyClient() {
         if (this.httpclient != null) {

@@ -3,22 +3,32 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
          xmlns:t="/lib/hudson" xmlns:f="/lib/form">
   
-  ${descriptor.setUid()}       
+  ${descriptor.setBuildID()}   
   
   <script src="${resURL}/plugin/xray-jenkins/handlebars-v4.0.5.amd.min.js"></script>
-
-  <div id="templates">
-  </div>
   
+  <j:file xmlns:j="jelly:core" var="main" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='XML'>	    
+	  		{{#each configurableFields}}
+		  		{{#ifEquals key "importInfo"}}
+	  				{{>addSwitcher}}
+					<div id="switchContainer">
+						{{>addInput}}
+					</div>
+		  		{{else}}
+		  			{{>addInput}}
+		  		{{/ifEquals}}
+	  		{{/each}}
+  </j:file>
+
   <j:file xmlns:j="jelly:core" var="addInput" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='XML'>
  		<f:entry title='{{label}}'>
-  	 			<input name="_.{{key}}" type="text" class="setting-input"/>
+  	 		<input name="_.{{key}}" type="text" class="setting-input" value="{{configuration}}"/>
   		</f:entry>  	 
   </j:file>
   
 <j:file xmlns:j="jelly:core" var="addTextarea" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='HTML'>
 			<f:entry title='{{label}}'>
-    			<f:textarea field='{{key}}'/>
+    			<f:textarea field='{{key}}' value="{{configuration}}"/>
 			</f:entry>
   </j:file>
   
@@ -31,21 +41,24 @@
 		</f:entry>
   </j:file>
   
-
-  <script id="_${descriptor.defaultUid()}">
+  <script id="_${descriptor.defaultBuildID()}">
     (function(){
     
-	   addXrayFields_${descriptor.defaultUid()} = function(){
+       var mainTemplate = '';
+    
+	   addXrayFields_${descriptor.defaultBuildID()} = function(){
+	   		
+	   		console.info('Adding fields...')
+		    console.info(mainTemplate);
 	   		
 			var dynamicFields = '${instance.getDynamicFields()}';
-	  		var formats = '${descriptor.defaultFormats()}';
+	  		var formats = '${instance.defaultFormats()}';
 			
 			if(formats !== '')
 				formats = JSON.parse(formats);
 			else
-				return;
-				
-			console.info(formats);
+				formats = JSON.parse('${descriptor.defaultFormats()}');
+			
 			
 			var selectedFormat;
 			if(arguments.length > 0)
@@ -53,15 +66,14 @@
 			else
 				selectedFormat = formats[Object.keys(formats)[0]];
 			
-			//Three steps: fetch template, compile it, generate result with the context data
-			var source = Q('#main').text(); 
-			var template = Handlebars.compile(source);	
+			console.info(selectedFormat);
+			
+			//Three steps: fetch template, compile it, generate result with the context data 
+			var template = Handlebars.compile(mainTemplate);	
 			var result = template(selectedFormat);
 	   		
-	   		Q('#configurableFields_${descriptor.defaultUid()}').html(result); 
+	   		Q('#configurableFields_${descriptor.defaultBuildID()}').html(result); 
 	   		
-	   		console.info('hey');
-
 		}
 		
 	  /*
@@ -74,33 +86,42 @@
 		
 	  Q(document).ready(function() {
 	  
-	    //template loading
-	    Q('#templates').load('${resURL}/plugin/xray-jenkins/xray-import-buildstepconfig.html',function(){
-		    
-		    //Handlebars is a kind of 'logic-less' like mustache, so it does not provide the equals operator
-	    	Handlebars.registerHelper('ifEquals', function(arg1, arg2, options) {
-	   			return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+	  		//template loading
+			Q.ajax({
+		   	 url: '${resURL}/plugin/xray-jenkins/xray-import-buildstepconfig.html',
+		     cache: false,
+		     dataType: "html",
+		     success: function(data) {
+		     	mainTemplate = data;
+		     	console.info('loaded')
+		     	console.info(mainTemplate);
+		     	
+		     	//Handlebars is a kind of 'logic-less' like mustache, so it does not provide the equals operator
+		    	Handlebars.registerHelper('ifEquals', function(arg1, arg2, options) {
+		   			return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+				});
+				
+				//Register partial templates, used for call templates inside templates
+				Handlebars.registerPartial("addInput",'${addInput}');
+				Handlebars.registerPartial("addTextarea", '${addTextarea}');
+				Handlebars.registerPartial("addSwitcher", '${addSwitcher}');
+				
+				//register event-handler
+		    	Q('#selectFormat_${descriptor.defaultBuildID()}').on('change',function(e){
+		    		addXrayFields_${descriptor.defaultBuildID()}(e.currentTarget.options[e.currentTarget.selectedIndex].text);
+		    	});
+				
+				//get last chosen format
+				var formatName = '${instance.getFormatName()}';
+				
+				//if no format was chosen, select the first one from the formats/endpoints list
+				if(formatName == '')
+					addXrayFields_${descriptor.defaultBuildID()}();
+				else
+				    addXrayFields_${descriptor.defaultBuildID()}(formatName); //making sure that the select gets the last configuration value
+
+		     	} 
 			});
-			
-			//Register partial templates, used for call templates inside templates
-			Handlebars.registerPartial("addInput",'${addInput}');
-			Handlebars.registerPartial("addTextarea", '${addTextarea}');
-			Handlebars.registerPartial("addSwitcher", '${addSwitcher}');
-			
-			//register event-handler
-	    	Q('#selectFormat_${descriptor.defaultUid()}').on('change',function(e){
-	    		addXrayFields_${descriptor.defaultUid()}(e.currentTarget.options[e.currentTarget.selectedIndex].text);
-	    	});
-			
-			//get last chosen format
-			var formatName = '${instance.getFormatName()}';
-			
-			//if no format was chosen, select the first one from the formats/endpoints list
-			if(formatName == '')
-				addXrayFields_${descriptor.defaultUid()}();
-			else
-			    addXrayFields_${descriptor.defaultUid()}(formatName); //making sure that the select gets the last configuration value
-	    });
     	
 	 });
    			
@@ -109,24 +130,22 @@
    	    		
 </script>
 
-   
-  <f:entry title="${%Xray Server Instance:}">
-        <f:textbox field="serverUrl" required="true"/>
-  </f:entry>
-  <f:entry title="${%Username}">
-    <f:textbox field="serverUsername" />
-  </f:entry>
-  <f:entry title="${%Password}">
-    <f:password field="serverPassword" />
-  </f:entry>
+  <f:entry title="${%JIRA Instance}" field="serverInstance">
+   		<f:select/>
+   </f:entry>
+     
   <f:validateButton title="${%Test Connection}" progress="${%Testing...}"
    method="testConnection" with="serverUrl,serverUsername,serverPassword" />
       
-   <f:entry title="${%Choose Format:}" field="formatSuffix">
-   		<f:select id="selectFormat_${descriptor.defaultUid()}"/>
-   		<f:section>
-   			<p id="configurableFields_${descriptor.defaultUid()}" style="border-left:solid;border-color:#00a3ac;width:50vw"></p>
+   <f:entry title="${%Format}" field="formatSuffix">
+   		<f:select id="selectFormat_${descriptor.defaultBuildID()}"/>
+
+   		<f:section name="dynamicFields">	
+   			<f:entry>	
+   				<p id="configurableFields_${descriptor.defaultBuildID()}" style="border-left:solid;border-color:#00a3ac;width:50vw"></p>		
+   			</f:entry>
    		</f:section>
+ 
    </f:entry>
 
    

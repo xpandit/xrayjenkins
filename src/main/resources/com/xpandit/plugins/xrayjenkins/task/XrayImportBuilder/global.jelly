@@ -1,0 +1,44 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
+  
+ 
+<f:section title="${%Xray instances configuration}" name="xrayinstance">
+     <f:entry title="${%Xray server}"> 
+	      <f:repeatable var="serverInstances" items="${descriptor.serverInstances}" minimum="1"> 
+	       <table>
+	       
+	       	  <f:entry field="configID" > 
+              	<f:textbox value="${serverInstances.configID}" style="display:none" />
+              </f:entry>
+	       	  
+	       	  <f:entry title="${%Configuration alias}" field="alias"> 
+              	<f:textbox value="${serverInstances.alias}" />
+              </f:entry>
+            
+			  <f:entry title="${%Server address}" field="serverAddress"> 
+              	<f:textbox value="${serverInstances.serverAddress}" />
+              </f:entry>
+             
+              <f:entry title="${%Username}" field="username"> 
+              	<f:textbox value="${serverInstances.username}" />
+              </f:entry>
+              
+              <f:entry title="${%Password}" field="password">
+    			<f:password value="${serverInstances.password}" />
+  			  </f:entry>
+  			  
+  			  <f:validateButton title="${%Test Connection}" progress="${%Testing...}"
+  				 method="testConnection" with="serverAddress,username,password" />
+  			  
+  			  <f:entry>
+                    <div align="right" class="repeatable-delete show-if-only" style="margin-left: 1em;">
+                        <f:repeatableDeleteButton value="${%Delete instance}"/><br/>
+                    </div>
+              </f:entry>
+               
+           </table> 
+	      </f:repeatable> 
+     </f:entry> 
+ </f:section>
+
+</j:jelly>
