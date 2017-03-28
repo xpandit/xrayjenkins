@@ -1,0 +1,10 @@
+Started by user [8mha:AAAAlh+LCAAAAAAAAP9b85aBtbiIQTGjNKU4P08vOT+vOD8nVc83PyU1x6OyILUoJzMv2y+/JJUBAhiZGBgqihhk0NSjKDWzXb3RdlLBUSYGJk8GtpzUvPSSDB8G5tKinBIGIZ+sxLJE/ZzEvHT94JKizLx0a6BxUmjGOUNodHsLgAzOEgYu/dLi1CL9vNKcHACFIKlWvwAAAA==[0manonymous
+Building in workspace C:\Users\DMDU\Projects\XrayJenkins\xrayjenkins\work\jobs\Xray Test Project - Freestyle\workspace
+Starting import task...
+Import Cucumber features Task started...
+##########################################################
+####   Xray for JIRA is importing the feature files  ####
+##########################################################
+File: C:\Users\DMDU\Projects\XrayJenkins\xrayjenkins\work\jobs\Xray Test Project - Freestyle\workspace\Behave\data.json
+Sucessfully imported Behave JSON multipart results
+Finished: SUCCESS

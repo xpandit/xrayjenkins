@@ -7,58 +7,58 @@
   
   <script src="${resURL}/plugin/xray-jenkins/handlebars-v4.0.5.amd.min.js"></script>
   
-  <j:file xmlns:j="jelly:core" var="main" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='XML'>	    
-	  		{{#each configurableFields}}
-		  		{{#ifEquals key "importInfo"}}
-	  				{{>addSwitcher}}
-					<div id="switchContainer">
-						{{>addInput}}
-					</div>
-		  		{{else}}
-		  			{{>addInput}}
-		  		{{/ifEquals}}
-	  		{{/each}}
-  </j:file>
-
+  <!-- Jelly + Handlebars templates spec -->
   <j:file xmlns:j="jelly:core" var="addInput" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='XML'>
- 		<f:entry title='{{label}}'>
-  	 		<input name="_.{{key}}" type="text" class="setting-input" value="{{configuration}}"/>
-  		</f:entry>  	 
-  </j:file>
+  	 	<input name="_.{{key}}" type="text" class="setting-input" value="{{configuration}}"/>
+  </j:file>  
   
-<j:file xmlns:j="jelly:core" var="addTextarea" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='HTML'>
-			<f:entry title='{{label}}'>
-    			<f:textarea field='{{key}}' value="{{configuration}}"/>
-			</f:entry>
+  <j:file xmlns:j="jelly:core" var="addInputEntry" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='XML'>
+ 		<f:entry title='{{label}}'>${addInput}</f:entry>   
   </j:file>
+ 
+  <j:file xmlns:j="jelly:core" var="addTextarea" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='XML'>
+  	 	<f:textarea field='{{key}}' value="{{configuration}}" style="width:100%"/>
+  </j:file>  
   
-  <j:file xmlns:j="jelly:core" var="addSwitcher" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='HTML'>
-  		<f:entry name='goalType' field='inputInfoSwitcher'>
-		    <select class="setting-input  select" onchange='switchInput("#switchContainer")'>
-		        <option value='fileContent'>${%import-parameter.content-type-filecontent}</option>
-		        <option value='file Path'>${%import-parameter.content-type-filepath}</option>
-		    </select>
+  <j:file xmlns:j="jelly:core" var="addTextareaEntry" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='HTML'>
+		<f:entry title='{{label}}'>
+    		${addTextarea}
 		</f:entry>
   </j:file>
   
+ <j:file xmlns:j="jelly:core" var="addSwitchableField" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='HTML'>
+  		<f:entry title="{{label}}">
+		    <select name="_.inputInfoSwitcher" class="setting-input  select" id="selectInputType_${descriptor.defaultBuildID()}" onchange='switchInput_${descriptor.defaultBuildID()}("#switchContainer_${descriptor.defaultBuildID()}")'>
+		        <option value='filePath'>${%import-parameter.content-type-filepath}</option>
+		        <option value='fileContent'>${%import-parameter.content-type-filecontent}</option>
+		    </select>
+		</f:entry>
+		<f:entry>
+			<div id="switchContainer_${descriptor.defaultBuildID()}">
+  	 			${addInput}
+  	 		</div>
+  		</f:entry> 
+  </j:file>
+  <!--End of templates spec -->
+  
+  
   <script id="_${descriptor.defaultBuildID()}">
     (function(){
-    
+
        var mainTemplate = '';
-    
+       var formats;
+       if('${instance.defaultFormats()}' != ''){
+		 formats = [${instance.defaultFormats()}];
+		 }
+	   else{
+		 formats = [${descriptor.defaultFormats()}];
+		 }
+
+	   formats = formats[0];
+	   
+	   console.info(formats);
+   
 	   addXrayFields_${descriptor.defaultBuildID()} = function(){
-	   		
-	   		console.info('Adding fields...')
-		    console.info(mainTemplate);
-	   		
-			var dynamicFields = '${instance.getDynamicFields()}';
-	  		var formats = '${instance.defaultFormats()}';
-			
-			if(formats !== '')
-				formats = JSON.parse(formats);
-			else
-				formats = JSON.parse('${descriptor.defaultFormats()}');
-			
 			
 			var selectedFormat;
 			if(arguments.length > 0)
@@ -66,35 +66,79 @@
 			else
 				selectedFormat = formats[Object.keys(formats)[0]];
 			
-			console.info(selectedFormat);
-			
 			//Three steps: fetch template, compile it, generate result with the context data 
 			var template = Handlebars.compile(mainTemplate);	
 			var result = template(selectedFormat);
-	   		
+			console.info(result);			
 	   		Q('#configurableFields_${descriptor.defaultBuildID()}').html(result); 
 	   		
+	   		switcherLastConfiguration_${descriptor.defaultBuildID()}();
 		}
 		
 	  /*
 	   * Switches the HTML element for the importInfo field
 	   */
-	  switchInput = function(container){
-	  	console.info(container);
+	  switchInput_${descriptor.defaultBuildID()} = function(container){
+
+	    //current selected input type, from the select HTML element	
+	  	var selectedInputType = Q("#selectInputType_${descriptor.defaultBuildID()}").find('option:selected').val(); 
+	  
+	  	if(!selectedInputType)
+	  		return;
+	  	
+	  	var key = Q("#selectFormat_${descriptor.defaultBuildID()}").find('option:selected').val();
+	  
+	  	//selected input type, from last configuration
+		var lastSwitcherConfig = '${instance.getInputInfoSwitcher()}';
+		
+		//field to render
+		var _field = (formats[key]).configurableFields.filter(function(field){return field.key == 'importInfo'})[0];
+		_field = JSON.parse(JSON.stringify(_field));	
+		
+		var renderConfiguration = (lastSwitcherConfig == selectedInputType);
+	
+		if(!renderConfiguration)
+			_field.configuration = '';
+	  	
+	  	if(selectedInputType == 'filePath'){// content is a file path
+	  			var template = Handlebars.compile('${addInput}');	
+				var result = template(_field);
+		  		Q(container).html(result);	
+			}
+		else if(selectedInputType == 'fileContent'){ // content is in JSON format
+			    var template = Handlebars.compile('${addTextarea}');	
+				var result = template(_field);
+		  		Q(container).html(result);
+				//prettify();
+		}		
+	  	
 	  }
+	  
+	  switcherLastConfiguration_${descriptor.defaultBuildID()} = function(){
+		//selected input type, from last configuration
+		var lastSwitcherConfig = '${instance.getInputInfoSwitcher()}';
+
+		if(lastSwitcherConfig !== '' ){//making sure the switcher gets the last configuration value
+			var select = Q("#selectInputType_${descriptor.defaultBuildID()}");
+			console.info(select);
+			if(select){
+				select.val(lastSwitcherConfig);
+				select.trigger('change');
+			}
+		}
+		
+	}
 		
 		
 	  Q(document).ready(function() {
-	  
-	  		//template loading
+	  	
+	  		//main template loading. It's syntax conflicts with Jelly so we need to load it assynchronously from an external source
 			Q.ajax({
 		   	 url: '${resURL}/plugin/xray-jenkins/xray-import-buildstepconfig.html',
 		     cache: false,
 		     dataType: "html",
 		     success: function(data) {
 		     	mainTemplate = data;
-		     	console.info('loaded')
-		     	console.info(mainTemplate);
 		     	
 		     	//Handlebars is a kind of 'logic-less' like mustache, so it does not provide the equals operator
 		    	Handlebars.registerHelper('ifEquals', function(arg1, arg2, options) {
@@ -102,23 +146,27 @@
 				});
 				
 				//Register partial templates, used for call templates inside templates
+				Handlebars.registerPartial("addInputEntry",'${addInputEntry}');
 				Handlebars.registerPartial("addInput",'${addInput}');
+				
+				Handlebars.registerPartial("addTextareaEntry",'${addTextareaEntry}');
 				Handlebars.registerPartial("addTextarea", '${addTextarea}');
-				Handlebars.registerPartial("addSwitcher", '${addSwitcher}');
+				
+				Handlebars.registerPartial("addSwitchableField", '${addSwitchableField}');
 				
 				//register event-handler
 		    	Q('#selectFormat_${descriptor.defaultBuildID()}').on('change',function(e){
-		    		addXrayFields_${descriptor.defaultBuildID()}(e.currentTarget.options[e.currentTarget.selectedIndex].text);
+		    		addXrayFields_${descriptor.defaultBuildID()}(e.currentTarget.options[e.currentTarget.selectedIndex].value);
 		    	});
 				
 				//get last chosen format
-				var formatName = '${instance.getFormatName()}';
+				var formatSuffix = '${instance.getFormatSuffix()}';
 				
 				//if no format was chosen, select the first one from the formats/endpoints list
-				if(formatName == '')
+				if(formatSuffix == '')
 					addXrayFields_${descriptor.defaultBuildID()}();
 				else
-				    addXrayFields_${descriptor.defaultBuildID()}(formatName); //making sure that the select gets the last configuration value
+				    addXrayFields_${descriptor.defaultBuildID()}(formatSuffix); //making sure that the select gets the last configuration value
 
 		     	} 
 			});

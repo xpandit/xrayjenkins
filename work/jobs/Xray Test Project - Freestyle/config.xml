@@ -20,12 +20,61 @@
         <username>admin</username>
         <password>admin</password>
       </xrayInstance>
-      <endpoint>JUNIT</endpoint>
+      <endpoint>BEHAVE_MULTIPART</endpoint>
       <dynamicFields>
         <entry>
-          <string>projectKey</string>
-          <string>PROJ</string>
+          <string>importInfo</string>
+          <string>{
+    &quot;fields&quot;: {
+        &quot;project&quot;: {
+            &quot;key&quot;: &quot;PROJ&quot;
+        },
+        &quot;summary&quot;: &quot;Test Execution for behave Execution (Mutipart)&quot;,
+        &quot;issuetype&quot;: {
+            &quot;id&quot;: &quot;10102&quot;
+        }
+    }
+}
+</string>
         </entry>
+        <entry>
+          <string>inputInfoSwitcher</string>
+          <string>fileContent</string>
+        </entry>
+        <entry>
+          <string>importFilePath</string>
+          <string>Behave/data.json</string>
+        </entry>
+      </dynamicFields>
+      <formatSuffix>/behave/multipart</formatSuffix>
+      <serverInstance>ac115497-73fa-47ed-bd92-d01b4bb7bf15</serverInstance>
+      <inputInfoSwitcher>fileContent</inputInfoSwitcher>
+    </com.xpandit.plugins.xrayjenkins.task.XrayImportBuilder>
+    <com.xpandit.plugins.xrayjenkins.task.XrayImportBuilder plugin="xray-jenkins@1.0-SNAPSHOT">
+      <xrayInstance reference="../../com.xpandit.plugins.xrayjenkins.task.XrayImportBuilder/xrayInstance"/>
+      <endpoint>CUCUMBER_MULTIPART</endpoint>
+      <dynamicFields>
+        <entry>
+          <string>importInfo</string>
+          <string>Cucumber/info.json</string>
+        </entry>
+        <entry>
+          <string>inputInfoSwitcher</string>
+          <string>filePath</string>
+        </entry>
+        <entry>
+          <string>importFilePath</string>
+          <string>report.json</string>
+        </entry>
+      </dynamicFields>
+      <formatSuffix>/cucumber/multipart</formatSuffix>
+      <serverInstance>ac115497-73fa-47ed-bd92-d01b4bb7bf15</serverInstance>
+      <inputInfoSwitcher>filePath</inputInfoSwitcher>
+    </com.xpandit.plugins.xrayjenkins.task.XrayImportBuilder>
+    <com.xpandit.plugins.xrayjenkins.task.XrayImportBuilder plugin="xray-jenkins@1.0-SNAPSHOT">
+      <xrayInstance reference="../../com.xpandit.plugins.xrayjenkins.task.XrayImportBuilder/xrayInstance"/>
+      <endpoint>JUNIT</endpoint>
+      <dynamicFields>
         <entry>
           <string>testEnvironments</string>
           <string>ANDROID;IOS;CORDOVA;BATATA OS</string>
@@ -40,42 +89,6 @@
         </entry>
       </dynamicFields>
       <formatSuffix>/junit</formatSuffix>
-      <serverInstance>ac115497-73fa-47ed-bd92-d01b4bb7bf15</serverInstance>
-    </com.xpandit.plugins.xrayjenkins.task.XrayImportBuilder>
-    <com.xpandit.plugins.xrayjenkins.task.XrayImportBuilder plugin="xray-jenkins@1.0-SNAPSHOT">
-      <xrayInstance reference="../../com.xpandit.plugins.xrayjenkins.task.XrayImportBuilder/xrayInstance"/>
-      <endpoint>ROBOT</endpoint>
-      <dynamicFields>
-        <entry>
-          <string>projectKey</string>
-          <string>PROJ</string>
-        </entry>
-        <entry>
-          <string>testEnvironments</string>
-          <string>ANDROID;IOS;CORDOVA;</string>
-        </entry>
-        <entry>
-          <string>importFilePath</string>
-          <string>Robot/robot.xml</string>
-        </entry>
-        <entry>
-          <string>revision</string>
-          <string>${BUILD_ID} - ${BUILD_NUMBER}</string>
-        </entry>
-      </dynamicFields>
-      <formatSuffix>/robot</formatSuffix>
-      <serverInstance>ac115497-73fa-47ed-bd92-d01b4bb7bf15</serverInstance>
-    </com.xpandit.plugins.xrayjenkins.task.XrayImportBuilder>
-    <com.xpandit.plugins.xrayjenkins.task.XrayImportBuilder plugin="xray-jenkins@1.0-SNAPSHOT">
-      <xrayInstance reference="../../com.xpandit.plugins.xrayjenkins.task.XrayImportBuilder/xrayInstance"/>
-      <endpoint>CUCUMBER</endpoint>
-      <dynamicFields>
-        <entry>
-          <string>importFilePath</string>
-          <string>report.json</string>
-        </entry>
-      </dynamicFields>
-      <formatSuffix>/cucumber</formatSuffix>
       <serverInstance>ac115497-73fa-47ed-bd92-d01b4bb7bf15</serverInstance>
     </com.xpandit.plugins.xrayjenkins.task.XrayImportBuilder>
   </builders>

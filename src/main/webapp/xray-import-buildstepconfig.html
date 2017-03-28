@@ -2,12 +2,9 @@
 
 	{{#each configurableFields}}
 		{{#ifEquals key "importInfo"}}
-			{{>addSwitcher}}
-	<div id="switchContainer">
-		{{>addInput}}
-	</div>
+			{{>addSwitchableField}}
 		{{else}}
-			{{>addInput}}
+			{{>addInputEntry}}
 		{{/ifEquals}}
 	{{/each}}
 

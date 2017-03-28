@@ -21,7 +21,6 @@ import org.kohsuke.stapler.StaplerRequest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.xpandit.plugins.xrayjenkins.model.XrayInstance;
-import com.xpandit.plugins.xrayjenkins.service.XrayRestClient;
 import com.xpandit.xray.exception.XrayClientCoreGenericException;
 import com.xpandit.xray.model.Content;
 import com.xpandit.xray.model.Endpoint;
@@ -51,149 +50,32 @@ import net.sf.json.JSONObject;
  *
  */
 public class XrayImportBuilder extends Builder implements SimpleBuildStep {
-
-    /*private final String serverUrl;
-    private final String serverUsername;
-    private final String serverPassword;
-   
-    private String formatSuffix;
-    private String formatName;
-    private String importFilePath;
-    private String importInfo;
-    private String projectKey;
-    private String testExecKey;
-    private String testPlanKey;
-    private String testEnvironments;
-    private String revision;
-    private String inputInfoSwitcher;*/
     
     private XrayInstance xrayInstance;
     private Endpoint endpoint;
     private Map<String,String> dynamicFields;
     
     private String formatSuffix; //value of format select
-    private String serverInstance;//value of JIRA instance
+    private String serverInstance;//Configuration ID of the JIRA instance
+    private String inputInfoSwitcher;//value of the input type switcher
     
     
     private static Gson gson = new GsonBuilder().create();
     
-    /*@DataBoundConstructor
-    public XrayImportBuilder(String serverUrl,String serverUsername, 
-            String serverPassword, String formatSuffix) {
-    	
-        this.serverUrl = serverUrl;
-        this.serverUsername = serverUsername;
-        this.serverPassword = serverPassword;
-        this.formatSuffix = formatSuffix;
-        this.endpoint = Endpoint.lookupBySuffix(formatSuffix);
-        this.formatName = endpoint.getName();          
-    }*/
     public XrayImportBuilder(XrayInstance xrayInstance, Endpoint endpoint, Map<String, String> dynamicFields) {
     	this.xrayInstance = xrayInstance;
     	this.endpoint = endpoint;
     	this.dynamicFields = dynamicFields;
+    	
     	this.formatSuffix = endpoint.getSuffix();
     	this.serverInstance = xrayInstance.getConfigID();
+    	this.inputInfoSwitcher = dynamicFields.get("inputInfoSwitcher");
 	}
-	/*@DataBoundSetter
-    public void setDynamicFields(Map<String,String> dynamicFields){
-    	this.dynamicFields = dynamicFields;
-    }*/
-    
-    /*@DataBoundSetter
-    public void setImportInfo(String importInfo){
-    	this.importInfo = importInfo;
-    }
-    
-    @DataBoundSetter
-    public void setProjectKey(String projectKey){
-    	this.projectKey = projectKey;
-    }
-    
-    @DataBoundSetter
-    public void setTestExecKey(String testExecKey){
-    	this.testExecKey = testExecKey;
-    }
-    
-    @DataBoundSetter
-    public void setTestPlanKey(String testPlanKey){
-    	this.testPlanKey = testPlanKey;
-    }
-    
-    @DataBoundSetter
-    public void setTestEnvironments(String testEnvironments){
-    	this.testEnvironments = testEnvironments;
-    }
-    
-    @DataBoundSetter
-    public void setRevision(String revision){
-    	this.revision = revision;
-    }
-    
-    @DataBoundSetter
-    public void setFormatSuffix(String formatSuffix){
-    	this.formatSuffix = formatSuffix;
-    }
-    
-    @DataBoundSetter
-    public void setInputInfoSwitcher(String inputInfoSwitcher){
-    	this.inputInfoSwitcher = inputInfoSwitcher;
-    }*/
+	
     
     public Map<String,String> getDynamicFields(){
     	return dynamicFields;
     }
-   /* public String getServerUrl() {
-        return serverUrl;
-    }
-
-    public String getServerUsername() {
-        return serverUsername;
-    }
-
-    public String getServerPassword() {
-        return serverPassword;
-    }
-
-    public String getImportFilePath() {
-        return importFilePath;
-    }
-
-    public String getFormatSuffix() {
-        return formatSuffix;
-    }
-    
-    public String getFormatName(){
-    	return formatName;
-    }
-
-    public String getProjectKey() {
-		return projectKey;
-	}
-    
-    public String getImportInfo() {
-		return importInfo;
-	}
-
-	public String getTestExecKey() {
-		return testExecKey;
-	}
-
-	public String getTestPlanKey() {
-		return testPlanKey;
-	}
-
-	public String getTestEnvironments() {
-		return testEnvironments;
-	}
-
-	public String getRevision() {
-		return revision;
-	}
-	
-	public String getInputInfoSwitcher(){
-		return inputInfoSwitcher;
-	}*/
     
     public String getFormatSuffix(){
     	return formatSuffix;
@@ -219,32 +101,25 @@ public class XrayImportBuilder extends Builder implements SimpleBuildStep {
 		return this.endpoint.getName();
 	}
 	
+	public String getInputInfoSwitcher() {
+		return inputInfoSwitcher;
+	}
+
+	public void setInputInfoSwitcher(String inputInfoSwitcher) {
+		this.inputInfoSwitcher = inputInfoSwitcher;
+	}
+	
 	public String defaultFormats(){
         Map<String,FormatBean> formats = new HashMap<String,FormatBean>();
         for(Endpoint e : Endpoint.values()){
         	FormatBean bean = e.toBean();
-        	formats.put(e.getName(),bean);
+        	formats.put(e.getSuffix(),bean);
         	
         	if(e.name().equals(endpoint.name()))
         		bean.setFieldsConfiguration(dynamicFields);
         }
         return gson.toJson(formats);	
     }
-    
-    /*private Map<String,String> defaultEndpointFields(){
-    	Map<String,String> conf = new HashMap<String,String>();
-		
-		conf.put(com.xpandit.xray.model.DataParameter.FILEPATH.getKey(), this.importFilePath);
-		conf.put(com.xpandit.xray.model.DataParameter.INFO.getKey(), this.importInfo);
-		
-		conf.put(com.xpandit.xray.model.QueryParameter.PROJECT_KEY.getKey(),this.projectKey);
-		conf.put(com.xpandit.xray.model.QueryParameter.TEST_EXEC_KEY.getKey(),this.testExecKey);
-		conf.put(com.xpandit.xray.model.QueryParameter.TEST_PLAN_KEY.getKey(),this.testPlanKey);
-		conf.put(com.xpandit.xray.model.QueryParameter.TEST_ENVIRONMENTS.getKey(),this.testEnvironments);
-		conf.put(com.xpandit.xray.model.QueryParameter.REVISION.getKey(),this.revision);
-		
-		return conf;
-    }*/
     
 	public File getReportFile(FilePath workspace, String filePath,TaskListener listener) throws IOException{
 		File file = getFile(workspace,filePath,listener);
@@ -332,6 +207,7 @@ public class XrayImportBuilder extends Builder implements SimpleBuildStep {
         	e.printStackTrace();
         	listener.getLogger().println("Task failed");
         	listener.error(e.getMessage());
+        	throw new InterruptedException(e.getMessage());
         }catch (InterruptedException e) {
 			e.printStackTrace();
 			listener.getLogger().println("Task failed");
@@ -344,7 +220,6 @@ public class XrayImportBuilder extends Builder implements SimpleBuildStep {
             throw new IOException(e);
         }
     }
-	
 	
 	@Extension
     public static class Descriptor extends BuildStepDescriptor<Builder> {
@@ -480,7 +355,7 @@ public class XrayImportBuilder extends Builder implements SimpleBuildStep {
             Map<String,FormatBean> formats = new HashMap<String,FormatBean>();
             for(Endpoint e : Endpoint.values()){
             	FormatBean bean = e.toBean();
-            	formats.put(e.getName(),bean);
+            	formats.put(e.getSuffix(),bean);
             }
             return gson.toJson(formats);	
         }
