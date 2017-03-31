@@ -182,8 +182,6 @@
    		<f:select/>
    </f:entry>
      
-  <f:validateButton title="${%Test Connection}" progress="${%Testing...}"
-   method="testConnection" with="serverUrl,serverUsername,serverPassword" />
       
    <f:entry title="${%Format}" field="formatSuffix">
    		<f:select id="selectFormat_${descriptor.defaultBuildID()}"/>

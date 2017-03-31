@@ -1,0 +1,41 @@
+Started by user [8mha:AAAAlh+LCAAAAAAAAP9b85aBtbiIQTGjNKU4P08vOT+vOD8nVc83PyU1x6OyILUoJzMv2y+/JJUBAhiZGBgqihhk0NSjKDWzXb3RdlLBUSYGJk8GtpzUvPSSDB8G5tKinBIGIZ+sxLJE/ZzEvHT94JKizLx0a6BxUmjGOUNodHsLgAzOEgYu/dLi1CL9vNKcHACFIKlWvwAAAA==[0manonymous
+Building in workspace C:\Users\DMDU\Projects\XrayJenkins\xrayjenkins\work\jobs\Xray Test Project - Freestyle\workspace
+Starting export task...
+##########################################################
+####   Xray for JIRA is exporting the feature files  ####
+##########################################################
+PROJ-78
+features
+###################### Unzipping file ####################
+###################### Unzipped file #####################
+Sucessfully exported the Cucumber feater
+Starting import task...
+Import Cucumber features Task started...
+##########################################################
+####   Xray for JIRA is importing the feature files  ####
+##########################################################
+File: C:\Users\DMDU\Projects\XrayJenkins\xrayjenkins\work\jobs\Xray Test Project - Freestyle\workspace\Behave\data.json
+Sucessfully imported Behave JSON multipart results
+Starting import task...
+Import Cucumber features Task started...
+##########################################################
+####   Xray for JIRA is importing the feature files  ####
+##########################################################
+File: C:\Users\DMDU\Projects\XrayJenkins\xrayjenkins\work\jobs\Xray Test Project - Freestyle\workspace\report.json
+File: C:\Users\DMDU\Projects\XrayJenkins\xrayjenkins\work\jobs\Xray Test Project - Freestyle\workspace\Cucumber\info.json
+Sucessfully imported Cucumber JSON multipart results
+Starting import task...
+Import Cucumber features Task started...
+##########################################################
+####   Xray for JIRA is importing the feature files  ####
+##########################################################
+File: C:\Users\DMDU\Projects\XrayJenkins\xrayjenkins\work\jobs\Xray Test Project - Freestyle\workspace\JUnit\TestResult.xml
+Sucessfully imported JUnit XML results
+Starting import task...
+Import Cucumber features Task started...
+##########################################################
+####   Xray for JIRA is importing the feature files  ####
+##########################################################
+File: C:\Users\DMDU\Projects\XrayJenkins\xrayjenkins\work\jobs\Xray Test Project - Freestyle\workspace\NUnit\TestResult.xml
+Sucessfully imported NUnit XML multipart results
+Finished: SUCCESS

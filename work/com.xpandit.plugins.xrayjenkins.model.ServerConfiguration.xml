@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<com.xpandit.plugins.xrayjenkins.model.ServerConfiguration plugin="xray-jenkins@1.0-SNAPSHOT">
+  <serverInstances>
+    <com.xpandit.plugins.xrayjenkins.model.XrayInstance>
+      <configID>89a9176c-deb5-40e2-b946-5f76b766cb20</configID>
+      <alias>Xray local v2</alias>
+      <serverAddress>http://localhost:8080</serverAddress>
+      <username>admin</username>
+      <password>admin</password>
+    </com.xpandit.plugins.xrayjenkins.model.XrayInstance>
+    <com.xpandit.plugins.xrayjenkins.model.XrayInstance>
+      <configID>f0b3daa0-4e75-46f3-94ca-85f4cb4304ab</configID>
+      <alias>Xray local</alias>
+      <serverAddress>http://localhost:8080</serverAddress>
+      <username>admin</username>
+      <password>admin</password>
+    </com.xpandit.plugins.xrayjenkins.model.XrayInstance>
+  </serverInstances>
+</com.xpandit.plugins.xrayjenkins.model.ServerConfiguration>

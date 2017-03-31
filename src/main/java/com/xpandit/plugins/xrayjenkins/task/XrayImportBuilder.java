@@ -20,6 +20,7 @@ import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.xpandit.plugins.xrayjenkins.model.ServerConfiguration;
 import com.xpandit.plugins.xrayjenkins.model.XrayInstance;
 import com.xpandit.xray.exception.XrayClientCoreGenericException;
 import com.xpandit.xray.model.Content;
@@ -27,6 +28,8 @@ import com.xpandit.xray.model.Endpoint;
 import com.xpandit.xray.model.FormatBean;
 import com.xpandit.xray.service.XrayImporter;
 import com.xpandit.xray.service.impl.XrayImporterImpl;
+
+import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
@@ -144,7 +147,7 @@ public class XrayImportBuilder extends Builder implements SimpleBuildStep {
 	}
 
 	@Override
-    public void perform(Run<?,?> build, FilePath workspace, Launcher launcher, TaskListener listener)throws InterruptedException, IOException {
+    public void perform(Run<?,?> build, FilePath workspace, Launcher launcher, TaskListener listener)throws AbortException, InterruptedException, IOException {
 	
         listener.getLogger().println("Starting import task...");
         
@@ -178,10 +181,6 @@ public class XrayImportBuilder extends Builder implements SimpleBuildStep {
         	
         	String importFilePath = dynamicFields.get(com.xpandit.xray.model.DataParameter.FILEPATH.getKey());
         	String importInfo = dynamicFields.get(com.xpandit.xray.model.DataParameter.INFO.getKey());
-        	
-            if (StringUtils.isBlank(importFilePath)) {
-                importFilePath = "features/result.json";
-            }
             
             Map<com.xpandit.xray.model.DataParameter,Content> dataParams = new HashMap<com.xpandit.xray.model.DataParameter,Content>();
             
@@ -207,7 +206,7 @@ public class XrayImportBuilder extends Builder implements SimpleBuildStep {
         	e.printStackTrace();
         	listener.getLogger().println("Task failed");
         	listener.error(e.getMessage());
-        	throw new InterruptedException(e.getMessage());
+        	throw new AbortException(e.getMessage());
         }catch (InterruptedException e) {
 			e.printStackTrace();
 			listener.getLogger().println("Task failed");
@@ -223,11 +222,9 @@ public class XrayImportBuilder extends Builder implements SimpleBuildStep {
 	
 	@Extension
     public static class Descriptor extends BuildStepDescriptor<Builder> {
-    	
+    	private static final String DYNAMIC_FIELDS = "dynamicFields";
         private static long BUILD_STEP_SEED = 0;
         private long buildID;
-        
-        private List<XrayInstance> serverInstances;
                 
         public Descriptor() {
         	super(XrayImportBuilder.class);
@@ -237,15 +234,20 @@ public class XrayImportBuilder extends Builder implements SimpleBuildStep {
         @Override
         public boolean configure(StaplerRequest req, JSONObject formData) throws FormException {
             
-            req.bindJSON(this, formData.getJSONObject("xrayinstance"));
-            
             save();
             return true;
+            
         }
         
         @Override
 		public XrayImportBuilder newInstance(StaplerRequest req, JSONObject formData){
-			
+        	
+        	try {
+				validate(formData);
+			} catch (FormValidation e) {
+				e.printStackTrace();
+			}
+        	
         	Map<String,String> dynamicFields = getDynamicFields(formData.getJSONObject("dynamicFields"));
 			XrayInstance server = getConfiguration(formData.getString("serverInstance"));
 			Endpoint endpoint = Endpoint.lookupBySuffix(formData.getString("formatSuffix"));
@@ -253,6 +255,18 @@ public class XrayImportBuilder extends Builder implements SimpleBuildStep {
 			return new XrayImportBuilder(server,endpoint,dynamicFields);
 			
         }
+        
+        private void validate(JSONObject formData) throws FormValidation{
+	       	 JSONObject dynamicFields = formData.getJSONObject(DYNAMIC_FIELDS);
+	       	 
+	       	 String importFilePath = dynamicFields.getString(com.xpandit.xray.model.DataParameter.FILEPATH.getKey());
+	       	 
+	       	 if(StringUtils.isBlank(importFilePath))
+	       		 FormValidation.error("You must configure the execution results file path");
+	       	 
+	       	 if(importFilePath.contains("../"))
+	       		FormValidation.error("You can't provide file paths for upper directories.Please don't use \"../\".");
+	   }
         
         private Map<String,String> getDynamicFields(JSONObject configuredFields){
         	
@@ -272,10 +286,11 @@ public class XrayImportBuilder extends Builder implements SimpleBuildStep {
         	
         }
         
+        
         private XrayInstance getConfiguration(String configID){
         	XrayInstance config =  null;
-        	
-        	for(XrayInstance sc : this.serverInstances){
+        	List<XrayInstance> serverInstances =  getServerInstances();
+        	for(XrayInstance sc : serverInstances){
         		if(sc.getConfigID().equals(configID)){
         			config = sc;break;
         		}
@@ -283,9 +298,6 @@ public class XrayImportBuilder extends Builder implements SimpleBuildStep {
         	return config;
         }
    
-        public void setServerInstances(List<XrayInstance> serverInstances){
-        	this.serverInstances = serverInstances;
-        }
         
         @Override
         public boolean isApplicable(Class<? extends AbstractProject> jobType) {
@@ -324,6 +336,10 @@ public class XrayImportBuilder extends Builder implements SimpleBuildStep {
             }
         }
         
+        public FormValidation doCheckDynamicFields(@QueryParameter JSONObject value){
+        	return FormValidation.error("You can't provide file paths for upper directories.Please don't use \"../\".");
+        }
+
         public ListBoxModel doFillFormatSuffixItems() {
         	
             ListBoxModel items = new ListBoxModel();
@@ -336,6 +352,7 @@ public class XrayImportBuilder extends Builder implements SimpleBuildStep {
         public ListBoxModel doFillServerInstanceItems() {
         	
             ListBoxModel items = new ListBoxModel();
+            List<XrayInstance> serverInstances =  getServerInstances();
             for(XrayInstance sc : serverInstances)
             	items.add(sc.getAlias(),sc.getConfigID());
             
@@ -350,7 +367,6 @@ public class XrayImportBuilder extends Builder implements SimpleBuildStep {
         	buildID = ++BUILD_STEP_SEED;
         }
         
-        
         public String defaultFormats(){
             Map<String,FormatBean> formats = new HashMap<String,FormatBean>();
             for(Endpoint e : Endpoint.values()){
@@ -361,7 +377,7 @@ public class XrayImportBuilder extends Builder implements SimpleBuildStep {
         }
         
         public List<XrayInstance> getServerInstances() {
-			return serverInstances;
+			return ServerConfiguration.get().getServerInstances();
 		}
         
     }
