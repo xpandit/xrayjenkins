@@ -2,18 +2,18 @@
 <?jelly escape-by-default='false'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
          xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+         
+  <script src="${resURL}/plugin/xray-jenkins/handlebars-v4.0.5.amd.min.js"></script>         
   
   ${descriptor.setBuildID()}   
-  
-  <script src="${resURL}/plugin/xray-jenkins/handlebars-v4.0.5.amd.min.js"></script>
-  
+ 
   <!-- Jelly + Handlebars templates spec -->
   <j:file xmlns:j="jelly:core" var="addInput" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='XML'>
   	 	<input name="_.{{key}}" type="text" class="setting-input" value="{{configuration}}"/>
   </j:file>  
   
   <j:file xmlns:j="jelly:core" var="addInputEntry" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='XML'>
- 		<f:entry title='{{label}}'>${addInput}</f:entry>   
+ 		<f:entry title='{{label}}' field='{{key}}'>${addInput}</f:entry>   
   </j:file>
  
   <j:file xmlns:j="jelly:core" var="addTextarea" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='XML'>
@@ -43,7 +43,7 @@
   
   
   <script id="_${descriptor.defaultBuildID()}">
-    (function(){
+    (function(Q){
 
        var mainTemplate = '';
        var formats;
@@ -55,8 +55,6 @@
 		 }
 
 	   formats = formats[0];
-	   
-	   console.info(formats);
    
 	   addXrayFields_${descriptor.defaultBuildID()} = function(){
 			
@@ -69,7 +67,6 @@
 			//Three steps: fetch template, compile it, generate result with the context data 
 			var template = Handlebars.compile(mainTemplate);	
 			var result = template(selectedFormat);
-			console.info(result);			
 	   		Q('#configurableFields_${descriptor.defaultBuildID()}').html(result); 
 	   		
 	   		switcherLastConfiguration_${descriptor.defaultBuildID()}();
@@ -120,7 +117,6 @@
 
 		if(lastSwitcherConfig !== '' ){//making sure the switcher gets the last configuration value
 			var select = Q("#selectInputType_${descriptor.defaultBuildID()}");
-			console.info(select);
 			if(select){
 				select.val(lastSwitcherConfig);
 				select.trigger('change');
@@ -174,26 +170,25 @@
 	 });
    			
    			
-   	})();
+   	})(jQuery);
    	    		
 </script>
 
   <f:entry title="${%JIRA Instance}" field="serverInstance">
    		<f:select/>
    </f:entry>
-     
       
    <f:entry title="${%Format}" field="formatSuffix">
    		<f:select id="selectFormat_${descriptor.defaultBuildID()}"/>
 
    		<f:section name="dynamicFields">	
-   			<f:entry>	
+   			<f:entry title="Parameters">	
    				<p id="configurableFields_${descriptor.defaultBuildID()}" style="border-left:solid;border-color:#00a3ac;width:50vw"></p>		
    			</f:entry>
    		</f:section>
  
    </f:entry>
 
-   
+
 </j:jelly>
 

@@ -2,8 +2,8 @@
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
   
  
-<f:section title="${%Xray instances configuration}" name="xrayinstance">
-     <f:entry title="${%Xray server}"> 
+<f:section title="${%Xray for JIRA configuration}" name="xrayinstance">
+     <f:entry title="${%JIRA servers}"> 
 	      <f:repeatable var="serverInstances" items="${descriptor.serverInstances}" minimum="1"> 
 	       <table>
 	       

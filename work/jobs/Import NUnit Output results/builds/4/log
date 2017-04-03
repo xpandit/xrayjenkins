@@ -1,0 +1,30 @@
+Started by upstream project "[8mha:AAAAsR+LCAAAAAAAAP9b85aBtbiIQTGjNKU4P08vOT+vOD8nVc83PyU1x6OyILUoJzMv2y+/JJUBAhiZGBgqihhk0NSjKDWzXb3RdlLBUSYGJk8GtpzUvPSSDB8G5tKinBIGIZ+sxLJE/ZzEvHT94JKizLx0a6BxUmjGOUNodHsLgAzZEgZt/az8JP2IosRKVSODkNTiEiAVUJSflZoMYukCsVtRKlC4MidVHwDXiOGt4AAAAA==[0mXray Test Project - Freestyle" build number [8mha:AAAAsx+LCAAAAAAAAP9b85aBtbiIQTGjNKU4P08vOT+vOD8nVc83PyU1x6OyILUoJzMv2y+/JJUBAhiZGBgqihhk0NSjKDWzXb3RdlLBUSYGJk8GtpzUvPSSDB8G5tKinBIGIZ+sxLJE/ZzEvHT94JKizLx0a6BxUmjGOUNodHsLgAymEgZd/az8JP2IosRKVSODkNTiEiAVUJSflZoMYukCsVtRKlC4MidV39ICAEP9s7LiAAAA[0m98
+originally caused by:
+ Started by user [8mha:AAAAlh+LCAAAAAAAAP9b85aBtbiIQTGjNKU4P08vOT+vOD8nVc83PyU1x6OyILUoJzMv2y+/JJUBAhiZGBgqihhk0NSjKDWzXb3RdlLBUSYGJk8GtpzUvPSSDB8G5tKinBIGIZ+sxLJE/ZzEvHT94JKizLx0a6BxUmjGOUNodHsLgAzOEgYu/dLi1CL9vNKcHACFIKlWvwAAAA==[0manonymous
+Building in workspace C:\Users\DMDU\Projects\XrayJenkins\xrayjenkins\work\jobs\Import NUnit Output results\workspace
+Starting import task...
+Import Cucumber features Task started...
+##########################################################
+####   Xray for JIRA is importing the feature files  ####
+##########################################################
+File: C:\Users\DMDU\Projects\XrayJenkins\xrayjenkins\work\jobs\Import NUnit Output results\workspace\NUnit\TestResult.xml
+Task failed
+ERROR: File path is a directory or the file doesn't exist
+[8mha:AAAAWB+LCAAAAAAAAP9b85aBtbiIQSmjNKU4P08vOT+vOD8nVc8DzHWtSE4tKMnMz/PLL0ldFVf2c+b/lb5MDAwVRQxSaBqcITRIIQMEMIIUFgAAckCEiWAAAAA=[0mERROR: Step ‘Xray Import task’ aborted due to exception: 
+[8mha:AAAAWB+LCAAAAAAAAP9b85aBtbiIQSmjNKU4P08vOT+vOD8nVc8DzHWtSE4tKMnMz/PLL0ldFVf2c+b/lb5MDAwVRQxSaBqcITRIIQMEMIIUFgAAckCEiWAAAAA=[0mjava.io.IOException: java.io.IOException: File path is a directory or the file doesn't exist
+	at com.xpandit.plugins.xrayjenkins.task.XrayImportBuilder.perform(XrayImportBuilder.java:220)
+	at hudson.tasks.BuildStepCompatibilityLayer.perform(BuildStepCompatibilityLayer.java:75)
+	at hudson.tasks.BuildStepMonitor$1.perform(BuildStepMonitor.java:20)
+	at hudson.model.AbstractBuild$AbstractBuildExecution.perform(AbstractBuild.java:785)
+	at hudson.model.AbstractBuild$AbstractBuildExecution.performAllBuildSteps(AbstractBuild.java:726)
+	at hudson.model.Build$BuildExecution.post2(Build.java:185)
+	at hudson.model.AbstractBuild$AbstractBuildExecution.post(AbstractBuild.java:671)
+	at hudson.model.Run.execute(Run.java:1766)
+	at hudson.model.FreeStyleBuild.run(FreeStyleBuild.java:43)
+	at hudson.model.ResourceController.execute(ResourceController.java:98)
+	at hudson.model.Executor.run(Executor.java:408)
+Caused by: java.io.IOException: File path is a directory or the file doesn't exist
+	at com.xpandit.plugins.xrayjenkins.task.XrayImportBuilder.getReportFile(XrayImportBuilder.java:130)
+	at com.xpandit.plugins.xrayjenkins.task.XrayImportBuilder.perform(XrayImportBuilder.java:190)
+	... 10 more
+Finished: FAILURE

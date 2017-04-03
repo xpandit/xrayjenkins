@@ -7,9 +7,6 @@ import javax.servlet.ServletException;
 
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
-
-import com.xpandit.plugins.xrayjenkins.service.XrayRestClient;
-
 import hudson.Extension;
 import hudson.util.FormValidation;
 import jenkins.model.GlobalConfiguration;
@@ -45,13 +42,12 @@ public class ServerConfiguration extends GlobalConfiguration {
 	    return GlobalConfiguration.all().get(ServerConfiguration.class);
 	}
 	
-	public FormValidation doTestConnection(@QueryParameter("serverUrl") final String serverUrl,
-              @QueryParameter("serverUsername") final String serverUsername, @QueryParameter("serverPassword") final String serverPassword) throws IOException, ServletException {
+	public FormValidation doTestConnection(@QueryParameter("serverAddress") final String serverAddress,
+              @QueryParameter("username") final String username, @QueryParameter("password") final String password) throws IOException, ServletException {
 
-          XrayInstance testXrayInstance = new XrayInstance(serverUrl,serverUsername,serverPassword);
-          XrayRestClient testXrayRestClient = XrayRestClient.createXrayRestClient(testXrayInstance);
+          XrayInstance testXrayInstance = new XrayInstance(serverAddress,username,password);
 
-          Boolean isConnectionOk = testXrayRestClient.testConnection();
+          Boolean isConnectionOk = testXrayInstance.testConnection();
           if(isConnectionOk){
               return FormValidation.ok("Connection: Success!");
           }

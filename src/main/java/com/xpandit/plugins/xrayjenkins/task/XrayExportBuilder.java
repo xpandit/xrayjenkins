@@ -18,20 +18,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import javax.servlet.ServletException;
-
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
-
 import com.xpandit.plugins.xrayjenkins.model.ServerConfiguration;
 import com.xpandit.plugins.xrayjenkins.model.XrayInstance;
-import com.xpandit.plugins.xrayjenkins.service.XrayRestClient;
 import com.xpandit.xray.exception.XrayClientCoreGenericException;
 import com.xpandit.xray.service.XrayExporter;
 import com.xpandit.xray.service.impl.XrayExporterImpl;
-
 import hudson.AbortException;
 import hudson.Extension;
 import hudson.FilePath;
@@ -278,23 +272,9 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
 
         @Override
         public String getDisplayName() {
-            return "Xray Export task";
+            return "Xray: Cucumber Features Export Task";
         }
 
-        public FormValidation doTestConnection(@QueryParameter("serverUrl") final String serverUrl,
-                @QueryParameter("serverUsername") final String serverUsername, @QueryParameter("serverPassword") final String serverPassword) throws IOException, ServletException {
-
-            XrayInstance testXrayInstance = new XrayInstance(serverUrl,serverUsername,serverPassword);
-            XrayRestClient testXrayRestClient = XrayRestClient.createXrayRestClient(testXrayInstance);
-
-            Boolean isConnectionOk = testXrayRestClient.testConnection();
-            if(isConnectionOk){
-                return FormValidation.ok("Connection: Success!");
-            }
-            else{
-                return FormValidation.error("Could not establish connection");
-            }
-        }
         /*
          * Checking if the file path doesn't contain "../"
          */

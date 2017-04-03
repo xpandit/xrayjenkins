@@ -1,0 +1,29 @@
+Started by user [8mha:AAAAlh+LCAAAAAAAAP9b85aBtbiIQTGjNKU4P08vOT+vOD8nVc83PyU1x6OyILUoJzMv2y+/JJUBAhiZGBgqihhk0NSjKDWzXb3RdlLBUSYGJk8GtpzUvPSSDB8G5tKinBIGIZ+sxLJE/ZzEvHT94JKizLx0a6BxUmjGOUNodHsLgAzOEgYu/dLi1CL9vNKcHACFIKlWvwAAAA==[0manonymous
+Building in workspace C:\Users\DMDU\Projects\XrayJenkins\xrayjenkins\work\jobs\Xray Test Project - Freestyle\workspace
+Starting export task...
+##########################################################
+####   Xray for JIRA is exporting the feature files  ####
+##########################################################
+PROJ-78
+features
+###################### Unzipping file ####################
+###################### Unzipped file #####################
+Sucessfully exported the Cucumber feater
+FATAL: You cannot provide file paths for upper directories.
+[8mha:AAAAWB+LCAAAAAAAAP9b85aBtbiIQSmjNKU4P08vOT+vOD8nVc8DzHWtSE4tKMnMz/PLL0ldFVf2c+b/lb5MDAwVRQxSaBqcITRIIQMEMIIUFgAAckCEiWAAAAA=[0mERROR: You cannot provide file paths for upper directories.
+	at hudson.util.FormValidation._errorWithMarkup(FormValidation.java:266)
+	at hudson.util.FormValidation.errorWithMarkup(FormValidation.java:252)
+	at hudson.util.FormValidation.error(FormValidation.java:143)
+	at com.xpandit.plugins.xrayjenkins.task.XrayImportBuilder.validate(XrayImportBuilder.java:245)
+	at com.xpandit.plugins.xrayjenkins.task.XrayImportBuilder.perform(XrayImportBuilder.java:151)
+	at hudson.tasks.BuildStepCompatibilityLayer.perform(BuildStepCompatibilityLayer.java:75)
+	at hudson.tasks.BuildStepMonitor$1.perform(BuildStepMonitor.java:20)
+	at hudson.model.AbstractBuild$AbstractBuildExecution.perform(AbstractBuild.java:785)
+	at hudson.model.Build$BuildExecution.build(Build.java:205)
+	at hudson.model.Build$BuildExecution.doRun(Build.java:162)
+	at hudson.model.AbstractBuild$AbstractBuildExecution.run(AbstractBuild.java:537)
+	at hudson.model.Run.execute(Run.java:1741)
+	at hudson.model.FreeStyleBuild.run(FreeStyleBuild.java:43)
+	at hudson.model.ResourceController.execute(ResourceController.java:98)
+	at hudson.model.Executor.run(Executor.java:408)
+Finished: FAILURE

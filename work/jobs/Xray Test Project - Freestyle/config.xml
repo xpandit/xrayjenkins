@@ -34,14 +34,12 @@
       <issues>PROJ-78</issues>
       <filePath>features</filePath>
     </com.xpandit.plugins.xrayjenkins.task.XrayExportBuilder>
+  </builders>
+  <publishers>
     <com.xpandit.plugins.xrayjenkins.task.XrayImportBuilder plugin="xray-jenkins@1.0-SNAPSHOT">
-      <xrayInstance reference="../../com.xpandit.plugins.xrayjenkins.task.XrayExportBuilder/xrayInstance"/>
+      <xrayInstance reference="../../../builders/com.xpandit.plugins.xrayjenkins.task.XrayExportBuilder/xrayInstance"/>
       <endpoint>NUNIT_MULTIPART</endpoint>
       <dynamicFields>
-        <entry>
-          <string>projectKey</string>
-          <string>PROJ</string>
-        </entry>
         <entry>
           <string>importInfo</string>
           <string>{
@@ -49,16 +47,12 @@
         &quot;project&quot;: {
             &quot;key&quot;: &quot;PROJ&quot;
         },
-        &quot;summary&quot;: &quot;Test Execution for NUnit Execution (Mutipart) JENKINS!!&quot;,
+        &quot;summary&quot;: &quot;Test Execution for NUnit Execution (Mutipart) JENKINS ${build_ID}&quot;,
         &quot;issuetype&quot;: {
             &quot;id&quot;: &quot;10102&quot;
         }
     }
 }</string>
-        </entry>
-        <entry>
-          <string>testEnvironments</string>
-          <string>ANDROID;IOS;CORDOVA;POTATO OS</string>
         </entry>
         <entry>
           <string>inputInfoSwitcher</string>
@@ -68,28 +62,20 @@
           <string>importFilePath</string>
           <string>NUnit/TestResult.xml</string>
         </entry>
-        <entry>
-          <string>revision</string>
-          <string>${BUILD_ID} - ${BUILD_NUMBER}</string>
-        </entry>
       </dynamicFields>
       <formatSuffix>/nunit/multipart</formatSuffix>
       <serverInstance>89a9176c-deb5-40e2-b946-5f76b766cb20</serverInstance>
       <inputInfoSwitcher>fileContent</inputInfoSwitcher>
     </com.xpandit.plugins.xrayjenkins.task.XrayImportBuilder>
-    <com.xpandit.plugins.xrayjenkins.task.XrayImportBuilder plugin="xray-jenkins@1.0-SNAPSHOT">
-      <xrayInstance reference="../../com.xpandit.plugins.xrayjenkins.task.XrayExportBuilder/xrayInstance"/>
-      <endpoint>CUCUMBER</endpoint>
-      <dynamicFields>
-        <entry>
-          <string>importFilePath</string>
-          <string>report.json</string>
-        </entry>
-      </dynamicFields>
-      <formatSuffix>/cucumber</formatSuffix>
-      <serverInstance>89a9176c-deb5-40e2-b946-5f76b766cb20</serverInstance>
-    </com.xpandit.plugins.xrayjenkins.task.XrayImportBuilder>
-  </builders>
-  <publishers/>
+    <hudson.tasks.BuildTrigger>
+      <childProjects>Import NUnit Output results</childProjects>
+      <threshold>
+        <name>FAILURE</name>
+        <ordinal>2</ordinal>
+        <color>RED</color>
+        <completeBuild>true</completeBuild>
+      </threshold>
+    </hudson.tasks.BuildTrigger>
+  </publishers>
   <buildWrappers/>
 </project>

@@ -14,9 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.ServletException;
 import org.apache.commons.lang3.StringUtils;
-import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -39,7 +37,9 @@ import hudson.model.FreeStyleProject;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.tasks.BuildStepDescriptor;
-import hudson.tasks.Builder;
+import hudson.tasks.BuildStepMonitor;
+import hudson.tasks.Notifier;
+import hudson.tasks.Publisher;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import jenkins.tasks.SimpleBuildStep;
@@ -52,7 +52,7 @@ import net.sf.json.JSONObject;
  * @version $Revision: 666 $
  *
  */
-public class XrayImportBuilder extends Builder implements SimpleBuildStep {
+public class XrayImportBuilder extends Notifier implements SimpleBuildStep {
     
     private XrayInstance xrayInstance;
     private Endpoint endpoint;
@@ -148,7 +148,8 @@ public class XrayImportBuilder extends Builder implements SimpleBuildStep {
 
 	@Override
     public void perform(Run<?,?> build, FilePath workspace, Launcher launcher, TaskListener listener)throws AbortException, InterruptedException, IOException {
-	
+		validate(dynamicFields);
+		
         listener.getLogger().println("Starting import task...");
         
         listener.getLogger().println("Import Cucumber features Task started...");
@@ -220,9 +221,38 @@ public class XrayImportBuilder extends Builder implements SimpleBuildStep {
         }
     }
 	
+    private void validate(Map<String,String> dynamicFields) throws FormValidation{
+      	 
+      	 for(com.xpandit.xray.model.DataParameter dp : com.xpandit.xray.model.DataParameter.values()){ // TODO useless
+      		 if(dynamicFields.containsKey(dp.getKey()) && dp.isRequired()){
+      			 String value = dynamicFields.get(dp.getKey());
+      			 if(StringUtils.isBlank(value))
+      				throw FormValidation.error("You must configure the field "+dp.getLabel());
+      		 }
+      	 }
+      	 
+      	for(com.xpandit.xray.model.QueryParameter qp : com.xpandit.xray.model.QueryParameter.values()){
+      		 if(dynamicFields.containsKey(qp.getKey()) && qp.isRequired()){
+      			 String value = dynamicFields.get(qp.getKey());
+      			 if(StringUtils.isBlank(value))
+      				throw FormValidation.error("You must configure the field "+qp.getLabel());
+      		 }
+      	 }
+      	 
+      	 String importFilePath = dynamicFields.get(com.xpandit.xray.model.DataParameter.FILEPATH.getKey());
+
+      	 if(importFilePath.contains("../"))
+      		throw FormValidation.error("You cannot provide file paths for upper directories.");
+   }
+    
+	@Override
+	public BuildStepMonitor getRequiredMonitorService() {
+		return BuildStepMonitor.NONE;
+	}
+	
+	
 	@Extension
-    public static class Descriptor extends BuildStepDescriptor<Builder> {
-    	private static final String DYNAMIC_FIELDS = "dynamicFields";
+    public static class Descriptor extends BuildStepDescriptor<Publisher> {
         private static long BUILD_STEP_SEED = 0;
         private long buildID;
                 
@@ -241,13 +271,7 @@ public class XrayImportBuilder extends Builder implements SimpleBuildStep {
         
         @Override
 		public XrayImportBuilder newInstance(StaplerRequest req, JSONObject formData){
-        	
-        	try {
-				validate(formData);
-			} catch (FormValidation e) {
-				e.printStackTrace();
-			}
-        	
+
         	Map<String,String> dynamicFields = getDynamicFields(formData.getJSONObject("dynamicFields"));
 			XrayInstance server = getConfiguration(formData.getString("serverInstance"));
 			Endpoint endpoint = Endpoint.lookupBySuffix(formData.getString("formatSuffix"));
@@ -255,18 +279,6 @@ public class XrayImportBuilder extends Builder implements SimpleBuildStep {
 			return new XrayImportBuilder(server,endpoint,dynamicFields);
 			
         }
-        
-        private void validate(JSONObject formData) throws FormValidation{
-	       	 JSONObject dynamicFields = formData.getJSONObject(DYNAMIC_FIELDS);
-	       	 
-	       	 String importFilePath = dynamicFields.getString(com.xpandit.xray.model.DataParameter.FILEPATH.getKey());
-	       	 
-	       	 if(StringUtils.isBlank(importFilePath))
-	       		 FormValidation.error("You must configure the execution results file path");
-	       	 
-	       	 if(importFilePath.contains("../"))
-	       		FormValidation.error("You can't provide file paths for upper directories.Please don't use \"../\".");
-	   }
         
         private Map<String,String> getDynamicFields(JSONObject configuredFields){
         	
@@ -306,40 +318,9 @@ public class XrayImportBuilder extends Builder implements SimpleBuildStep {
 
         @Override
         public String getDisplayName() {
-            return "Xray Import task";
+            return "Xray: Results Import Task";
         }
-
-        public FormValidation doTestConnection(@QueryParameter("serverAddress") final String serverUrl,
-                @QueryParameter("username") final String serverUsername, @QueryParameter("password") final String serverPassword) throws IOException, ServletException {
-
-            XrayInstance testXrayInstance = new XrayInstance(serverUrl,serverUsername,serverPassword);
-
-            Boolean isConnectionOk = testXrayInstance.testConnection();
-            if(isConnectionOk){
-                return FormValidation.ok("Connection: Success!");
-            }
-            else{
-                return FormValidation.error("Could not establish connection");
-            }
-
-        }
-        /*
-         * Checking if the file path doesn't contain "../"
-         */
-        public FormValidation doCheckImportFilePath(@QueryParameter String value) {
-
-            if(value.contains("../")){
-                return FormValidation.error("You can't provide file paths for upper directories.Please don't use \"../\".");
-            }
-            else{
-                return FormValidation.ok();
-            }
-        }
-        
-        public FormValidation doCheckDynamicFields(@QueryParameter JSONObject value){
-        	return FormValidation.error("You can't provide file paths for upper directories.Please don't use \"../\".");
-        }
-
+   
         public ListBoxModel doFillFormatSuffixItems() {
         	
             ListBoxModel items = new ListBoxModel();
@@ -381,7 +362,8 @@ public class XrayImportBuilder extends Builder implements SimpleBuildStep {
 		}
         
     }
-	
-	
+
+
+
 
 }

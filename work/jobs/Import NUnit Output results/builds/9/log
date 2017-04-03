@@ -1,0 +1,12 @@
+Started by upstream project "[8mha:AAAAsR+LCAAAAAAAAP9b85aBtbiIQTGjNKU4P08vOT+vOD8nVc83PyU1x6OyILUoJzMv2y+/JJUBAhiZGBgqihhk0NSjKDWzXb3RdlLBUSYGJk8GtpzUvPSSDB8G5tKinBIGIZ+sxLJE/ZzEvHT94JKizLx0a6BxUmjGOUNodHsLgAzZEgZt/az8JP2IosRKVSODkNTiEiAVUJSflZoMYukCsVtRKlC4MidVHwDXiOGt4AAAAA==[0mXray Test Project - Freestyle" build number [8mha:AAAAtB+LCAAAAAAAAP9b85aBtbiIQTGjNKU4P08vOT+vOD8nVc83PyU1x6OyILUoJzMv2y+/JJUBAhiZGBgqihhk0NSjKDWzXb3RdlLBUSYGJk8GtpzUvPSSDB8G5tKinBIGIZ+sxLJE/ZzEvHT94JKizLx0a6BxUmjGOUNodHsLgAzmEgY9/az8JP2IosRKVSODkNTiEiAVUJSflZoMYukCsVtRKlC4MidV39DAAAAYo8zi4wAAAA==[0m100
+originally caused by:
+ Started by user [8mha:AAAAlh+LCAAAAAAAAP9b85aBtbiIQTGjNKU4P08vOT+vOD8nVc83PyU1x6OyILUoJzMv2y+/JJUBAhiZGBgqihhk0NSjKDWzXb3RdlLBUSYGJk8GtpzUvPSSDB8G5tKinBIGIZ+sxLJE/ZzEvHT94JKizLx0a6BxUmjGOUNodHsLgAzOEgYu/dLi1CL9vNKcHACFIKlWvwAAAA==[0manonymous
+Building in workspace C:\Users\DMDU\Projects\XrayJenkins\xrayjenkins\work\jobs\Xray Test Project - Freestyle\workspace
+Starting import task...
+Import Cucumber features Task started...
+##########################################################
+####   Xray for JIRA is importing the feature files  ####
+##########################################################
+File: C:\Users\DMDU\Projects\XrayJenkins\xrayjenkins\work\jobs\Xray Test Project - Freestyle\workspace\NUnit\TestResult.xml
+Sucessfully imported NUnit XML results
+Finished: SUCCESS
