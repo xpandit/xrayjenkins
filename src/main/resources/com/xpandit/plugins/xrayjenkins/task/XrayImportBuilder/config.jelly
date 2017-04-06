@@ -186,7 +186,11 @@
    				<p id="configurableFields_${descriptor.defaultBuildID()}" style="border-left:solid;border-color:#00a3ac;width:50vw"></p>		
    			</f:entry>
    		</f:section>
- 
+ 	
+   </f:entry>
+   
+   <f:entry>
+   	 <a href="http://confluence.xpand-addons.com/display/XRAY/Import+Execution+Results+-+REST">Click here for more details</a>
    </f:entry>
 
 
