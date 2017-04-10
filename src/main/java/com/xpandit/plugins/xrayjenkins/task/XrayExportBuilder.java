@@ -13,22 +13,20 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
-import javax.servlet.ServletException;
-
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
-
+import com.xpandit.plugins.xrayjenkins.model.ServerConfiguration;
 import com.xpandit.plugins.xrayjenkins.model.XrayInstance;
-import com.xpandit.plugins.xrayjenkins.service.XrayRestClient;
-
+import com.xpandit.xray.exception.XrayClientCoreGenericException;
+import com.xpandit.xray.service.XrayExporter;
+import com.xpandit.xray.service.impl.XrayExporterImpl;
+import hudson.AbortException;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -39,7 +37,7 @@ import hudson.model.TaskListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.FormValidation;
-
+import hudson.util.ListBoxModel;
 import jenkins.tasks.SimpleBuildStep;
 import net.sf.json.JSONObject;
 
@@ -52,52 +50,26 @@ import net.sf.json.JSONObject;
  */
 public class XrayExportBuilder extends Builder implements SimpleBuildStep {
 
-    private static final String EXPORT_CUCUMBER_FEATURES_URL_SUFIX = "/rest/raven/1.0/export/test";
-
-    private final String serverUrl;
-    private final String serverUsername;
-    private final String serverPassword;
-    private final String issues;
-    private final String filter;
+	private XrayInstance xrayInstance;
+    private Map<String,String> fields;
+    
+    private String serverInstance;//Configuration ID of the JIRA instance
+    private String issues;
+    private String filter;
     private String filePath;
 
-    @DataBoundConstructor
-    public XrayExportBuilder(String serverUrl,String serverUsername, 
-            String serverPassword, String issues, String filter, String filePath) {
-        this.serverUrl = serverUrl;
-        this.serverUsername = serverUsername;
-        this.serverPassword = serverPassword;
-        this.issues = issues;
-        this.filter = filter;
-        this.filePath = filePath;
-    }
-
-    public String getServerUrl() {
-        return serverUrl;
-    }
-
-    public String getServerUsername() {
-        return serverUsername;
-    }
-
-    public String getServerPassword() {
-        return serverPassword;
-    }
-
-    public String getIssues() {
-        return issues;
-    }
-
-    public String getFilter() {
-        return filter;
-    }
-
-    public String getFilePath() {
-        return filePath;
-    }
-
+    public XrayExportBuilder(XrayInstance xrayInstance,  Map<String, String> fields) {
+    	this.xrayInstance = xrayInstance;
+    	this.fields = fields;
+    	
+    	this.issues = fields.get("issues");
+    	this.filter = fields.get("filter");
+    	this.filePath = fields.get("filePath");
+    	this.serverInstance = xrayInstance.getConfigID();
+	}
+   
     @Override
-    public void perform(Run<?,?> build, FilePath workspace, Launcher launcher, TaskListener listener) {
+    public void perform(Run<?,?> build, FilePath workspace, Launcher launcher, TaskListener listener) throws AbortException, IOException {
         
         listener.getLogger().println("Starting export task...");
         
@@ -105,141 +77,204 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
         listener.getLogger().println("####   Xray for JIRA is exporting the feature files  ####");
         listener.getLogger().println("##########################################################");
         
-        XrayInstance xrayInstance = new XrayInstance(serverUrl,serverUsername,serverPassword);
-        XrayRestClient client = XrayRestClient.createXrayRestClient(xrayInstance);
-
+        XrayExporter client = new XrayExporterImpl(xrayInstance.getServerAddress(),xrayInstance.getUsername(),xrayInstance.getPassword());
+        
         try{
-            Map<String, String> queryParams = new HashMap<>();
 
-            if (issues != null && !StringUtils.isEmpty(issues)) {
+            if (StringUtils.isNotBlank(issues)) 
                 listener.getLogger().println(issues);
-                queryParams.put("keys", issues);
-            }
 
-            if (filter != null && !StringUtils.isEmpty(filter)) {
+            if (StringUtils.isNotBlank(filter)) 
                 listener.getLogger().println(filter);
-                queryParams.put("filter", filter);
-            }
 
-            HttpResponse response = client.httpGet(EXPORT_CUCUMBER_FEATURES_URL_SUFIX, queryParams);
-
-            int statusCode = response.getStatusLine().getStatusCode();
-
-            if (statusCode == 200) {
-                InputStream in = response.getEntity().getContent();
-
-                if (filePath == null || StringUtils.isEmpty(filePath)) {
-                    filePath = "features/";
-                }
-
-                File outputFile = new File(workspace.getRemote(), filePath);
-                outputFile.mkdirs();
-
-                FileOutputStream fos = new FileOutputStream(new File(outputFile, "features.zip"));
-
-                byte[] buffer = new byte[4096];
-                int length;
-                while ((length = in.read(buffer)) > 0) {
-                    fos.write(buffer, 0, length);
-                }
-
-                listener.getLogger().println("###################### Unzipping file ####################");
-
-                ZipInputStream zis = new ZipInputStream(new FileInputStream(workspace.getRemote()+"/"+filePath+"/features.zip"));
-                //get the zipped file list entry
-                ZipEntry ze = zis.getNextEntry();
-
-                while(ze!=null){
-
-                    String fileName = ze.getName();
-                    File newFile = new File(workspace.getRemote(), filePath+"/"+fileName);
-
-                    System.out.println("file unzip : "+ newFile.getAbsoluteFile());
-
-                    new File(newFile.getParent()).mkdirs();
-
-                    fos = new FileOutputStream(newFile);             
-
-                    int len;
-                    while ((len = zis.read(buffer)) > 0) {
-                        fos.write(buffer, 0, len);
-                    }
-
-                    fos.close();   
-                    ze = zis.getNextEntry();
-                }
-
-                zis.closeEntry();
-                zis.close();
-                listener.getLogger().println("###################### Unzipped file #####################");
-            } else {
-                try {
-                    throw new ClientProtocolException("Unexpected response status: " + statusCode);
-                } catch (ClientProtocolException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        catch (IOException e) {
-            listener.getLogger().println("Error:_" + e);
+            if (StringUtils.isNotBlank(filePath)) 
+                listener.getLogger().println(filePath);
+           
+            InputStream file = client.downloadFeatures(issues,filter,"true");
+            this.unzipFeatures(listener, workspace, filePath, file);
+            listener.getLogger().println("Sucessfully exported the Cucumber features");
+        }catch (XrayClientCoreGenericException e) {
+        	e.printStackTrace();
+        	listener.getLogger().println("Task failed");
+        	listener.error(e.getMessage());
+        	throw new AbortException(e.getMessage());
+		}catch (IOException e) {
             e.printStackTrace();
+            listener.getLogger().println("Task failed");
+            listener.error(e.getMessage());
+            throw new IOException(e);
         }
+    }
+    
+    private void unzipFeatures(TaskListener listener, FilePath workspace, String filePath, InputStream zip) throws IOException{
+
+        if (filePath == null || StringUtils.isEmpty(filePath)) {
+            filePath = "features/";
+        }
+
+        File outputFile = new File(workspace.getRemote(), filePath);
+        outputFile.mkdirs();
+
+        FileOutputStream fos = new FileOutputStream(new File(outputFile, "features.zip"));
+
+        byte[] buffer = new byte[4096];
+        int length;
+        while ((length = zip.read(buffer)) > 0) {
+            fos.write(buffer, 0, length);
+        }
+
+        listener.getLogger().println("###################### Unzipping file ####################");
+
+        ZipInputStream zis = new ZipInputStream(new FileInputStream(workspace.getRemote()+"/"+filePath+"/features.zip"));
+        //get the zipped file list entry
+        ZipEntry ze = zis.getNextEntry();
+
+        while(ze!=null){
+
+            String fileName = ze.getName();
+            File newFile = new File(workspace.getRemote(), filePath+"/"+fileName);
+
+            System.out.println("file unzip : "+ newFile.getAbsoluteFile());
+
+            new File(newFile.getParent()).mkdirs();
+
+            fos = new FileOutputStream(newFile);             
+
+            int len;
+            while ((len = zis.read(buffer)) > 0) {
+                fos.write(buffer, 0, len);
+            }
+
+            fos.close();   
+            ze = zis.getNextEntry();
+        }
+
+        zis.closeEntry();
+        zis.close();
+        listener.getLogger().println("###################### Unzipped file #####################");
+   
     }
 
     
-    @Extension
+    public String getServerInstance() {
+		return serverInstance;
+	}
+
+	public void setServerInstance(String serverInstance) {
+		this.serverInstance = serverInstance;
+	}
+
+
+	public String getIssues() {
+		return issues;
+	}
+
+	public void setIssues(String issues) {
+		this.issues = issues;
+	}
+
+
+	public String getFilter() {
+		return filter;
+	}
+
+	public void setFilter(String filter) {
+		this.filter = filter;
+	}
+
+
+	public String getFilePath() {
+		return filePath;
+	}
+
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
+	}
+
+
+	public Map<String,String> getFields() {
+		return fields;
+	}
+
+	public void setFields(Map<String,String> fields) {
+		this.fields = fields;
+	}
+
+	@Extension
     public static class Descriptor extends BuildStepDescriptor<Builder> {
-        
-        private String serverUrl;
-        private String serverUsername;
-        private String serverPassword;
-        private String issues;
-        private String filter;
-        private String filePath;
-        
-        
+
         public Descriptor() {
+        	super(XrayExportBuilder.class);
             load();
         }
         
         @Override
         public boolean configure(StaplerRequest req, JSONObject formData) throws FormException {
+           
+        	save();
+            return true;
             
-            serverUrl = formData.getString("serverUrl");
-            serverUsername = formData.getString("serverUsername");
-            serverPassword = formData.getString("serverPassword");
-            issues = formData.getString("issues");
-            filter = formData.getString("filter");
-            filePath = formData.getString("filePath");
-            
-            save();
-            return super.configure(req,formData);
         }
         
         @Override
+		public XrayExportBuilder newInstance(StaplerRequest req, JSONObject formData){
+			
+        	Map<String,String> fields = getFields(formData.getJSONObject("fields"));
+			XrayInstance server = getConfiguration(formData.getString("serverInstance"));
+			
+			return new XrayExportBuilder(server,fields);
+			
+        }
+        
+        
+        public ListBoxModel doFillServerInstanceItems() {
+        	
+            ListBoxModel items = new ListBoxModel();
+            List<XrayInstance> serverInstances =  getServerInstances();
+            for(XrayInstance sc : serverInstances)
+            	items.add(sc.getAlias(),sc.getConfigID());
+            
+            return items;
+        }
+        
+        private XrayInstance getConfiguration(String configID) {
+        	XrayInstance config =  null;
+        	List<XrayInstance> serverInstances =  getServerInstances();
+        	for(XrayInstance sc : serverInstances){
+        		if(sc.getConfigID().equals(configID)){
+        			config = sc;break;
+        		}
+        	}
+        	return config;
+		}
+        
+
+        private Map<String, String> getFields(JSONObject configuredFields) {
+        	Map<String,String> fields = new HashMap<String,String>();
+        	
+        	Set<String> keys = configuredFields.keySet();
+        	
+        	for(String key : keys){
+        		if(configuredFields.containsKey(key)){
+        			String value = configuredFields.getString(key);
+					if(StringUtils.isNotBlank(value))
+						fields.put(key, value);
+        		}
+        	}
+        	
+        	return fields;
+		}
+		
+		@Override
         public boolean isApplicable(Class<? extends AbstractProject> jobType) {
             return FreeStyleProject.class.isAssignableFrom(jobType);
         }
 
         @Override
         public String getDisplayName() {
-            return "Xray Export task";
+            return "Xray: Cucumber Features Export Task";
         }
 
-        public FormValidation doTestConnection(@QueryParameter("serverUrl") final String serverUrl,
-                @QueryParameter("serverUsername") final String serverUsername, @QueryParameter("serverPassword") final String serverPassword) throws IOException, ServletException {
-
-            XrayInstance testXrayInstance = new XrayInstance(serverUrl,serverUsername,serverPassword);
-            XrayRestClient testXrayRestClient = XrayRestClient.createXrayRestClient(testXrayInstance);
-
-            Boolean isConnectionOk = testXrayRestClient.testConnection();
-            if(isConnectionOk){
-                return FormValidation.ok("Connection: Success!");
-            }
-            else{
-                return FormValidation.error("Could not establish connection");
-            }
-        }
         /*
          * Checking if the file path doesn't contain "../"
          */
@@ -263,7 +298,6 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
             else{
                 return FormValidation.ok();
             }
-
         }
 
         public FormValidation doCheckFilter(@QueryParameter String value, @QueryParameter String issues) {            
@@ -275,29 +309,11 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
             }
         }
         
-        public String getServerUrl() {
-            return serverUrl;
-        }
-
-        public String getServerUsername() {
-            return serverUsername;
-        }
-
-        public String getServerPassword() {
-            return serverPassword;
-        }
-
-        public String getIssues() {
-            return issues;
-        }
-
-        public String getFilter() {
-            return filter;
-        }
-
-        public String getFilePath() {
-            return filePath;
-        }
+        
+        public List<XrayInstance> getServerInstances() {
+			return ServerConfiguration.get().getServerInstances();
+		}
+        
     }
 
 }

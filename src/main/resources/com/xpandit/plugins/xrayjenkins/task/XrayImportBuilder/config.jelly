@@ -1,27 +1,198 @@
-<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
-  
-  <f:entry title="${%Xray Server Instance:}">
-        <f:textbox field="serverUrl"/>
-  </f:entry>
-  <f:entry title="${%Username}">
-    <f:textbox field="serverUsername" />
-  </f:entry>
-  <f:entry title="${%Password}">
-    <f:password field="serverPassword" />
-  </f:entry>
-  <f:validateButton title="${%Test Connection}" progress="${%Testing...}"
-   method="testConnection" with="serverUrl,serverUsername,serverPassword" />
-   
-   <f:entry name="format" title="Format" field="format">
-       <select name="format">
-        <option value="">Xray Json</option>
-        <option value="/behave">Behave Json</option>
-        <option value="/cucumber">Cucumber Json</option>
-        <option value="/bundle">Bundle</option>
-       </select>
-    </f:entry>
 
-   <f:entry title="${%File Path with file name:}" field="importFilePath">
-        <f:textbox field="importFilePath"/>
+<?jelly escape-by-default='false'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
+         xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+         
+  <script src="${resURL}/plugin/xray-for-jira-connector/handlebars-v4.0.5.amd.min.js"></script>         
+  
+  ${descriptor.setBuildID()}   
+ 
+  <!-- Jelly + Handlebars templates spec -->
+  <j:file xmlns:j="jelly:core" var="addInput" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='XML'>
+  	 	<input name="_.{{key}}" type="text" class="setting-input" value="{{configuration}}"/>
+  </j:file>  
+  
+  <j:file xmlns:j="jelly:core" var="addInputEntry" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='XML'>
+ 		<f:entry title='{{label}}' field='{{key}}'>${addInput}</f:entry>   
+  </j:file>
+ 
+  <j:file xmlns:j="jelly:core" var="addTextarea" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='XML'>
+  	 	<f:textarea field='{{key}}' value="{{configuration}}" style="width:100%"/>
+  </j:file>  
+  
+  <j:file xmlns:j="jelly:core" var="addTextareaEntry" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='HTML'>
+		<f:entry title='{{label}}'>
+    		${addTextarea}
+		</f:entry>
+  </j:file>
+  
+ <j:file xmlns:j="jelly:core" var="addSwitchableField" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='HTML'>
+  		<f:entry title="{{label}}">
+		    <select name="_.inputInfoSwitcher" class="setting-input  select" id="selectInputType_${descriptor.defaultBuildID()}" onchange='switchInput_${descriptor.defaultBuildID()}("#switchContainer_${descriptor.defaultBuildID()}")'>
+		        <option value='filePath'>${%import-parameter.content-type-filepath}</option>
+		        <option value='fileContent'>${%import-parameter.content-type-filecontent}</option>
+		    </select>
+		</f:entry>
+		<f:entry>
+			<div id="switchContainer_${descriptor.defaultBuildID()}">
+  	 			${addInput}
+  	 		</div>
+  		</f:entry> 
+  </j:file>
+  <!--End of templates spec -->
+  
+  
+  <script id="_${descriptor.defaultBuildID()}">
+    (function(Q){
+
+       var mainTemplate = '';
+       var formats;
+       if('${instance.defaultFormats()}' != ''){
+		 formats = [${instance.defaultFormats()}];
+		 }
+	   else{
+		 formats = [${descriptor.defaultFormats()}];
+		 }
+
+	   formats = formats[0];
+   
+	   addXrayFields_${descriptor.defaultBuildID()} = function(){
+			
+			var selectedFormat;
+			if(arguments.length > 0)
+				selectedFormat = formats[arguments[0]];
+			else
+				selectedFormat = formats[Object.keys(formats)[0]];
+			
+			//Three steps: fetch template, compile it, generate result with the context data 
+			var template = Handlebars.compile(mainTemplate);	
+			var result = template(selectedFormat);
+	   		Q('#configurableFields_${descriptor.defaultBuildID()}').html(result); 
+	   		
+	   		switcherLastConfiguration_${descriptor.defaultBuildID()}();
+		}
+		
+	  /*
+	   * Switches the HTML element for the importInfo field
+	   */
+	  switchInput_${descriptor.defaultBuildID()} = function(container){
+
+	    //current selected input type, from the select HTML element	
+	  	var selectedInputType = Q("#selectInputType_${descriptor.defaultBuildID()}").find('option:selected').val(); 
+	  
+	  	if(!selectedInputType)
+	  		return;
+	  	
+	  	var key = Q("#selectFormat_${descriptor.defaultBuildID()}").find('option:selected').val();
+	  
+	  	//selected input type, from last configuration
+		var lastSwitcherConfig = '${instance.getInputInfoSwitcher()}';
+		
+		//field to render
+		var _field = (formats[key]).configurableFields.filter(function(field){return field.key == 'importInfo'})[0];
+		_field = JSON.parse(JSON.stringify(_field));	
+		
+		var renderConfiguration = (lastSwitcherConfig == selectedInputType);
+	
+		if(!renderConfiguration)
+			_field.configuration = '';
+	  	
+	  	if(selectedInputType == 'filePath'){// content is a file path
+	  			var template = Handlebars.compile('${addInput}');	
+				var result = template(_field);
+		  		Q(container).html(result);	
+			}
+		else if(selectedInputType == 'fileContent'){ // content is in JSON format
+			    var template = Handlebars.compile('${addTextarea}');	
+				var result = template(_field);
+		  		Q(container).html(result);
+				//prettify();
+		}		
+	  	
+	  }
+	  
+	  switcherLastConfiguration_${descriptor.defaultBuildID()} = function(){
+		//selected input type, from last configuration
+		var lastSwitcherConfig = '${instance.getInputInfoSwitcher()}';
+
+		if(lastSwitcherConfig !== '' ){//making sure the switcher gets the last configuration value
+			var select = Q("#selectInputType_${descriptor.defaultBuildID()}");
+			if(select){
+				select.val(lastSwitcherConfig);
+				select.trigger('change');
+			}
+		}
+		
+	}
+		
+		
+	  Q(document).ready(function() {
+	  	
+	  		//main template loading. It's syntax conflicts with Jelly so we need to load it assynchronously from an external source
+			Q.ajax({
+		   	 url: '${resURL}/plugin/xray-for-jira-connector/xray-import-buildstepconfig.html',
+		     cache: false,
+		     dataType: "html",
+		     success: function(data) {
+		     	mainTemplate = data;
+		     	
+		     	//Handlebars is a kind of 'logic-less' like mustache, so it does not provide the equals operator
+		    	Handlebars.registerHelper('ifEquals', function(arg1, arg2, options) {
+		   			return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+				});
+				
+				//Register partial templates, used for call templates inside templates
+				Handlebars.registerPartial("addInputEntry",'${addInputEntry}');
+				Handlebars.registerPartial("addInput",'${addInput}');
+				
+				Handlebars.registerPartial("addTextareaEntry",'${addTextareaEntry}');
+				Handlebars.registerPartial("addTextarea", '${addTextarea}');
+				
+				Handlebars.registerPartial("addSwitchableField", '${addSwitchableField}');
+				
+				//register event-handler
+		    	Q('#selectFormat_${descriptor.defaultBuildID()}').on('change',function(e){
+		    		addXrayFields_${descriptor.defaultBuildID()}(e.currentTarget.options[e.currentTarget.selectedIndex].value);
+		    	});
+				
+				//get last chosen format
+				var formatSuffix = '${instance.getFormatSuffix()}';
+				
+				//if no format was chosen, select the first one from the formats/endpoints list
+				if(formatSuffix == '')
+					addXrayFields_${descriptor.defaultBuildID()}();
+				else
+				    addXrayFields_${descriptor.defaultBuildID()}(formatSuffix); //making sure that the select gets the last configuration value
+
+		     	} 
+			});
+    	
+	 });
+   			
+   			
+   	})(jQuery);
+   	    		
+</script>
+
+  <f:entry title="${%JIRA Instance}" field="serverInstance">
+   		<f:select/>
    </f:entry>
+      
+   <f:entry title="${%Format}" field="formatSuffix">
+   		<f:select id="selectFormat_${descriptor.defaultBuildID()}"/>
+
+   		<f:section name="dynamicFields">	
+   			<f:entry title="Parameters">	
+   				<p id="configurableFields_${descriptor.defaultBuildID()}" style="border-left:solid;border-color:#00a3ac;width:50vw"></p>		
+   			</f:entry>
+   		</f:section>
+ 	
+   </f:entry>
+   
+   <f:entry>
+   	 <a href="http://confluence.xpand-addons.com/display/XRAY/Import+Execution+Results+-+REST">Click here for more details</a>
+   </f:entry>
+
+
 </j:jelly>
+

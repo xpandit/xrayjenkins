@@ -1,0 +1,11 @@
+  <!--Renders an HTML element for each additional field-->
+
+	{{#each configurableFields}}
+		{{#ifEquals key "importInfo"}}
+			{{>addSwitchableField}}
+		{{else}}
+			{{>addInputEntry}}
+		{{/ifEquals}}
+	{{/each}}
+
+  
