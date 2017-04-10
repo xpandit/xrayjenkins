@@ -1,1 +1,0 @@
-mvn hpi:run -Djetty.port=8087

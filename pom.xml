@@ -9,8 +9,9 @@
 		<version>2.11</version>
 		<relativePath />
 	</parent>
+	
 	<groupId>com.xpandit.plugins</groupId>
-	<artifactId>xray-jenkins</artifactId>
+	<artifactId>xray-for-jira-connector</artifactId>
 	<version>1.0.0</version>
 	<packaging>hpi</packaging>
 
@@ -28,19 +29,19 @@
 			Maven plugin version required by the plugin. -->
 	</properties>
 
-	<name>Xray Jenkins Plugin</name>
-	<description>TODO</description>
-	<url>https://wiki.jenkins-ci.org/display/JENKINS/TODO+Plugin</url>
+	<name>Xray for JIRA Jenkins Plugin</name>
+	<description>Integrates Jenkins with Xray for JIRA</description>
+	<url>http://confluence.xpand-addons.com/display/XRAY/Xray+for+JIRA+Jenkins+Plugin</url>
 
 	<!-- The default licence for Jenkins OSS Plugins is MIT. Substitute for 
 		the applicable one if needed. -->
 
-	<licenses>
+	<!--  <licenses>
 		<license>
 			<name>MIT License</name>
 			<url>http://opensource.org/licenses/MIT</url>
 		</license>
-	</licenses>
+	</licenses> -->
 
 	<!-- If you want this to appear on the wiki page: <developers> <developer> 
 		<id>bhacker</id> <name>Bob Q. Hacker</name> <email>bhacker@nowhere.net</email> 
@@ -48,18 +49,6 @@
 	<!-- Assuming you want to host on @jenkinsci: <scm> <connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection> 
 		<developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection> 
 		<url>http://github.com/jenkinsci/${project.artifactId}-plugin</url> </scm> -->
-	<repositories>
-		<repository>
-			<id>repo.jenkins-ci.org</id>
-			<url>https://repo.jenkins-ci.org/public/</url>
-		</repository>
-	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>repo.jenkins-ci.org</id>
-			<url>https://repo.jenkins-ci.org/public/</url>
-		</pluginRepository>
-	</pluginRepositories>
 
 	<dependencies>
 		
@@ -106,8 +95,29 @@
 	          <version>2.19.1</version>
 	        </plugin>
   		</plugins>
-  		
 	</build>
-
+	
+	<!-- Jenkins repositories -->
+	<repositories>
+		<repository>
+			<id>repo.jenkins-ci.org</id>
+			<url>https://repo.jenkins-ci.org/public/</url>
+		</repository>
+	</repositories>
+	
+	<pluginRepositories>
+		<pluginRepository>
+			<id>repo.jenkins-ci.org</id>
+			<url>https://repo.jenkins-ci.org/public/</url>
+		</pluginRepository>
+	</pluginRepositories>
+	
+	<!--  To configure when the GIT HUB repo is available
+		<scm>
+		  <connection>scm:git:ssh://github.com/jenkinsci/MYPLUGINNAME.git</connection>
+		  <developerConnection>scm:git:ssh://git@github.com/jenkinsci/MYPLUGINNAME.git</developerConnection>
+		  <url>https://github.com/jenkinsci/MYPLUGINNAME</url>
+		</scm>
+	-->
 
 </project>

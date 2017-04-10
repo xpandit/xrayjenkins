@@ -3,7 +3,7 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
          xmlns:t="/lib/hudson" xmlns:f="/lib/form">
          
-  <script src="${resURL}/plugin/xray-jenkins/handlebars-v4.0.5.amd.min.js"></script>         
+  <script src="${resURL}/plugin/xray-for-jira-connector/handlebars-v4.0.5.amd.min.js"></script>         
   
   ${descriptor.setBuildID()}   
  
@@ -130,7 +130,7 @@
 	  	
 	  		//main template loading. It's syntax conflicts with Jelly so we need to load it assynchronously from an external source
 			Q.ajax({
-		   	 url: '${resURL}/plugin/xray-jenkins/xray-import-buildstepconfig.html',
+		   	 url: '${resURL}/plugin/xray-for-jira-connector/xray-import-buildstepconfig.html',
 		     cache: false,
 		     dataType: "html",
 		     success: function(data) {

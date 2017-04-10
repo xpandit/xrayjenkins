@@ -21,3 +21,5 @@ target/
 workspace/
 .classpath
 .projects
+debugJenkins.bat
+launchJenkins.bat
