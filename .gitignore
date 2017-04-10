@@ -21,7 +21,7 @@ target/
 workspace/
 
 #Please make sure you ignore build history from your Jobs
-work/jobs/Job Example/builds
+work/
 .classpath
 .projects
 debugJenkins.bat
