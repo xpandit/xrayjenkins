@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven
+Built-By: kohsuke
+Build-Jdk: 1.7.0_07
+Extension-Name: github-organization-folder
+Specification-Title: Pipeline-as-Code support for a whole GitHub organ
+ ization
+Implementation-Title: github-organization-folder
+Implementation-Version: 1.1
+Group-Id: org.jenkins-ci.plugins
+Short-Name: github-organization-folder
+Long-Name: GitHub Organization Folder Plugin
+Url: https://wiki.jenkins-ci.org/display/JENKINS/GitHub+Organization+F
+ older+Plugin
+Plugin-Version: 1.1
+Hudson-Version: 1.609
+Jenkins-Version: 1.609
+Plugin-Dependencies: workflow-multibranch:1.15,branch-api:1.3,cloudbee
+ s-folder:5.3,github-branch-source:1.3
+Plugin-Developers: 
+

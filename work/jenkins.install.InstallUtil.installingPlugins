@@ -1,0 +1,14 @@
+<map>
+  <entry>
+    <string>workflow-aggregator</string>
+    <string>Failure</string>
+  </entry>
+  <entry>
+    <string>pipeline-stage-view</string>
+    <string>Failure</string>
+  </entry>
+  <entry>
+    <string>github-organization-folder</string>
+    <string>Failure</string>
+  </entry>
+</map>

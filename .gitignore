@@ -19,6 +19,9 @@ target/
 .metadata/
 .settings/
 workspace/
+
+#Please make sure you ignore build history from your Jobs
+work/jobs/Job Example/builds
 .classpath
 .projects
 debugJenkins.bat
