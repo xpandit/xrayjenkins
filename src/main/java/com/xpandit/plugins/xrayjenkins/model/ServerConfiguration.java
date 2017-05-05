@@ -7,6 +7,9 @@ import javax.servlet.ServletException;
 
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
+
+import com.xpandit.xray.service.impl.XrayClientImpl;
+
 import hudson.Extension;
 import hudson.util.FormValidation;
 import jenkins.model.GlobalConfiguration;
@@ -43,18 +46,17 @@ public class ServerConfiguration extends GlobalConfiguration {
 	}
 	
 	public FormValidation doTestConnection(@QueryParameter("serverAddress") final String serverAddress,
-              @QueryParameter("username") final String username, @QueryParameter("password") final String password) throws IOException, ServletException {
+            @QueryParameter("username") final String username, @QueryParameter("password") final String password) throws IOException, ServletException {
 
-          XrayInstance testXrayInstance = new XrayInstance(serverAddress,username,password);
-
-          Boolean isConnectionOk = testXrayInstance.testConnection();
-          if(isConnectionOk){
-              return FormValidation.ok("Connection: Success!");
-          }
-          else{
-              return FormValidation.error("Could not establish connection");
-          }
-      }
+        Boolean isConnectionOk = (new XrayClientImpl(serverAddress,username,password)).testConnection();
+        
+        if(isConnectionOk){
+            return FormValidation.ok("Connection: Success!");
+        }
+        else{
+            return FormValidation.error("Could not establish connection");
+        }
+  }
 	
 
 }

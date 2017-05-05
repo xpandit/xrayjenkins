@@ -7,15 +7,8 @@
  */
 package com.xpandit.plugins.xrayjenkins.model;
 
-import java.io.IOException;
 import java.util.UUID;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.ssl.SSLContextBuilder;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
@@ -28,7 +21,6 @@ public class XrayInstance {
 	private String serverAddress;
     private String username;
     private String password;
-    private CloseableHttpClient httpclient;
 
     public XrayInstance(String serverAddress, String username, String password) {
     	this.configID =  "";
@@ -43,7 +35,6 @@ public class XrayInstance {
  			String username,String password){
  		
     	this(serverAddress,username,password);
-    	
     	
  		this.configID = StringUtils.isBlank(configID) ? UUID.randomUUID().toString() : configID;
  		this.alias = alias;
@@ -89,47 +80,6 @@ public class XrayInstance {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-    
-    public Boolean testConnection(){
-        HttpGet get = prepareHTTPGET();
-        HttpResponse response;
-        try {
-            response = this.httpclient.execute(get);
-            int statusCode = response.getStatusLine().getStatusCode();
-            
-            if(statusCode != 200){
-                return false;
-            }
-            else{
-                return true;
-            }
-        } catch (IOException e) {
-            return false;
-        } finally{
-        	destroyClient();
-        }
-    }
-    
-    private HttpGet prepareHTTPGET() {
-    	 HttpGet get = new HttpGet(this.getServerAddress());
-    	 this.httpclient = new DefaultHttpClient();
-         String encoding = Base64.encodeBase64String((username + ":" + password).getBytes());
-         get.setHeader("Authorization", "Basic " + encoding);     
-         return get;
-    }
-    
-    
-    public void destroyClient() {
-        if (this.httpclient != null) {
-            try {
-                this.httpclient.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-    
-    
-    
+        
 }
 
