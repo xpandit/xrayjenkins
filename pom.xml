@@ -12,7 +12,7 @@
 	
 	<groupId>com.xpandit.plugins</groupId>
 	<artifactId>xray-for-jira-connector</artifactId>
-	<version>1.0.0</version>
+	<version>1.1.0</version>
 	<packaging>hpi</packaging>
 
 	<properties>
