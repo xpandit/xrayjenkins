@@ -1,19 +1,19 @@
-/*
- * xray-jenkins Project
- *
+/**
+ * XP.RAVEN Project
+ * <p>
  * Copyright (C) 2016 Xpand IT.
- *
+ * <p>
  * This software is proprietary.
  */
 package com.xpandit.plugins.xrayjenkins.task;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.StaplerRequest;
 import com.google.gson.Gson;
@@ -124,17 +124,18 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep {
         return gson.toJson(formats);	
     }
     
-	public File getReportFile(FilePath workspace, String filePath,TaskListener listener) throws IOException{
-		File file = getFile(workspace,filePath,listener);
+	private FilePath getReportFile(FilePath workspace, String filePath,TaskListener listener) throws IOException, InterruptedException, XrayJenkinsGenericException {
+		FilePath file = getFile(workspace,filePath,listener);
+
 		if(file.isDirectory() || !file.exists()){
-            throw new IOException("File path is a directory or the file doesn't exist");
+            throw new XrayJenkinsGenericException("File path is a directory or the file doesn't exist");
         }
 		return file;
 	}
 	
-	public File getFile(FilePath workspace, String filePath,TaskListener listener) throws IOException{
-		   File f = new File(workspace.getRemote(), filePath);
-		   listener.getLogger().println("File: "+f.getAbsolutePath());
+	private FilePath getFile(FilePath workspace, String filePath, TaskListener listener) throws IOException{
+		   FilePath f = new FilePath(workspace, filePath);
+		   listener.getLogger().println("File: "+f.getRemote());
 		   return f;
 	}
 	
@@ -190,7 +191,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep {
             
             if(StringUtils.isNotBlank(importFilePath)){
             	String resolved = this.expand(env,importFilePath);
-            	Content results = new com.xpandit.xray.model.FilePath(getReportFile(workspace,resolved,listener).getAbsolutePath(),
+            	Content results = new com.xpandit.xray.model.FilePath(getReportFile(workspace,resolved,listener).getRemote(),
             														endpoint.getResultsMediaType());
             	dataParams.put(com.xpandit.xray.model.DataParameter.FILEPATH, results);
             }
@@ -198,7 +199,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep {
             	String resolved = this.expand(env,importInfo);
             	String inputInfoSwitcher = dynamicFields.get("inputInfoSwitcher");
 	            Content info = inputInfoSwitcher.equals("filePath") ? 
-	            		new com.xpandit.xray.model.FilePath(getFile(workspace,resolved,listener).getAbsolutePath(),endpoint.getInfoFieldMediaType()) :
+	            		new com.xpandit.xray.model.FilePath(getFile(workspace,resolved,listener).getRemote(),endpoint.getInfoFieldMediaType()) :
 	            		new com.xpandit.xray.model.StringContent(resolved, endpoint.getInfoFieldMediaType());
     		    dataParams.put(com.xpandit.xray.model.DataParameter.INFO, info);
             }

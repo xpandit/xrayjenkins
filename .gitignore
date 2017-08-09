@@ -26,3 +26,6 @@ work/
 .projects
 debugJenkins.bat
 launchJenkins.bat
+
+.idea
+xray-for-jira-connector.iml
