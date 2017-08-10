@@ -94,28 +94,30 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
             this.unzipFeatures(listener, workspace, filePath, file);
             listener.getLogger().println("Sucessfully exported the Cucumber features");
         }catch (XrayClientCoreGenericException e) {
-        	e.printStackTrace();
-        	listener.getLogger().println("Task failed");
-        	listener.error(e.getMessage());
-        	throw new AbortException(e.getMessage());
+            e.printStackTrace();
+            throw new AbortException(e.getMessage());
 		}catch (IOException e) {
             e.printStackTrace();
-            listener.getLogger().println("Task failed");
             listener.error(e.getMessage());
             throw new IOException(e);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            listener.error(e.getMessage());
+            throw new AbortException(e.getMessage());
         }
     }
     
-    private void unzipFeatures(TaskListener listener, FilePath workspace, String filePath, InputStream zip) throws IOException{
+    private void unzipFeatures(TaskListener listener, FilePath workspace, String filePath, InputStream zip) throws IOException, InterruptedException {
 
         if (filePath == null || StringUtils.isEmpty(filePath)) {
             filePath = "features/";
         }
 
-        File outputFile = new File(workspace.getRemote(), filePath);
+        FilePath outputFile = new FilePath(workspace, filePath);
+        listener.getLogger().println("###################### Unzipping file ####################");
         outputFile.mkdirs();
-
-        FileOutputStream fos = new FileOutputStream(new File(outputFile, "features.zip"));
+        outputFile.unzipFrom(zip);
+        /*FileOutputStream fos = new FileOutputStream(new File(outputFile, "features.zip"));
 
         byte[] buffer = new byte[4096];
         int length;
@@ -150,7 +152,7 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
         }
 
         zis.closeEntry();
-        zis.close();
+        zis.close();*/
         listener.getLogger().println("###################### Unzipped file #####################");
    
     }

@@ -52,7 +52,7 @@ import net.sf.json.JSONObject;
  * @version $Revision: 666 $
  *
  */
-public class XrayImportBuilder extends Notifier implements SimpleBuildStep {
+public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
     
     private XrayInstance xrayInstance;
     private Endpoint endpoint;
@@ -124,8 +124,8 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep {
         return gson.toJson(formats);	
     }
     
-	private FilePath getReportFile(FilePath workspace, String filePath,TaskListener listener) throws IOException, InterruptedException, XrayJenkinsGenericException {
-		FilePath file = getFile(workspace,filePath,listener);
+	private FilePath getFile(FilePath workspace, String filePath,TaskListener listener) throws IOException, InterruptedException, XrayJenkinsGenericException {
+		FilePath file = readFile(workspace,filePath,listener);
 
 		if(file.isDirectory() || !file.exists()){
             throw new XrayJenkinsGenericException("File path is a directory or the file doesn't exist");
@@ -133,7 +133,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep {
 		return file;
 	}
 	
-	private FilePath getFile(FilePath workspace, String filePath, TaskListener listener) throws IOException{
+	private FilePath readFile(FilePath workspace, String filePath, TaskListener listener) throws IOException{
 		   FilePath f = new FilePath(workspace, filePath);
 		   listener.getLogger().println("File: "+f.getRemote());
 		   return f;
@@ -164,7 +164,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep {
         try {
         	EnvVars env = build.getEnvironment(listener);
         	
-	    	Map<com.xpandit.xray.model.QueryParameter,String> queryParams = new HashMap<com.xpandit.xray.model.QueryParameter,String>();
+			Map<com.xpandit.xray.model.QueryParameter,String> queryParams = new HashMap<com.xpandit.xray.model.QueryParameter,String>();
 	          
 	        String projectKey = dynamicFields.get(com.xpandit.xray.model.QueryParameter.PROJECT_KEY.getKey());
 	        queryParams.put(com.xpandit.xray.model.QueryParameter.PROJECT_KEY, this.expand(env,projectKey));
@@ -187,44 +187,49 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep {
         	String importFilePath = dynamicFields.get(com.xpandit.xray.model.DataParameter.FILEPATH.getKey());
         	String importInfo = dynamicFields.get(com.xpandit.xray.model.DataParameter.INFO.getKey());
             
-            Map<com.xpandit.xray.model.DataParameter,Content> dataParams = new HashMap<com.xpandit.xray.model.DataParameter,Content>();
+            Map<com.xpandit.xray.model.DataParameter,Content> dataParams = new HashMap<>();
             
             if(StringUtils.isNotBlank(importFilePath)){
             	String resolved = this.expand(env,importFilePath);
-            	Content results = new com.xpandit.xray.model.FilePath(getReportFile(workspace,resolved,listener).getRemote(),
-            														endpoint.getResultsMediaType());
+				FilePath resultsFile = getFile(workspace,resolved,listener);
+
+				Content results = new com.xpandit.xray.model.FileStream(resultsFile.getName(),resultsFile.read(),
+            																endpoint.getResultsMediaType());
+
             	dataParams.put(com.xpandit.xray.model.DataParameter.FILEPATH, results);
             }
             if(StringUtils.isNotBlank(importInfo)){
             	String resolved = this.expand(env,importInfo);
             	String inputInfoSwitcher = dynamicFields.get("inputInfoSwitcher");
-	            Content info = inputInfoSwitcher.equals("filePath") ? 
-	            		new com.xpandit.xray.model.FilePath(getFile(workspace,resolved,listener).getRemote(),endpoint.getInfoFieldMediaType()) :
-	            		new com.xpandit.xray.model.StringContent(resolved, endpoint.getInfoFieldMediaType());
+
+				Content info;
+				if(inputInfoSwitcher.equals("filePath")){
+					FilePath infoFile = getFile(workspace,resolved,listener);
+					info = new com.xpandit.xray.model.FileStream(infoFile.getName(),infoFile.read(),endpoint.getInfoFieldMediaType());
+				}else{
+					info = new com.xpandit.xray.model.StringContent(resolved, endpoint.getInfoFieldMediaType());
+				}
+
     		    dataParams.put(com.xpandit.xray.model.DataParameter.INFO, info);
             }
-       
-            client.uploadResults(endpoint, dataParams, queryParams);
+
+			client.uploadResults(endpoint, dataParams, queryParams);
+
             listener.getLogger().println("Sucessfully imported "+endpoint.getName()+" results");
             
-        } catch(XrayClientCoreGenericException e){
+        }catch(XrayClientCoreGenericException e){
         	e.printStackTrace();
-        	listener.getLogger().println("Task failed");
-        	listener.error(e.getMessage());
         	throw new AbortException(e.getMessage());
-        }catch (InterruptedException e) {
-			e.printStackTrace();
-			listener.getLogger().println("Task failed");
-			listener.error(e.getMessage());
-			throw new InterruptedException(e.getMessage());
-		}catch (IOException e) {
+        }catch(XrayJenkinsGenericException e){
             e.printStackTrace();
-            listener.getLogger().println("Task failed");
+            throw new AbortException(e.getMessage());
+        }catch (IOException e) {
+            e.printStackTrace();
             listener.error(e.getMessage());
             throw new IOException(e);
         }
-    }
-	
+	}
+
     private void validate(Map<String,String> dynamicFields) throws FormValidation{
       	 
       	 for(com.xpandit.xray.model.DataParameter dp : com.xpandit.xray.model.DataParameter.values()){ // TODO useless
@@ -267,10 +272,8 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep {
         
         @Override
         public boolean configure(StaplerRequest req, JSONObject formData) throws FormException {
-            
             save();
             return true;
-            
         }
         
         @Override
@@ -366,8 +369,5 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep {
 		}
         
     }
-
-
-
 
 }
