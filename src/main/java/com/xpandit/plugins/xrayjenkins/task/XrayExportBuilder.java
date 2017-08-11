@@ -82,13 +82,13 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
         try{
 
             if (StringUtils.isNotBlank(issues)) 
-                listener.getLogger().println(issues);
+                listener.getLogger().println("Issues: "+issues);
 
             if (StringUtils.isNotBlank(filter)) 
-                listener.getLogger().println(filter);
+                listener.getLogger().println("Filter: "+filter);
 
             if (StringUtils.isNotBlank(filePath)) 
-                listener.getLogger().println(filePath);
+                listener.getLogger().println("Will save the feature files in: "+filePath);
            
             InputStream file = client.downloadFeatures(issues,filter,"true");
             this.unzipFeatures(listener, workspace, filePath, file);
@@ -109,7 +109,7 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
     
     private void unzipFeatures(TaskListener listener, FilePath workspace, String filePath, InputStream zip) throws IOException, InterruptedException {
 
-        if (filePath == null || StringUtils.isEmpty(filePath)) {
+        if (StringUtils.isBlank(filePath)) {
             filePath = "features/";
         }
 

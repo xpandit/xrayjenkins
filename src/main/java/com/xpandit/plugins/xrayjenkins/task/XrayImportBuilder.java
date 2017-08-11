@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
+import com.xpandit.xray.util.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.StaplerRequest;
 import com.google.gson.Gson;
@@ -125,7 +126,15 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
     }
     
 	private FilePath getFile(FilePath workspace, String filePath,TaskListener listener) throws IOException, InterruptedException, XrayJenkinsGenericException {
-		FilePath file = readFile(workspace,filePath,listener);
+		if(workspace == null){
+			throw new XrayJenkinsGenericException("No workspace in this current node");
+		}
+
+		if(StringUtils.isBlank(filePath)){
+			throw new XrayJenkinsGenericException("No file path was specified");
+		}
+
+		FilePath file = readFile(workspace,filePath.trim(),listener);
 
 		if(file.isDirectory() || !file.exists()){
             throw new XrayJenkinsGenericException("File path is a directory or the file doesn't exist");
@@ -144,7 +153,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 			String expanded = environment.expand(variable);
 			return expanded.equals(variable) ? variable : expanded;
 		}
-		return null;
+		return "";
 	}
 
 	@Override
@@ -184,8 +193,8 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 	        String fixVersion = dynamicFields.get(com.xpandit.xray.model.QueryParameter.FIX_VERSION.getKey());
 	        queryParams.put(com.xpandit.xray.model.QueryParameter.FIX_VERSION, this.expand(env,fixVersion));
         	
-        	String importFilePath = dynamicFields.get(com.xpandit.xray.model.DataParameter.FILEPATH.getKey()).trim();
-        	String importInfo = dynamicFields.get(com.xpandit.xray.model.DataParameter.INFO.getKey()).trim();
+        	String importFilePath = dynamicFields.get(com.xpandit.xray.model.DataParameter.FILEPATH.getKey());
+        	String importInfo = dynamicFields.get(com.xpandit.xray.model.DataParameter.INFO.getKey());
             
             Map<com.xpandit.xray.model.DataParameter,Content> dataParams = new HashMap<>();
             
@@ -232,7 +241,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 
     private void validate(Map<String,String> dynamicFields) throws FormValidation{
       	 
-      	 for(com.xpandit.xray.model.DataParameter dp : com.xpandit.xray.model.DataParameter.values()){ // TODO useless
+      	 for(com.xpandit.xray.model.DataParameter dp : com.xpandit.xray.model.DataParameter.values()){
       		 if(dynamicFields.containsKey(dp.getKey()) && dp.isRequired()){
       			 String value = dynamicFields.get(dp.getKey());
       			 if(StringUtils.isBlank(value))
