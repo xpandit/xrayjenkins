@@ -1,8 +1,8 @@
-/*
- * xray-jenkins Project
- *
+/**
+ * XP.RAVEN Project
+ * <p>
  * Copyright (C) 2016 Xpand IT.
- *
+ * <p>
  * This software is proprietary.
  */
 package com.xpandit.plugins.xrayjenkins.task;
@@ -82,77 +82,42 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
         try{
 
             if (StringUtils.isNotBlank(issues)) 
-                listener.getLogger().println(issues);
+                listener.getLogger().println("Issues: "+issues);
 
             if (StringUtils.isNotBlank(filter)) 
-                listener.getLogger().println(filter);
+                listener.getLogger().println("Filter: "+filter);
 
             if (StringUtils.isNotBlank(filePath)) 
-                listener.getLogger().println(filePath);
+                listener.getLogger().println("Will save the feature files in: "+filePath);
            
             InputStream file = client.downloadFeatures(issues,filter,"true");
             this.unzipFeatures(listener, workspace, filePath, file);
             listener.getLogger().println("Sucessfully exported the Cucumber features");
         }catch (XrayClientCoreGenericException e) {
-        	e.printStackTrace();
-        	listener.getLogger().println("Task failed");
-        	listener.error(e.getMessage());
-        	throw new AbortException(e.getMessage());
+            e.printStackTrace();
+            throw new AbortException(e.getMessage());
 		}catch (IOException e) {
             e.printStackTrace();
-            listener.getLogger().println("Task failed");
             listener.error(e.getMessage());
             throw new IOException(e);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            listener.error(e.getMessage());
+            throw new AbortException(e.getMessage());
         }
     }
     
-    private void unzipFeatures(TaskListener listener, FilePath workspace, String filePath, InputStream zip) throws IOException{
+    private void unzipFeatures(TaskListener listener, FilePath workspace, String filePath, InputStream zip) throws IOException, InterruptedException {
 
-        if (filePath == null || StringUtils.isEmpty(filePath)) {
+        if (StringUtils.isBlank(filePath)) {
             filePath = "features/";
         }
 
-        File outputFile = new File(workspace.getRemote(), filePath);
-        outputFile.mkdirs();
-
-        FileOutputStream fos = new FileOutputStream(new File(outputFile, "features.zip"));
-
-        byte[] buffer = new byte[4096];
-        int length;
-        while ((length = zip.read(buffer)) > 0) {
-            fos.write(buffer, 0, length);
-        }
-
+        FilePath outputFile = new FilePath(workspace, filePath.trim());
         listener.getLogger().println("###################### Unzipping file ####################");
-
-        ZipInputStream zis = new ZipInputStream(new FileInputStream(workspace.getRemote()+"/"+filePath+"/features.zip"));
-        //get the zipped file list entry
-        ZipEntry ze = zis.getNextEntry();
-
-        while(ze!=null){
-
-            String fileName = ze.getName();
-            File newFile = new File(workspace.getRemote(), filePath+"/"+fileName);
-
-            System.out.println("file unzip : "+ newFile.getAbsoluteFile());
-
-            new File(newFile.getParent()).mkdirs();
-
-            fos = new FileOutputStream(newFile);             
-
-            int len;
-            while ((len = zis.read(buffer)) > 0) {
-                fos.write(buffer, 0, len);
-            }
-
-            fos.close();   
-            ze = zis.getNextEntry();
-        }
-
-        zis.closeEntry();
-        zis.close();
+        outputFile.mkdirs();
+        outputFile.unzipFrom(zip);
         listener.getLogger().println("###################### Unzipped file #####################");
-   
     }
 
     

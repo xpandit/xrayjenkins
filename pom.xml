@@ -12,7 +12,7 @@
 	
 	<groupId>com.xpandit.plugins</groupId>
 	<artifactId>xray-for-jira-connector</artifactId>
-	<version>1.1.0</version>
+	<version>1.2.0</version>
 	<packaging>hpi</packaging>
 
 	<properties>
@@ -27,6 +27,7 @@
 		<!-- Other properties you may want to use: ~ hpi-plugin.version: The HPI 
 			Maven Plugin version used by the plugin.. ~ stapler-plugin.version: The Stapler 
 			Maven plugin version required by the plugin. -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
 	<name>Xray for JIRA Jenkins Plugin</name>
@@ -55,7 +56,7 @@
 		<dependency>
 			<groupId>com.xpandit.xray</groupId>
 			<artifactId>client-core</artifactId>			
-    		<version>1.1.0</version>	
+    		<version>1.2.0</version>
 		</dependency>
 		
 		<dependency>
@@ -119,5 +120,6 @@
 		  <url>https://github.com/jenkinsci/MYPLUGINNAME</url>
 		</scm>
 	-->
+
 
 </project>
