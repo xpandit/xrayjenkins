@@ -113,46 +113,10 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
             filePath = "features/";
         }
 
-        FilePath outputFile = new FilePath(workspace, filePath);
+        FilePath outputFile = new FilePath(workspace, filePath.trim());
         listener.getLogger().println("###################### Unzipping file ####################");
         outputFile.mkdirs();
         outputFile.unzipFrom(zip);
-        /*FileOutputStream fos = new FileOutputStream(new File(outputFile, "features.zip"));
-
-        byte[] buffer = new byte[4096];
-        int length;
-        while ((length = zip.read(buffer)) > 0) {
-            fos.write(buffer, 0, length);
-        }
-
-        listener.getLogger().println("###################### Unzipping file ####################");
-
-        ZipInputStream zis = new ZipInputStream(new FileInputStream(workspace.getRemote()+"/"+filePath+"/features.zip"));
-        //get the zipped file list entry
-        ZipEntry ze = zis.getNextEntry();
-
-        while(ze!=null){
-
-            String fileName = ze.getName();
-            File newFile = new File(workspace.getRemote(), filePath+"/"+fileName);
-
-            System.out.println("file unzip : "+ newFile.getAbsoluteFile());
-
-            new File(newFile.getParent()).mkdirs();
-
-            fos = new FileOutputStream(newFile);             
-
-            int len;
-            while ((len = zis.read(buffer)) > 0) {
-                fos.write(buffer, 0, len);
-            }
-
-            fos.close();   
-            ze = zis.getNextEntry();
-        }
-
-        zis.closeEntry();
-        zis.close();*/
         listener.getLogger().println("###################### Unzipped file #####################");
    
     }

@@ -184,8 +184,8 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 	        String fixVersion = dynamicFields.get(com.xpandit.xray.model.QueryParameter.FIX_VERSION.getKey());
 	        queryParams.put(com.xpandit.xray.model.QueryParameter.FIX_VERSION, this.expand(env,fixVersion));
         	
-        	String importFilePath = dynamicFields.get(com.xpandit.xray.model.DataParameter.FILEPATH.getKey());
-        	String importInfo = dynamicFields.get(com.xpandit.xray.model.DataParameter.INFO.getKey());
+        	String importFilePath = dynamicFields.get(com.xpandit.xray.model.DataParameter.FILEPATH.getKey()).trim();
+        	String importInfo = dynamicFields.get(com.xpandit.xray.model.DataParameter.INFO.getKey()).trim();
             
             Map<com.xpandit.xray.model.DataParameter,Content> dataParams = new HashMap<>();
             
