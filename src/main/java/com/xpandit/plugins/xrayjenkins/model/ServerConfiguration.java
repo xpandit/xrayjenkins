@@ -1,3 +1,10 @@
+/**
+ * XP.RAVEN Project
+ * <p>
+ * Copyright (C) 2016 Xpand IT.
+ * <p>
+ * This software is proprietary.
+ */
 package com.xpandit.plugins.xrayjenkins.model;
 
 import java.io.IOException;
@@ -34,10 +41,10 @@ public class ServerConfiguration extends GlobalConfiguration {
     }
 	
 	public void setServerInstances(List<XrayInstance> serverInstances){
-    	this.serverInstances = serverInstances;
+        this.serverInstances = serverInstances;
     }
-	
-	public List<XrayInstance> getServerInstances(){
+
+    public List<XrayInstance> getServerInstances(){
 		return this.serverInstances;
 	}
 	

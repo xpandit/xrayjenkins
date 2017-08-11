@@ -1,19 +1,21 @@
-/*
- * xray-jenkins Project
- *
+/**
+ * XP.RAVEN Project
+ * <p>
  * Copyright (C) 2016 Xpand IT.
- *
+ * <p>
  * This software is proprietary.
  */
 package com.xpandit.plugins.xrayjenkins.task;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
+import com.xpandit.xray.util.StringUtil;
+import hudson.util.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.StaplerRequest;
 import com.google.gson.Gson;
@@ -52,7 +54,7 @@ import net.sf.json.JSONObject;
  * @version $Revision: 666 $
  *
  */
-public class XrayImportBuilder extends Notifier implements SimpleBuildStep {
+public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
     
     private XrayInstance xrayInstance;
     private Endpoint endpoint;
@@ -124,17 +126,26 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep {
         return gson.toJson(formats);	
     }
     
-	public File getReportFile(FilePath workspace, String filePath,TaskListener listener) throws IOException{
-		File file = getFile(workspace,filePath,listener);
+	private FilePath getFile(FilePath workspace, String filePath,TaskListener listener) throws IOException, InterruptedException{
+		if(workspace == null){
+			throw new XrayJenkinsGenericException("No workspace in this current node");
+		}
+
+		if(StringUtils.isBlank(filePath)){
+			throw new XrayJenkinsGenericException("No file path was specified");
+		}
+
+		FilePath file = readFile(workspace,filePath.trim(),listener);
+
 		if(file.isDirectory() || !file.exists()){
-            throw new IOException("File path is a directory or the file doesn't exist");
+            throw new XrayJenkinsGenericException("File path is a directory or the file doesn't exist");
         }
 		return file;
 	}
 	
-	public File getFile(FilePath workspace, String filePath,TaskListener listener) throws IOException{
-		   File f = new File(workspace.getRemote(), filePath);
-		   listener.getLogger().println("File: "+f.getAbsolutePath());
+	private FilePath readFile(FilePath workspace, String filePath, TaskListener listener) throws IOException{
+		   FilePath f = new FilePath(workspace, filePath);
+		   listener.getLogger().println("File: "+f.getRemote());
 		   return f;
 	}
 	
@@ -143,7 +154,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep {
 			String expanded = environment.expand(variable);
 			return expanded.equals(variable) ? variable : expanded;
 		}
-		return null;
+		return "";
 	}
 
 	@Override
@@ -163,7 +174,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep {
         try {
         	EnvVars env = build.getEnvironment(listener);
         	
-	    	Map<com.xpandit.xray.model.QueryParameter,String> queryParams = new HashMap<com.xpandit.xray.model.QueryParameter,String>();
+			Map<com.xpandit.xray.model.QueryParameter,String> queryParams = new HashMap<com.xpandit.xray.model.QueryParameter,String>();
 	          
 	        String projectKey = dynamicFields.get(com.xpandit.xray.model.QueryParameter.PROJECT_KEY.getKey());
 	        queryParams.put(com.xpandit.xray.model.QueryParameter.PROJECT_KEY, this.expand(env,projectKey));
@@ -186,47 +197,54 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep {
         	String importFilePath = dynamicFields.get(com.xpandit.xray.model.DataParameter.FILEPATH.getKey());
         	String importInfo = dynamicFields.get(com.xpandit.xray.model.DataParameter.INFO.getKey());
             
-            Map<com.xpandit.xray.model.DataParameter,Content> dataParams = new HashMap<com.xpandit.xray.model.DataParameter,Content>();
+            Map<com.xpandit.xray.model.DataParameter,Content> dataParams = new HashMap<>();
             
             if(StringUtils.isNotBlank(importFilePath)){
             	String resolved = this.expand(env,importFilePath);
-            	Content results = new com.xpandit.xray.model.FilePath(getReportFile(workspace,resolved,listener).getAbsolutePath(),
-            														endpoint.getResultsMediaType());
+				FilePath resultsFile = getFile(workspace,resolved,listener);
+
+				Content results = new com.xpandit.xray.model.FileStream(resultsFile.getName(),resultsFile.read(),
+            																endpoint.getResultsMediaType());
+
             	dataParams.put(com.xpandit.xray.model.DataParameter.FILEPATH, results);
             }
             if(StringUtils.isNotBlank(importInfo)){
             	String resolved = this.expand(env,importInfo);
             	String inputInfoSwitcher = dynamicFields.get("inputInfoSwitcher");
-	            Content info = inputInfoSwitcher.equals("filePath") ? 
-	            		new com.xpandit.xray.model.FilePath(getFile(workspace,resolved,listener).getAbsolutePath(),endpoint.getInfoFieldMediaType()) :
-	            		new com.xpandit.xray.model.StringContent(resolved, endpoint.getInfoFieldMediaType());
+
+				Content info;
+				if(inputInfoSwitcher.equals("filePath")){
+					FilePath infoFile = getFile(workspace,resolved,listener);
+					info = new com.xpandit.xray.model.FileStream(infoFile.getName(),infoFile.read(),endpoint.getInfoFieldMediaType());
+				}else{
+					info = new com.xpandit.xray.model.StringContent(resolved, endpoint.getInfoFieldMediaType());
+				}
+
     		    dataParams.put(com.xpandit.xray.model.DataParameter.INFO, info);
             }
-       
-            client.uploadResults(endpoint, dataParams, queryParams);
+
+			client.uploadResults(endpoint, dataParams, queryParams);
+
             listener.getLogger().println("Sucessfully imported "+endpoint.getName()+" results");
             
-        } catch(XrayClientCoreGenericException e){
+        }catch(XrayClientCoreGenericException e){
         	e.printStackTrace();
-        	listener.getLogger().println("Task failed");
-        	listener.error(e.getMessage());
         	throw new AbortException(e.getMessage());
-        }catch (InterruptedException e) {
-			e.printStackTrace();
-			listener.getLogger().println("Task failed");
-			listener.error(e.getMessage());
-			throw new InterruptedException(e.getMessage());
-		}catch (IOException e) {
+        }catch(XrayJenkinsGenericException e){
             e.printStackTrace();
-            listener.getLogger().println("Task failed");
+            throw new AbortException(e.getMessage());
+        }catch (IOException e) {
+            e.printStackTrace();
             listener.error(e.getMessage());
             throw new IOException(e);
-        }
-    }
-	
+        }finally{
+			client.shutdown();
+		}
+	}
+
     private void validate(Map<String,String> dynamicFields) throws FormValidation{
       	 
-      	 for(com.xpandit.xray.model.DataParameter dp : com.xpandit.xray.model.DataParameter.values()){ // TODO useless
+      	 for(com.xpandit.xray.model.DataParameter dp : com.xpandit.xray.model.DataParameter.values()){
       		 if(dynamicFields.containsKey(dp.getKey()) && dp.isRequired()){
       			 String value = dynamicFields.get(dp.getKey());
       			 if(StringUtils.isBlank(value))
@@ -266,10 +284,8 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep {
         
         @Override
         public boolean configure(StaplerRequest req, JSONObject formData) throws FormException {
-            
             save();
             return true;
-            
         }
         
         @Override
@@ -365,8 +381,5 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep {
 		}
         
     }
-
-
-
 
 }
