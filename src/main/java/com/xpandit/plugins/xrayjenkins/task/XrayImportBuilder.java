@@ -15,6 +15,7 @@ import java.util.Set;
 
 import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
 import com.xpandit.xray.util.StringUtil;
+import hudson.util.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.StaplerRequest;
 import com.google.gson.Gson;
@@ -125,7 +126,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         return gson.toJson(formats);	
     }
     
-	private FilePath getFile(FilePath workspace, String filePath,TaskListener listener) throws IOException, InterruptedException, XrayJenkinsGenericException {
+	private FilePath getFile(FilePath workspace, String filePath,TaskListener listener) throws IOException, InterruptedException{
 		if(workspace == null){
 			throw new XrayJenkinsGenericException("No workspace in this current node");
 		}
@@ -236,7 +237,9 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
             e.printStackTrace();
             listener.error(e.getMessage());
             throw new IOException(e);
-        }
+        }finally{
+			client.shutdown();
+		}
 	}
 
     private void validate(Map<String,String> dynamicFields) throws FormValidation{

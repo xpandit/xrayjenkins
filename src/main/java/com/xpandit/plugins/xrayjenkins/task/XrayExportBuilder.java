@@ -118,7 +118,6 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
         outputFile.mkdirs();
         outputFile.unzipFrom(zip);
         listener.getLogger().println("###################### Unzipped file #####################");
-   
     }
 
     
