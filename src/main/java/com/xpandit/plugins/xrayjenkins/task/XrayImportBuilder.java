@@ -15,8 +15,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
-import com.xpandit.xray.util.StringUtil;
-import hudson.util.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.StaplerRequest;
 import com.google.gson.Gson;

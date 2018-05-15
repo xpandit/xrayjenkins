@@ -7,6 +7,7 @@
  */
 package com.xpandit.plugins.xrayjenkins.task;
 
+import hudson.maven.MavenModuleSet;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -35,6 +36,8 @@ import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import jenkins.tasks.SimpleBuildStep;
 import net.sf.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class description.
@@ -52,6 +55,8 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
     private String issues;
     private String filter;
     private String filePath;
+
+    private static final Logger LOG = LoggerFactory.getLogger(XrayExportBuilder.class);
 
     public XrayExportBuilder(XrayInstance xrayInstance,  Map<String, String> fields) {
     	this.xrayInstance = xrayInstance;
@@ -227,7 +232,9 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
 		
 		@Override
         public boolean isApplicable(Class<? extends AbstractProject> jobType) {
-            return FreeStyleProject.class.isAssignableFrom(jobType);
+            LOG.info("applying XrayExportBuilder to following jobType class: {}", jobType.getSimpleName());
+            return FreeStyleProject.class.isAssignableFrom(jobType)
+                    || MavenModuleSet.class.isAssignableFrom(jobType);
         }
 
         @Override
