@@ -233,6 +233,7 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
 		@Override
         public boolean isApplicable(Class<? extends AbstractProject> jobType) {
             LOG.info("applying XrayExportBuilder to following jobType class: {}", jobType.getSimpleName());
+            //MavenModuleSet is the jobtype used by Maven IntegrationPlugin
             return FreeStyleProject.class.isAssignableFrom(jobType)
                     || MavenModuleSet.class.isAssignableFrom(jobType);
         }

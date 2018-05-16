@@ -335,6 +335,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		@Override
 		public boolean isApplicable(Class<? extends AbstractProject> jobType) {
 			LOG.info("applying XrayImportBuilder to following jobType class: {}", jobType.getSimpleName());
+			//MavenModuleSet is the jobtype used by Maven IntegrationPlugin
 			return FreeStyleProject.class.isAssignableFrom(jobType)
 					|| MavenModuleSet.class.isAssignableFrom(jobType);
 		}
