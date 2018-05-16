@@ -7,6 +7,7 @@
  */
 package com.xpandit.plugins.xrayjenkins.task;
 
+import hudson.matrix.MatrixProject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -227,7 +228,9 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
 		
 		@Override
         public boolean isApplicable(Class<? extends AbstractProject> jobType) {
-            return FreeStyleProject.class.isAssignableFrom(jobType);
+            //MatrixProject is the jobtype used by Multi Configuration Project
+            return FreeStyleProject.class.isAssignableFrom(jobType)
+                    || MatrixProject.class.isAssignableFrom(jobType);
         }
 
         @Override

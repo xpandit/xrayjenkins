@@ -7,6 +7,7 @@
  */
 package com.xpandit.plugins.xrayjenkins.task;
 
+import hudson.matrix.MatrixProject;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -14,8 +15,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
-import com.xpandit.xray.util.StringUtil;
-import hudson.util.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.StaplerRequest;
 import com.google.gson.Gson;
@@ -332,7 +331,9 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         
         @Override
         public boolean isApplicable(Class<? extends AbstractProject> jobType) {
-            return FreeStyleProject.class.isAssignableFrom(jobType);
+        	//MatrixProject is the jobtype used by Multi Configuration Project
+            return FreeStyleProject.class.isAssignableFrom(jobType)
+					|| MatrixProject.class.isAssignableFrom(jobType);
         }
 
         @Override
