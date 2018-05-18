@@ -472,14 +472,6 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
     public static class Descriptor extends BuildStepDescriptor<Publisher> {
         private static long BUILD_STEP_SEED = 0;
         private long buildID;
-
-		private String projectKey;
-		private String testEnvironments;
-		private String testPlanKey;
-		private String fixVersion;
-		private String importFilePath;
-		private String testExecKey;
-		private String revision;
                 
         public Descriptor() {
         	super(XrayImportBuilder.class);
