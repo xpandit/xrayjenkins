@@ -7,6 +7,9 @@
  */
 package com.xpandit.plugins.xrayjenkins.task;
 
+
+import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
+import org.apache.commons.lang.StringUtils;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -14,9 +17,8 @@ import java.util.Map;
 import java.util.Set;
 
 import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
-import com.xpandit.xray.util.StringUtil;
-import hudson.util.IOUtils;
-import org.apache.commons.lang3.StringUtils;
+
+import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -46,6 +48,8 @@ import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import jenkins.tasks.SimpleBuildStep;
 import net.sf.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class description.
@@ -55,6 +59,9 @@ import net.sf.json.JSONObject;
  *
  */
 public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
+
+	private static final Logger LOG = LoggerFactory.getLogger(XrayImportBuilder.class);
+	private static Gson gson = new GsonBuilder().create();
     
     private XrayInstance xrayInstance;
     private Endpoint endpoint;
@@ -63,11 +70,22 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
     private String formatSuffix; //value of format select
     private String serverInstance;//Configuration ID of the JIRA instance
     private String inputInfoSwitcher;//value of the input type switcher
-    
-    
-    private static Gson gson = new GsonBuilder().create();
-    
-    public XrayImportBuilder(XrayInstance xrayInstance, Endpoint endpoint, Map<String, String> dynamicFields) {
+
+	/**
+	 * Variables used for DataBoundConstructor (Pipeline usage)
+	 */
+	private String projectKey;
+	private String testEnvironments;
+	private String testPlanKey;
+	private String fixVersion;
+	private String importFilePath;
+	private String testExecKey;
+	private String revision;
+
+	@Deprecated
+    public XrayImportBuilder(XrayInstance xrayInstance,
+							 Endpoint endpoint,
+							 Map<String, String> dynamicFields) {
     	this.xrayInstance = xrayInstance;
     	this.endpoint = endpoint;
     	this.dynamicFields = dynamicFields;
@@ -76,8 +94,170 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
     	this.serverInstance = xrayInstance.getConfigID();
     	this.inputInfoSwitcher = dynamicFields.get("inputInfoSwitcher");
 	}
-	
-    
+
+	/**
+	 * Constructor used in pipelines projects
+	 * "Anyway code run from Pipeline should take any configuration values as literal strings
+	 * and make no attempt to perform variable substitution"
+	 * @see <a href="https://jenkins.io/doc/developer/plugin-development/pipeline-integration/">Writing Pipeline-Compatible Plugins </a>
+	 *
+	 * @param serverInstance the server configuration id
+	 * @param endpoint the endpoint to be used
+	 * @param projectKey the project key
+	 * @param testEnvironments the test environments
+	 * @param testPlanKey the test plan key
+	 * @param fixVersion the fix version
+	 * @param importFilePath the path of the result file to be imported
+	 * @param testExecKey the test execution key
+	 * @param revision the revision
+	 */
+	@DataBoundConstructor
+	public XrayImportBuilder(String serverInstance,
+							 String endpoint,
+							 String projectKey,
+							 String testEnvironments,
+							 String testPlanKey,
+							 String fixVersion,
+							 String importFilePath,
+							 String testExecKey,
+							 String revision){
+    	this.serverInstance = serverInstance;
+    	this.endpoint = endpoint != null ? getEndpointValue(endpoint) : null;
+    	this.xrayInstance = ConfigurationUtils.getConfiguration(serverInstance);
+		this.formatSuffix = this.endpoint != null ? this.endpoint.getSuffix() : null;
+
+		setDynamicFields(projectKey,
+				testEnvironments,
+				testPlanKey,
+				fixVersion,
+				importFilePath,
+				testExecKey,
+				revision);
+
+		this.inputInfoSwitcher = dynamicFields.get("inputInfoSwitcher");
+	}
+
+	private Endpoint getEndpointValue(String endpoint){
+		switch(endpoint){
+			case "xrayjson":
+				return Endpoint.XRAY;
+			case "cucumber":
+				return Endpoint.CUCUMBER;
+			case "cucumbermultipart":
+				return Endpoint.CUCUMBER_MULTIPART;
+			case "behave":
+				return Endpoint.BEHAVE;
+			case "behavemultipart":
+				return Endpoint.BEHAVE_MULTIPART;
+			case "junit":
+				return Endpoint.JUNIT;
+			case "junitmultipart":
+				return Endpoint.JUNIT_MULTIPART;
+			case "nunit":
+				return Endpoint.NUNIT;
+			case "nunitmultipart":
+				return Endpoint.NUNIT_MULTIPART;
+			case "robot":
+				return Endpoint.ROBOT;
+			case "robotmultipart":
+				return Endpoint.ROBOT_MULTIPART;
+			case "bundle":
+				return Endpoint.BUNDLE;
+			default:
+				LOG.error("provided Xray Endpoint is not valid");
+				return null;
+		}
+	}
+
+	private void setDynamicFields(String projectKey,
+								  String testEnvironments,
+								  String testPlanKey,
+								  String fixVersion,
+								  String importFilePath,
+								  String testExecKey,
+								  String revision){
+    	if(dynamicFields == null){
+    		dynamicFields = new HashMap<>();
+		}
+    	if (!StringUtils.isBlank(projectKey)){
+    		dynamicFields.put("projectKey",projectKey);
+		}
+		if (!StringUtils.isBlank(testEnvironments)){
+			dynamicFields.put("testEnvironments",testEnvironments);
+		}
+		if (!StringUtils.isBlank(testPlanKey)){
+			dynamicFields.put("testPlanKey",testPlanKey);
+		}
+		if (!StringUtils.isBlank(fixVersion)){
+			dynamicFields.put("fixVersion",fixVersion);
+		}
+		if (!StringUtils.isBlank(importFilePath)){
+			dynamicFields.put("importFilePath",importFilePath);
+		}
+		if (!StringUtils.isBlank(testExecKey)){
+			dynamicFields.put("testExecKey",testExecKey);
+		}
+		if (!StringUtils.isBlank(projectKey)){
+			dynamicFields.put("revision",revision);
+		}
+	}
+
+	public String getProjectKey() {
+		return projectKey;
+	}
+
+	public void setProjectKey(String projectKey) {
+		this.projectKey = projectKey;
+	}
+
+	public String getTestEnvironments() {
+		return testEnvironments;
+	}
+
+	public void setTestEnvironments(String testEnvironments) {
+		this.testEnvironments = testEnvironments;
+	}
+
+	public String getTestPlanKey() {
+		return testPlanKey;
+	}
+
+	public void setTestPlanKey(String testPlanKey) {
+		this.testPlanKey = testPlanKey;
+	}
+
+	public String getFixVersion() {
+		return fixVersion;
+	}
+
+	public void setFixVersion(String fixVersion) {
+		this.fixVersion = fixVersion;
+	}
+
+	public String getImportFilePath() {
+		return importFilePath;
+	}
+
+	public void setImportFilePath(String importFilePath) {
+		this.importFilePath = importFilePath;
+	}
+
+	public String getTestExecKey() {
+		return testExecKey;
+	}
+
+	public void setTestExecKey(String testExecKey) {
+		this.testExecKey = testExecKey;
+	}
+
+	public String getRevision() {
+		return revision;
+	}
+
+	public void setRevision(String revision) {
+		this.revision = revision;
+	}
+
     public Map<String,String> getDynamicFields(){
     	return dynamicFields;
     }
@@ -158,8 +338,11 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 	}
 
 	@Override
-    public void perform(Run<?,?> build, FilePath workspace, Launcher launcher, TaskListener listener)throws AbortException, InterruptedException, IOException {
-		validate(dynamicFields);
+    public void perform(Run<?,?> build,
+						FilePath workspace,
+						Launcher launcher,
+						TaskListener listener)throws AbortException, InterruptedException, IOException {
+    	validate(dynamicFields);
 		
         listener.getLogger().println("Starting import task...");
         
@@ -243,7 +426,19 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 	}
 
     private void validate(Map<String,String> dynamicFields) throws FormValidation{
-      	 
+
+		if(serverInstance == null){
+			LOG.error("configuration id is null");
+			throw new XrayJenkinsGenericException("configuration id is null");
+		}
+		if(xrayInstance == null){
+			LOG.error("Xray instance is null");
+			throw new XrayJenkinsGenericException("Xray instance is null");
+		}
+		if(endpoint == null){
+			LOG.error("passed endpoint is null or could not be found");
+			throw new XrayJenkinsGenericException("passed endpoint is null or could not be found");
+		}
       	 for(com.xpandit.xray.model.DataParameter dp : com.xpandit.xray.model.DataParameter.values()){
       		 if(dynamicFields.containsKey(dp.getKey()) && dp.isRequired()){
       			 String value = dynamicFields.get(dp.getKey());
@@ -251,7 +446,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
       				throw FormValidation.error("You must configure the field "+dp.getLabel());
       		 }
       	 }
-      	 
+
       	for(com.xpandit.xray.model.QueryParameter qp : com.xpandit.xray.model.QueryParameter.values()){
       		 if(dynamicFields.containsKey(qp.getKey()) && qp.isRequired()){
       			 String value = dynamicFields.get(qp.getKey());
@@ -264,6 +459,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 
       	 if(importFilePath.contains("../"))
       		throw FormValidation.error("You cannot provide file paths for upper directories.");
+
    }
     
 	@Override
@@ -276,6 +472,14 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
     public static class Descriptor extends BuildStepDescriptor<Publisher> {
         private static long BUILD_STEP_SEED = 0;
         private long buildID;
+
+		private String projectKey;
+		private String testEnvironments;
+		private String testPlanKey;
+		private String fixVersion;
+		private String importFilePath;
+		private String testExecKey;
+		private String revision;
                 
         public Descriptor() {
         	super(XrayImportBuilder.class);
@@ -290,11 +494,10 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         
         @Override
 		public XrayImportBuilder newInstance(StaplerRequest req, JSONObject formData){
-
         	Map<String,String> dynamicFields = getDynamicFields(formData.getJSONObject("dynamicFields"));
-			XrayInstance server = getConfiguration(formData.getString("serverInstance"));
+			XrayInstance server = ConfigurationUtils.getConfiguration(formData.getString("serverInstance"));
 			Endpoint endpoint = Endpoint.lookupBySuffix(formData.getString("formatSuffix"));
-			
+
 			return new XrayImportBuilder(server,endpoint,dynamicFields);
 			
         }
@@ -318,7 +521,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         }
         
         
-        private XrayInstance getConfiguration(String configID){
+        /*private XrayInstance getConfiguration(String configID){
         	XrayInstance config =  null;
         	List<XrayInstance> serverInstances =  getServerInstances();
         	for(XrayInstance sc : serverInstances){
@@ -327,11 +530,12 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         		}
         	}
         	return config;
-        }
+        }*/
    
         
         @Override
         public boolean isApplicable(Class<? extends AbstractProject> jobType) {
+        	LOG.info("~~~~~~jobtype is: {}", jobType);
             return FreeStyleProject.class.isAssignableFrom(jobType);
         }
 
