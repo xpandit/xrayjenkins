@@ -71,18 +71,6 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
     private String serverInstance;//Configuration ID of the JIRA instance
     private String inputInfoSwitcher;//value of the input type switcher
 
-	/**
-	 * Variables used for DataBoundConstructor (Pipeline usage)
-	 */
-	private String projectKey;
-	private String testEnvironments;
-	private String testPlanKey;
-	private String fixVersion;
-	private String importFilePath;
-	private String testExecKey;
-	private String revision;
-	private String importInfo;
-
     public XrayImportBuilder(XrayInstance xrayInstance,
 							 Endpoint endpoint,
 							 Map<String, String> dynamicFields) {
@@ -215,70 +203,6 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		if(!StringUtils.isBlank(inputInfoSwitcher)){
     		dynamicFields.put("inputInfoSwitcher", inputInfoSwitcher);
 		}
-	}
-
-	public String getProjectKey() {
-		return projectKey;
-	}
-
-	public void setProjectKey(String projectKey) {
-		this.projectKey = projectKey;
-	}
-
-	public String getTestEnvironments() {
-		return testEnvironments;
-	}
-
-	public void setTestEnvironments(String testEnvironments) {
-		this.testEnvironments = testEnvironments;
-	}
-
-	public String getTestPlanKey() {
-		return testPlanKey;
-	}
-
-	public void setTestPlanKey(String testPlanKey) {
-		this.testPlanKey = testPlanKey;
-	}
-
-	public String getFixVersion() {
-		return fixVersion;
-	}
-
-	public void setFixVersion(String fixVersion) {
-		this.fixVersion = fixVersion;
-	}
-
-	public String getImportFilePath() {
-		return importFilePath;
-	}
-
-	public void setImportFilePath(String importFilePath) {
-		this.importFilePath = importFilePath;
-	}
-
-	public String getTestExecKey() {
-		return testExecKey;
-	}
-
-	public void setTestExecKey(String testExecKey) {
-		this.testExecKey = testExecKey;
-	}
-
-	public String getRevision() {
-		return revision;
-	}
-
-	public void setRevision(String revision) {
-		this.revision = revision;
-	}
-
-	public String getImportInfo() {
-		return importInfo;
-	}
-
-	public void setImportInfo(String importInfo) {
-		this.importInfo = importInfo;
 	}
 
 	public Map<String,String> getDynamicFields(){
