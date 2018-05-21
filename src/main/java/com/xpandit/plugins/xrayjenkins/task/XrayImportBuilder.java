@@ -110,6 +110,8 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 	 * @param importFilePath the path of the result file to be imported
 	 * @param testExecKey the test execution key
 	 * @param revision the revision
+	 * @param importInfo the importation info file or json content
+	 * @param inputInfoSwitcher filePath or fileContent switcher
 	 */
 	@DataBoundConstructor
 	public XrayImportBuilder(String serverInstance,

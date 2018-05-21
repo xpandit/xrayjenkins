@@ -7,6 +7,7 @@
  */
 package com.xpandit.plugins.xrayjenkins.task;
 
+import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
+import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import com.xpandit.plugins.xrayjenkins.model.ServerConfiguration;
@@ -62,6 +64,38 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
     	this.filePath = fields.get("filePath");
     	this.serverInstance = xrayInstance.getConfigID();
 	}
+
+    @DataBoundConstructor
+	public XrayExportBuilder(String serverInstance,
+                             String filter,
+                             String filePath,
+                             String issues){
+        this.xrayInstance = ConfigurationUtils.getConfiguration(serverInstance);
+        this.fields = new HashMap<>();
+        setFields(filter, filePath, issues);
+        this.issues = fields.get("issues");
+        this.filter = fields.get("filter");
+        this.filePath = fields.get("filePath");
+    }
+
+    private void setFields(String filter,
+                           String filePath,
+                           String issues){
+
+        if(!StringUtils.isBlank(filter)){
+            this.fields.put("filter", filter);
+        }
+        if(!StringUtils.isBlank(filePath)){
+            this.fields.put("filePath", filePath);
+        }
+        if(!StringUtils.isBlank(issues)){
+            this.fields.put("issues", issues);
+        }
+    }
+
+    private void setXrayInstance(String serverInstance){
+        this.xrayInstance = ConfigurationUtils.getConfiguration(serverInstance);
+    }
    
     @Override
     public void perform(Run<?,?> build, FilePath workspace, Launcher launcher, TaskListener listener) throws AbortException, IOException {
@@ -71,6 +105,10 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
         listener.getLogger().println("##########################################################");
         listener.getLogger().println("####   Xray for JIRA is exporting the feature files  ####");
         listener.getLogger().println("##########################################################");
+
+        if(this.xrayInstance == null){
+            listener.getLogger().println("XrayInstance is null. please check the passed configuration ID");
+        }
         
         XrayExporter client = new XrayExporterImpl(xrayInstance.getServerAddress(),xrayInstance.getUsername(),xrayInstance.getPassword());
         
