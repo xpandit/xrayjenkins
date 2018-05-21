@@ -81,8 +81,8 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 	private String importFilePath;
 	private String testExecKey;
 	private String revision;
+	private String importInfo;
 
-	@Deprecated
     public XrayImportBuilder(XrayInstance xrayInstance,
 							 Endpoint endpoint,
 							 Map<String, String> dynamicFields) {
@@ -120,7 +120,9 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 							 String fixVersion,
 							 String importFilePath,
 							 String testExecKey,
-							 String revision){
+							 String revision,
+							 String importInfo,
+							 String inputInfoSwitcher){
     	this.serverInstance = serverInstance;
     	this.endpoint = endpoint != null ? getEndpointValue(endpoint) : null;
     	this.xrayInstance = ConfigurationUtils.getConfiguration(serverInstance);
@@ -132,7 +134,9 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 				fixVersion,
 				importFilePath,
 				testExecKey,
-				revision);
+				revision,
+				importInfo,
+				inputInfoSwitcher);
 
 		this.inputInfoSwitcher = dynamicFields.get("inputInfoSwitcher");
 	}
@@ -175,7 +179,9 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 								  String fixVersion,
 								  String importFilePath,
 								  String testExecKey,
-								  String revision){
+								  String revision,
+								  String importInfo,
+								  String inputInfoSwitcher){
     	if(dynamicFields == null){
     		dynamicFields = new HashMap<>();
 		}
@@ -199,6 +205,12 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		}
 		if (!StringUtils.isBlank(projectKey)){
 			dynamicFields.put("revision",revision);
+		}
+		if(!StringUtils.isBlank(importInfo)){
+    		dynamicFields.put("importInfo", importInfo);
+		}
+		if(!StringUtils.isBlank(inputInfoSwitcher)){
+    		dynamicFields.put("inputInfoSwitcher", inputInfoSwitcher);
 		}
 	}
 
@@ -258,7 +270,15 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		this.revision = revision;
 	}
 
-    public Map<String,String> getDynamicFields(){
+	public String getImportInfo() {
+		return importInfo;
+	}
+
+	public void setImportInfo(String importInfo) {
+		this.importInfo = importInfo;
+	}
+
+	public Map<String,String> getDynamicFields(){
     	return dynamicFields;
     }
     
