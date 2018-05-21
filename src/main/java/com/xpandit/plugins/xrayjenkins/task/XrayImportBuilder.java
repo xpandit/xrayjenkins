@@ -462,6 +462,10 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 			LOG.error("passed endpoint is null or could not be found");
 			throw new XrayJenkinsGenericException("passed endpoint is null or could not be found");
 		}
+		if(dynamicFields.get("importFilePath") == null){
+			LOG.error("importFilePath is null");
+			throw new XrayJenkinsGenericException("importFilePath is null");
+		}
       	 for(com.xpandit.xray.model.DataParameter dp : com.xpandit.xray.model.DataParameter.values()){
       		 if(dynamicFields.containsKey(dp.getKey()) && dp.isRequired()){
       			 String value = dynamicFields.get(dp.getKey());
