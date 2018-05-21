@@ -37,6 +37,8 @@ import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import jenkins.tasks.SimpleBuildStep;
 import net.sf.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class description.
@@ -55,6 +57,8 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
     private String filter;
     private String filePath;
 
+    private static final Logger LOG = LoggerFactory.getLogger(XrayExportBuilder.class);
+
     public XrayExportBuilder(XrayInstance xrayInstance,  Map<String, String> fields) {
     	this.xrayInstance = xrayInstance;
     	this.fields = fields;
@@ -67,7 +71,7 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
 
     /**
      * Constructor used in pipelines projects
-     * 
+     *
      * "Anyway code run from Pipeline should take any configuration values as literal strings
      * and make no attempt to perform variable substitution"
      * @see <a href="https://jenkins.io/doc/developer/plugin-development/pipeline-integration/">Writing Pipeline-Compatible Plugins </a>
@@ -118,7 +122,7 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
         listener.getLogger().println("##########################################################");
 
         if(this.xrayInstance == null){
-            listener.getLogger().println("XrayInstance is null. please check the passed configuration ID");
+            LOG.error("XrayInstance is null. please check the passed configuration ID");
         }
         
         XrayExporter client = new XrayExporterImpl(xrayInstance.getServerAddress(),xrayInstance.getUsername(),xrayInstance.getPassword());
