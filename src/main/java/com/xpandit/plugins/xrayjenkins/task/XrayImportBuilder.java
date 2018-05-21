@@ -97,6 +97,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 
 	/**
 	 * Constructor used in pipelines projects
+     *
 	 * "Anyway code run from Pipeline should take any configuration values as literal strings
 	 * and make no attempt to perform variable substitution"
 	 * @see <a href="https://jenkins.io/doc/developer/plugin-development/pipeline-integration/">Writing Pipeline-Compatible Plugins </a>
@@ -534,22 +535,8 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         	
         }
         
-        
-        /*private XrayInstance getConfiguration(String configID){
-        	XrayInstance config =  null;
-        	List<XrayInstance> serverInstances =  getServerInstances();
-        	for(XrayInstance sc : serverInstances){
-        		if(sc.getConfigID().equals(configID)){
-        			config = sc;break;
-        		}
-        	}
-        	return config;
-        }*/
-   
-        
         @Override
         public boolean isApplicable(Class<? extends AbstractProject> jobType) {
-        	LOG.info("~~~~~~jobtype is: {}", jobType);
             return FreeStyleProject.class.isAssignableFrom(jobType);
         }
 
