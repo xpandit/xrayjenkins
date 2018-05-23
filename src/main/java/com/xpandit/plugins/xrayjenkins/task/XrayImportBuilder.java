@@ -7,6 +7,7 @@
  */
 package com.xpandit.plugins.xrayjenkins.task;
 
+import com.xpandit.plugins.xrayjenkins.Utils.FormUtils;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -357,16 +358,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         }
         
         public ListBoxModel doFillServerInstanceItems() {
-        	
-            ListBoxModel items = new ListBoxModel();
-            List<XrayInstance> serverInstances =  getServerInstances();
-            if(serverInstances == null){
-            	return items;
-			}
-            for(XrayInstance sc : serverInstances)
-            	items.add(sc.getAlias(),sc.getConfigID());
-            
-            return items;
+			return FormUtils.getServerInstanceItems();
         }
         
         public long defaultBuildID(){
