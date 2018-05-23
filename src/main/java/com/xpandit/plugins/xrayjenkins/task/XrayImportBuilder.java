@@ -17,6 +17,7 @@ import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
 import com.xpandit.xray.util.StringUtil;
 import hudson.util.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -289,15 +290,21 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         }
         
         @Override
-		public XrayImportBuilder newInstance(StaplerRequest req, JSONObject formData){
-
+		public XrayImportBuilder newInstance(StaplerRequest req, JSONObject formData) throws Descriptor.FormException{
+        	validateFormData(formData);
         	Map<String,String> dynamicFields = getDynamicFields(formData.getJSONObject("dynamicFields"));
 			XrayInstance server = getConfiguration(formData.getString("serverInstance"));
 			Endpoint endpoint = Endpoint.lookupBySuffix(formData.getString("formatSuffix"));
-			
+
 			return new XrayImportBuilder(server,endpoint,dynamicFields);
 			
         }
+
+        private void validateFormData(JSONObject formData) throws Descriptor.FormException{
+			if(StringUtils.isBlank(formData.getString("serverInstance"))){
+				throw new Descriptor.FormException("Xray Results Import Task error, you must provide a valid JIRA Instance","serverInstance");
+			}
+		}
         
         private Map<String,String> getDynamicFields(JSONObject configuredFields){
         	
@@ -353,6 +360,9 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         	
             ListBoxModel items = new ListBoxModel();
             List<XrayInstance> serverInstances =  getServerInstances();
+            if(serverInstances == null){
+            	return items;
+			}
             for(XrayInstance sc : serverInstances)
             	items.add(sc.getAlias(),sc.getConfigID());
             
@@ -378,6 +388,13 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         
         public List<XrayInstance> getServerInstances() {
 			return ServerConfiguration.get().getServerInstances();
+		}
+
+		public FormValidation doCheckServerInstance(@QueryParameter String value){
+        	if(StringUtils.isBlank(value)){
+        		return FormValidation.error("Server instance not found");
+			}
+			return FormValidation.ok();
 		}
         
     }

@@ -177,13 +177,19 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
         }
         
         @Override
-		public XrayExportBuilder newInstance(StaplerRequest req, JSONObject formData){
-			
+		public XrayExportBuilder newInstance(StaplerRequest req, JSONObject formData) throws Descriptor.FormException{
+			validateFormData(formData);
         	Map<String,String> fields = getFields(formData.getJSONObject("fields"));
 			XrayInstance server = getConfiguration(formData.getString("serverInstance"));
 			
 			return new XrayExportBuilder(server,fields);
 			
+        }
+
+        private void validateFormData(JSONObject formData) throws Descriptor.FormException{
+            if(StringUtils.isBlank(formData.getString("serverInstance"))){
+                throw new Descriptor.FormException("Xray Cucumber Features Export Task error, you must provide a valid JIRA Instance","serverInstance");
+            }
         }
         
         
@@ -267,6 +273,13 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
             else{
                 return FormValidation.ok();
             }
+        }
+
+        public FormValidation doCheckServerInstance(@QueryParameter String value){
+            if(StringUtils.isBlank(value)){
+                return FormValidation.error("Server instance not found");
+            }
+            return FormValidation.ok();
         }
         
         
