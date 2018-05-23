@@ -7,6 +7,7 @@
  */
 package com.xpandit.plugins.xrayjenkins.task;
 
+import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -45,7 +46,6 @@ import net.sf.json.JSONObject;
  */
 public class XrayExportBuilder extends Builder implements SimpleBuildStep {
 
-	private XrayInstance xrayInstance;
     private Map<String,String> fields;
     
     private String serverInstance;//Configuration ID of the JIRA instance
@@ -53,26 +53,31 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
     private String filter;
     private String filePath;
 
-    public XrayExportBuilder(XrayInstance xrayInstance,  Map<String, String> fields) {
-    	this.xrayInstance = xrayInstance;
+    public XrayExportBuilder(String serverInstance,  Map<String, String> fields) {
     	this.fields = fields;
-    	
     	this.issues = fields.get("issues");
     	this.filter = fields.get("filter");
     	this.filePath = fields.get("filePath");
-    	this.serverInstance = xrayInstance.getConfigID();
+    	this.serverInstance = serverInstance;
 	}
    
     @Override
-    public void perform(Run<?,?> build, FilePath workspace, Launcher launcher, TaskListener listener) throws AbortException, IOException {
+    public void perform(Run<?,?> build,
+                        FilePath workspace,
+                        Launcher launcher,
+                        TaskListener listener) throws AbortException, IOException {
         
         listener.getLogger().println("Starting export task...");
         
         listener.getLogger().println("##########################################################");
         listener.getLogger().println("####   Xray for JIRA is exporting the feature files  ####");
         listener.getLogger().println("##########################################################");
-        
-        XrayExporter client = new XrayExporterImpl(xrayInstance.getServerAddress(),xrayInstance.getUsername(),xrayInstance.getPassword());
+
+
+        XrayInstance serverInstance = ConfigurationUtils.getConfiguration(this.serverInstance);
+        XrayExporter client = new XrayExporterImpl(serverInstance.getServerAddress(),
+                serverInstance.getUsername(),
+                serverInstance.getPassword());
         
         try{
 
@@ -178,12 +183,9 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
         
         @Override
 		public XrayExportBuilder newInstance(StaplerRequest req, JSONObject formData){
-			
-        	Map<String,String> fields = getFields(formData.getJSONObject("fields"));
-			XrayInstance server = getConfiguration(formData.getString("serverInstance"));
-			
-			return new XrayExportBuilder(server,fields);
-			
+			return new XrayExportBuilder(formData.getString("serverInstance"),
+                    getFields(formData.getJSONObject("fields")));
+
         }
         
         
