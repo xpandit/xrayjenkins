@@ -7,6 +7,7 @@
  */
 package com.xpandit.plugins.xrayjenkins.task;
 
+import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
 import com.xpandit.plugins.xrayjenkins.Utils.FormUtils;
 import java.io.IOException;
 import java.util.HashMap;
@@ -15,10 +16,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
-import com.xpandit.xray.util.StringUtil;
-import hudson.util.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -382,11 +380,8 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 			return ServerConfiguration.get().getServerInstances();
 		}
 
-		public FormValidation doCheckServerInstance(@QueryParameter String value){
-        	if(StringUtils.isBlank(value)){
-        		return FormValidation.error("Server instance not found");
-			}
-			return FormValidation.ok();
+		public FormValidation doCheckServerInstance(){
+			return ConfigurationUtils.anyAvailableConfiguration() ? FormValidation.ok() : FormValidation.error("No configured Server Instances found");
 		}
         
     }

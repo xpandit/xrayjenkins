@@ -7,6 +7,7 @@
  */
 package com.xpandit.plugins.xrayjenkins.task;
 
+import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
 import com.xpandit.plugins.xrayjenkins.Utils.FormUtils;
 import java.io.IOException;
 import java.io.InputStream;
@@ -270,11 +271,8 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
             }
         }
 
-        public FormValidation doCheckServerInstance(@QueryParameter String value){
-            if(StringUtils.isBlank(value)){
-                return FormValidation.error("Server instance not found");
-            }
-            return FormValidation.ok();
+        public FormValidation doCheckServerInstance(){
+            return ConfigurationUtils.anyAvailableConfiguration() ? FormValidation.ok() : FormValidation.error("No configured Server Instances found");
         }
         
         
