@@ -45,19 +45,19 @@ import net.sf.json.JSONObject;
  *
  */
 public class XrayExportBuilder extends Builder implements SimpleBuildStep {
-
-    private Map<String,String> fields;
     
     private String serverInstance;//Configuration ID of the JIRA instance
     private String issues;
     private String filter;
     private String filePath;
 
-    public XrayExportBuilder(String serverInstance,  Map<String, String> fields) {
-    	this.fields = fields;
-    	this.issues = fields.get("issues");
-    	this.filter = fields.get("filter");
-    	this.filePath = fields.get("filePath");
+    public XrayExportBuilder(String serverInstance,
+                             String issues,
+                             String filter,
+                             String filePath) {
+        this.issues = issues;
+        this.filter = filter;
+        this.filePath = filePath;
     	this.serverInstance = serverInstance;
 	}
    
@@ -156,15 +156,6 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
 		this.filePath = filePath;
 	}
 
-
-	public Map<String,String> getFields() {
-		return fields;
-	}
-
-	public void setFields(Map<String,String> fields) {
-		this.fields = fields;
-	}
-
 	@Extension
     public static class Descriptor extends BuildStepDescriptor<Builder> {
 
@@ -183,9 +174,11 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
         
         @Override
 		public XrayExportBuilder newInstance(StaplerRequest req, JSONObject formData){
+            Map<String,String> fields = getFields(formData.getJSONObject("fields"));
 			return new XrayExportBuilder(formData.getString("serverInstance"),
-                    getFields(formData.getJSONObject("fields")));
-
+                    fields.get("issues"),
+                    fields.get("filter"),
+                    fields.get("filePath"));
         }
         
         
