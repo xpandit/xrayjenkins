@@ -8,6 +8,7 @@
 package com.xpandit.plugins.xrayjenkins.task;
 
 import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
+import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -72,9 +73,10 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
         listener.getLogger().println("##########################################################");
         listener.getLogger().println("####   Xray for JIRA is exporting the feature files  ####");
         listener.getLogger().println("##########################################################");
-
-
         XrayInstance serverInstance = ConfigurationUtils.getConfiguration(this.serverInstance);
+        if(serverInstance == null){
+            throw new XrayJenkinsGenericException("XrayInstance could not be found");
+        }
         XrayExporter client = new XrayExporterImpl(serverInstance.getServerAddress(),
                 serverInstance.getUsername(),
                 serverInstance.getPassword());

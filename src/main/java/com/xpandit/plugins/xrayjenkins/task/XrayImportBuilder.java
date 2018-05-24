@@ -168,7 +168,6 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         listener.getLogger().println("##########################################################");
         listener.getLogger().println("####   Xray for JIRA is importing the feature files  ####");
         listener.getLogger().println("##########################################################");
-
         XrayInstance serverInstance = ConfigurationUtils.getConfiguration(this.serverInstance);
         if(serverInstance == null){
         	throw new XrayJenkinsGenericException("XrayInstance could not be found");
