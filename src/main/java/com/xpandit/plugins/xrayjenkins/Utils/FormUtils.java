@@ -25,9 +25,9 @@ public class FormUtils {
         if(serverInstances == null){
             return items;
         }
-        for(XrayInstance sc : serverInstances)
+        for(XrayInstance sc : serverInstances){
             items.add(sc.getAlias(),sc.getConfigID());
-
+        }
         return items;
     }
 

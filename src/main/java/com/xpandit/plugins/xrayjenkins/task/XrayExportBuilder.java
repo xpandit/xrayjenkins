@@ -71,7 +71,7 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
         listener.getLogger().println("Starting export task...");
         
         listener.getLogger().println("##########################################################");
-        listener.getLogger().println("####   Xray for JIRA is exporting the feature files  ####");
+        listener.getLogger().println("####   Xray is exporting the feature files  ####");
         listener.getLogger().println("##########################################################");
         
         XrayExporter client = new XrayExporterImpl(xrayInstance.getServerAddress(),xrayInstance.getUsername(),xrayInstance.getPassword());

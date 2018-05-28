@@ -166,7 +166,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         listener.getLogger().println("Import Cucumber features Task started...");
 
         listener.getLogger().println("##########################################################");
-        listener.getLogger().println("####   Xray for JIRA is importing the feature files  ####");
+        listener.getLogger().println("#### Importing the execution results to Xray  ####");
         listener.getLogger().println("##########################################################");
 
         XrayImporter client = new XrayImporterImpl(xrayInstance.getServerAddress(),xrayInstance.getUsername(),xrayInstance.getPassword());
