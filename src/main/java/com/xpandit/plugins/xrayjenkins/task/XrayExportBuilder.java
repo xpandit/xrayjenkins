@@ -75,7 +75,7 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
         listener.getLogger().println("##########################################################");
         XrayInstance serverInstance = ConfigurationUtils.getConfiguration(this.serverInstance);
         if(serverInstance == null){
-            throw new XrayJenkinsGenericException("XrayInstance could not be found");
+            throw new AbortException("The Jira server configuration of this task was not found.");
         }
         XrayExporter client = new XrayExporterImpl(serverInstance.getServerAddress(),
                 serverInstance.getUsername(),
