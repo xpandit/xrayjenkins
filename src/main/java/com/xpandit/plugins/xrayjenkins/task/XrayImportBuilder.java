@@ -7,7 +7,7 @@
  */
 package com.xpandit.plugins.xrayjenkins.task;
 
-import hudson.maven.MavenModuleSet;
+import com.xpandit.plugins.xrayjenkins.Utils.BuilderUtils;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +34,6 @@ import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractProject;
-import hudson.model.FreeStyleProject;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.tasks.BuildStepDescriptor;
@@ -335,9 +334,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		@Override
 		public boolean isApplicable(Class<? extends AbstractProject> jobType) {
 			LOG.info("applying XrayImportBuilder to following jobType class: {}", jobType.getSimpleName());
-			//MavenModuleSet is the jobtype used by Maven IntegrationPlugin
-			return FreeStyleProject.class.isAssignableFrom(jobType)
-					|| MavenModuleSet.class.isAssignableFrom(jobType);
+			return BuilderUtils.isSupportedJobType(jobType);
 		}
 
         @Override
