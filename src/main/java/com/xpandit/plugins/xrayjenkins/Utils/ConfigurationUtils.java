@@ -16,9 +16,10 @@ public class ConfigurationUtils {
      * @return <code>true</code> if any server configuration is available, <code>false</code> otherwise
      */
     public static boolean anyAvailableConfiguration(){
-        return ServerConfiguration.get()  != null
-                && ServerConfiguration.get().getServerInstances() != null
-                && ServerConfiguration.get().getServerInstances().size() > 0;
+        ServerConfiguration configuration = ServerConfiguration.get();
+        return configuration != null
+                && configuration.getServerInstances() != null
+                && configuration.getServerInstances().size() > 0;
     }
 
 }
