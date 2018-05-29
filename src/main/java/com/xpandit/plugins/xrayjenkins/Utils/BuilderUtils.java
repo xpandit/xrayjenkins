@@ -19,9 +19,10 @@ public class BuilderUtils {
      * @param jobType the project type
      * @return <code>true</code> if the project type is supported, <code>false</code> otherwise
      */
-    public static boolean isSuportedJobType(Class<? extends AbstractProject> jobType){
-        //MatrixProject is the jobType used by Multi Configuration Project
-        //MavenModuleSet is the jobtype used by Maven IntegrationPlugin
+    public static boolean isSupportedJobType(Class<? extends AbstractProject> jobType){
+        /*MatrixProject is the jobType used by Multi Configuration Project
+         *MavenModuleSet is the jobType used by Maven IntegrationPlugin
+         */
         return FreeStyleProject.class.isAssignableFrom(jobType)
                 || MatrixProject.class.isAssignableFrom(jobType)
                 || MavenModuleSet.class.isAssignableFrom(jobType);
