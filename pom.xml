@@ -95,6 +95,11 @@
 		    <artifactId>jquery</artifactId>
 		    <version>1.11.2-0</version>
   		</dependency>
+		<dependency>
+			<groupId>org.jenkins-ci.plugins</groupId>
+			<artifactId>matrix-project</artifactId>
+			<version>1.13</version>
+		</dependency>
 	</dependencies>
 	
 	<build>

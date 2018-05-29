@@ -7,6 +7,7 @@
  */
 package com.xpandit.plugins.xrayjenkins.Utils;
 
+import hudson.matrix.MatrixProject;
 import hudson.maven.MavenModuleSet;
 import hudson.model.AbstractProject;
 import hudson.model.FreeStyleProject;
@@ -19,8 +20,11 @@ public class BuilderUtils {
      * @return <code>true</code> if the project type is supported, <code>false</code> otherwise
      */
     public static boolean isSupportedJobType(Class<? extends AbstractProject> jobType){
-        //MavenModuleSet is the jobtype used by Maven IntegrationPlugin
+        /*MatrixProject is the jobType used by Multi Configuration Project
+         *MavenModuleSet is the jobType used by Maven IntegrationPlugin
+         */
         return FreeStyleProject.class.isAssignableFrom(jobType)
+                || MatrixProject.class.isAssignableFrom(jobType)
                 || MavenModuleSet.class.isAssignableFrom(jobType);
     }
 
