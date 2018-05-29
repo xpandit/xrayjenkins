@@ -1,0 +1,27 @@
+/*
+ * XP.RAVEN Project
+ * <p/>
+ * Copyright (C) 2018 Xpand IT.
+ * <p/>
+ * This software is proprietary.
+ */
+package com.xpandit.plugins.xrayjenkins.Utils;
+
+import hudson.maven.MavenModuleSet;
+import hudson.model.AbstractProject;
+import hudson.model.FreeStyleProject;
+
+public class BuilderUtils {
+
+    /**
+     * Utility method to check if the project type is supported by XrayJenkins plugin
+     * @param jobType the project type
+     * @return <code>true</code> if the project type is supported, <code>false</code> otherwise
+     */
+    public static boolean isSupportedJobType(Class<? extends AbstractProject> jobType){
+        //MavenModuleSet is the jobtype used by Maven IntegrationPlugin
+        return FreeStyleProject.class.isAssignableFrom(jobType)
+                || MavenModuleSet.class.isAssignableFrom(jobType);
+    }
+
+}
