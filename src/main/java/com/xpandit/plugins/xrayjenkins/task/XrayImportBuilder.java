@@ -44,6 +44,8 @@ import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import jenkins.tasks.SimpleBuildStep;
 import net.sf.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class description.
@@ -61,7 +63,8 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
     private String formatSuffix; //value of format select
     private String serverInstance;//Configuration ID of the JIRA instance
     private String inputInfoSwitcher;//value of the input type switcher
-    
+
+	private static final Logger LOG = LoggerFactory.getLogger(XrayImportBuilder.class);
     
     private static Gson gson = new GsonBuilder().create();
     
@@ -326,12 +329,13 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         	}
         	return config;
         }
-   
-        
-        @Override
-        public boolean isApplicable(Class<? extends AbstractProject> jobType) {
-            return BuilderUtils.isSuportedJobType(jobType);
-        }
+
+
+		@Override
+		public boolean isApplicable(Class<? extends AbstractProject> jobType) {
+			LOG.info("applying XrayImportBuilder to following jobType class: {}", jobType.getSimpleName());
+			return BuilderUtils.isSupportedJobType(jobType);
+		}
 
         @Override
         public String getDisplayName() {
