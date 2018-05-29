@@ -9,6 +9,7 @@ package com.xpandit.plugins.xrayjenkins.task;
 
 import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
 import com.xpandit.plugins.xrayjenkins.Utils.FormUtils;
+import com.xpandit.plugins.xrayjenkins.Utils.BuilderUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -28,7 +29,6 @@ import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractProject;
-import hudson.model.FreeStyleProject;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.tasks.BuildStepDescriptor;
@@ -37,6 +37,8 @@ import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import jenkins.tasks.SimpleBuildStep;
 import net.sf.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class description.
@@ -54,6 +56,8 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
     private String issues;
     private String filter;
     private String filePath;
+
+    private static final Logger LOG = LoggerFactory.getLogger(XrayExportBuilder.class);
 
     public XrayExportBuilder(XrayInstance xrayInstance,  Map<String, String> fields) {
     	this.xrayInstance = xrayInstance;
@@ -193,7 +197,7 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
                 throw new Descriptor.FormException("Xray Cucumber Features Export Task error, you must provide a valid JIRA Instance","serverInstance");
             }
         }
-        
+
         
         public ListBoxModel doFillServerInstanceItems() {
         	return FormUtils.getServerInstanceItems();
@@ -229,7 +233,8 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
 		
 		@Override
         public boolean isApplicable(Class<? extends AbstractProject> jobType) {
-            return FreeStyleProject.class.isAssignableFrom(jobType);
+            LOG.info("applying XrayExportBuilder to following jobType class: {}", jobType.getSimpleName());
+            return BuilderUtils.isSupportedJobType(jobType);
         }
 
         @Override
@@ -274,7 +279,7 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
         public FormValidation doCheckServerInstance(){
             return ConfigurationUtils.anyAvailableConfiguration() ? FormValidation.ok() : FormValidation.error("No configured Server Instances found");
         }
-        
+
         
         public List<XrayInstance> getServerInstances() {
 			return ServerConfiguration.get().getServerInstances();
