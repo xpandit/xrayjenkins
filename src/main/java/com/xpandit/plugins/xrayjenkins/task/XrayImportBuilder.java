@@ -9,7 +9,6 @@ package com.xpandit.plugins.xrayjenkins.task;
 
 
 import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
-import org.apache.commons.lang.StringUtils;
 import com.xpandit.plugins.xrayjenkins.Utils.BuilderUtils;
 import java.io.IOException;
 import java.util.HashMap;
@@ -71,12 +70,10 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
     private String formatSuffix; //value of format select
     private String serverInstance;//Configuration ID of the JIRA instance
     private String inputInfoSwitcher;//value of the input type switcher
-
-	private static final Logger LOG = LoggerFactory.getLogger(XrayImportBuilder.class);
     
-    private static Gson gson = new GsonBuilder().create();
-    
-    public XrayImportBuilder(XrayInstance xrayInstance, Endpoint endpoint, Map<String, String> dynamicFields) {
+    public XrayImportBuilder(XrayInstance xrayInstance,
+							 Endpoint endpoint,
+							 Map<String, String> dynamicFields) {
     	this.xrayInstance = xrayInstance;
     	this.endpoint = endpoint;
     	this.dynamicFields = dynamicFields;
@@ -465,19 +462,6 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         	return dynamicFields;
         	
         }
-        
-        
-        private XrayInstance getConfiguration(String configID){
-        	XrayInstance config =  null;
-        	List<XrayInstance> serverInstances =  getServerInstances();
-        	for(XrayInstance sc : serverInstances){
-        		if(sc.getConfigID().equals(configID)){
-        			config = sc;break;
-        		}
-        	}
-        	return config;
-        }
-
 
 		@Override
 		public boolean isApplicable(Class<? extends AbstractProject> jobType) {
