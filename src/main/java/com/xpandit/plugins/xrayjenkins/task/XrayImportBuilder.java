@@ -232,13 +232,13 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
             listener.getLogger().println("Sucessfully imported "+endpoint.getName()+" results");
             
         }catch(XrayClientCoreGenericException e){
-        	e.printStackTrace();
+			LOG.error("Error while performing import tasks", e);
         	throw new AbortException(e.getMessage());
         }catch(XrayJenkinsGenericException e){
-            e.printStackTrace();
+			LOG.error("Error while performing import tasks", e);
             throw new AbortException(e.getMessage());
         }catch (IOException e) {
-            e.printStackTrace();
+			LOG.error("Error while performing import tasks", e);
             listener.error(e.getMessage());
             throw new IOException(e);
         }finally{
