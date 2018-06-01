@@ -8,6 +8,7 @@
 package com.xpandit.plugins.xrayjenkins.task;
 
 import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
+import com.xpandit.plugins.xrayjenkins.Utils.BuilderUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -28,7 +29,6 @@ import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractProject;
-import hudson.model.FreeStyleProject;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.tasks.BuildStepDescriptor;
@@ -111,7 +111,7 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
     private void setXrayInstance(String serverInstance){
         this.xrayInstance = ConfigurationUtils.getConfiguration(serverInstance);
     }
-   
+
     @Override
     public void perform(Run<?,?> build, FilePath workspace, Launcher launcher, TaskListener listener) throws AbortException, IOException {
         
@@ -124,7 +124,7 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
         if(this.xrayInstance == null){
             LOG.error("XrayInstance is null. please check the passed configuration ID");
         }
-        
+
         XrayExporter client = new XrayExporterImpl(xrayInstance.getServerAddress(),xrayInstance.getUsername(),xrayInstance.getPassword());
         
         try{
@@ -280,7 +280,8 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
 		
 		@Override
         public boolean isApplicable(Class<? extends AbstractProject> jobType) {
-            return FreeStyleProject.class.isAssignableFrom(jobType);
+            LOG.info("applying XrayExportBuilder to following jobType class: {}", jobType.getSimpleName());
+            return BuilderUtils.isSupportedJobType(jobType);
         }
 
         @Override

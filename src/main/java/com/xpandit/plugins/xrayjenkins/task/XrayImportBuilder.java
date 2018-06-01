@@ -10,6 +10,7 @@ package com.xpandit.plugins.xrayjenkins.task;
 
 import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
 import org.apache.commons.lang.StringUtils;
+import com.xpandit.plugins.xrayjenkins.Utils.BuilderUtils;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.Set;
 import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
 
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.StaplerRequest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -37,7 +39,6 @@ import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractProject;
-import hudson.model.FreeStyleProject;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.tasks.BuildStepDescriptor;
@@ -62,7 +63,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 
 	private static final Logger LOG = LoggerFactory.getLogger(XrayImportBuilder.class);
 	private static Gson gson = new GsonBuilder().create();
-    
+
     private XrayInstance xrayInstance;
     private Endpoint endpoint;
     private Map<String,String> dynamicFields;
@@ -71,9 +72,11 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
     private String serverInstance;//Configuration ID of the JIRA instance
     private String inputInfoSwitcher;//value of the input type switcher
 
-    public XrayImportBuilder(XrayInstance xrayInstance,
-							 Endpoint endpoint,
-							 Map<String, String> dynamicFields) {
+	private static final Logger LOG = LoggerFactory.getLogger(XrayImportBuilder.class);
+    
+    private static Gson gson = new GsonBuilder().create();
+    
+    public XrayImportBuilder(XrayInstance xrayInstance, Endpoint endpoint, Map<String, String> dynamicFields) {
     	this.xrayInstance = xrayInstance;
     	this.endpoint = endpoint;
     	this.dynamicFields = dynamicFields;
@@ -463,10 +466,24 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         	
         }
         
-        @Override
-        public boolean isApplicable(Class<? extends AbstractProject> jobType) {
-            return FreeStyleProject.class.isAssignableFrom(jobType);
+        
+        private XrayInstance getConfiguration(String configID){
+        	XrayInstance config =  null;
+        	List<XrayInstance> serverInstances =  getServerInstances();
+        	for(XrayInstance sc : serverInstances){
+        		if(sc.getConfigID().equals(configID)){
+        			config = sc;break;
+        		}
+        	}
+        	return config;
         }
+
+
+		@Override
+		public boolean isApplicable(Class<? extends AbstractProject> jobType) {
+			LOG.info("applying XrayImportBuilder to following jobType class: {}", jobType.getSimpleName());
+			return BuilderUtils.isSupportedJobType(jobType);
+		}
 
         @Override
         public String getDisplayName() {
