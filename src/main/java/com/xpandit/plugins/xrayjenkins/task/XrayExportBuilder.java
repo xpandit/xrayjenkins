@@ -8,7 +8,6 @@
 package com.xpandit.plugins.xrayjenkins.task;
 
 import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
-import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
 import com.xpandit.plugins.xrayjenkins.Utils.BuilderUtils;
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,7 +47,9 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class XrayExportBuilder extends Builder implements SimpleBuildStep {
-    
+
+    private static final Logger LOG = LoggerFactory.getLogger(XrayExportBuilder.class);
+
     private String serverInstance;//Configuration ID of the JIRA instance
     private String issues;
     private String filter;
@@ -195,18 +196,6 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
             
             return items;
         }
-        
-        private XrayInstance getConfiguration(String configID) {
-        	XrayInstance config =  null;
-        	List<XrayInstance> serverInstances =  getServerInstances();
-        	for(XrayInstance sc : serverInstances){
-        		if(sc.getConfigID().equals(configID)){
-        			config = sc;break;
-        		}
-        	}
-        	return config;
-		}
-        
 
         private Map<String, String> getFields(JSONObject configuredFields) {
         	Map<String,String> fields = new HashMap<String,String>();
