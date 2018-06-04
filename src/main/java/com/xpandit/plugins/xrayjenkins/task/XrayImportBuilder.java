@@ -139,7 +139,32 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         return gson.toJson(formats);	
     }
     
-	private FilePath getFile(FilePath workspace, String filePath,TaskListener listener) throws IOException, InterruptedException{
+	private List<FilePath> getFilePaths(FilePath workspace, String filePath, TaskListener listener)
+			throws IOException, InterruptedException{
+    	List<FilePath> filePaths = new ArrayList<>();
+		if(workspace == null){
+			throw new XrayJenkinsGenericException("No workspace in this current node");
+		}
+
+		if(StringUtils.isBlank(filePath)){
+			throw new XrayJenkinsGenericException("No file path was specified");
+		}
+
+		FilePath file = readFile(workspace,filePath.trim(),listener);
+
+		List<File> files = getFileList(file.getRemote());
+
+		if(files.isEmpty()){
+			throw new XrayJenkinsGenericException("File path is a directory or no matching file exists");
+		}
+		for(File f : files){
+			filePaths.add(new FilePath(f));
+		}
+
+		return filePaths;
+	}
+
+	private FilePath getInfoFile(FilePath workspace, String filePath, TaskListener listener) throws IOException, InterruptedException{
 		if(workspace == null){
 			throw new XrayJenkinsGenericException("No workspace in this current node");
 		}
@@ -153,8 +178,8 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		getFileList(file.getRemote());
 
 		if(file.isDirectory() || !file.exists()){
-            throw new XrayJenkinsGenericException("File path is a directory or the file doesn't exist");
-        }
+			throw new XrayJenkinsGenericException("File path is a directory or the file doesn't exist");
+		}
 		return file;
 	}
 
@@ -232,23 +257,6 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		}
 		return res;
 	}
-
-	/*private List<File> getFileList(String regex){
-    	List<File> files = new ArrayList<>();
-		File folder = new File("C:\\git_repos\\xrayjenkins\\work\\workspace\\fresstyla\\joaquina");
-		File[] listOfFiles = folder.listFiles();
-		*//*PathMatcher matcher = FileSystems.getDefault().getPathMatcher("regex:"
-				+ "C:\\git_repos\\xrayjenkins\\work\\workspace\\fresstyla\\joaquina\\*.xml");*//*
-		PathMatcher matcher = FileSystems.getDefault().getPathMatcher("regex:"
-				+ "C:\\\\git_repos\\\\xrayjenkins\\\\work\\\\workspace\\\\fresstyla\\\\joaquina\\\\*.xml");
-		for(int i = 0; i < listOfFiles.length; i++){
-			Path fileName = listOfFiles[i].toPath();
-			if (matcher.matches(fileName)) {
-				files.add(listOfFiles[i]);
-			}
-		}
-		return files;
-	}*/
 	
 	private FilePath readFile(FilePath workspace, String filePath, TaskListener listener) throws IOException{
 		   FilePath f = new FilePath(workspace, filePath);
@@ -265,88 +273,110 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 	}
 
 	@Override
-    public void perform(Run<?,?> build, FilePath workspace, Launcher launcher, TaskListener listener)throws AbortException, InterruptedException, IOException {
+	public void perform(Run<?,?> build, FilePath workspace, Launcher launcher, TaskListener listener)
+			throws AbortException, InterruptedException, IOException {
 		validate(dynamicFields);
-		
-        listener.getLogger().println("Starting import task...");
-        
-        listener.getLogger().println("Import Cucumber features Task started...");
 
-        listener.getLogger().println("##########################################################");
-        listener.getLogger().println("####   Xray for JIRA is importing the feature files  ####");
-        listener.getLogger().println("##########################################################");
+		listener.getLogger().println("Starting import task...");
 
-        XrayImporter client = new XrayImporterImpl(xrayInstance.getServerAddress(),xrayInstance.getUsername(),xrayInstance.getPassword());
+		listener.getLogger().println("Import Cucumber features Task started...");
 
-        try {
-        	EnvVars env = build.getEnvironment(listener);
-        	
-			Map<com.xpandit.xray.model.QueryParameter,String> queryParams = new HashMap<com.xpandit.xray.model.QueryParameter,String>();
-	          
-	        String projectKey = dynamicFields.get(com.xpandit.xray.model.QueryParameter.PROJECT_KEY.getKey());
-	        queryParams.put(com.xpandit.xray.model.QueryParameter.PROJECT_KEY, this.expand(env,projectKey));
-	          
-	        String testExecKey = dynamicFields.get(com.xpandit.xray.model.QueryParameter.TEST_EXEC_KEY.getKey());
-	        queryParams.put(com.xpandit.xray.model.QueryParameter.TEST_EXEC_KEY, this.expand(env,testExecKey));
-	          
-	        String testPlanKey = dynamicFields.get(com.xpandit.xray.model.QueryParameter.TEST_PLAN_KEY.getKey());
-	        queryParams.put(com.xpandit.xray.model.QueryParameter.TEST_PLAN_KEY, this.expand(env,testPlanKey));
-	          
-	        String testEnvironments = dynamicFields.get(com.xpandit.xray.model.QueryParameter.TEST_ENVIRONMENTS.getKey());
-	        queryParams.put(com.xpandit.xray.model.QueryParameter.TEST_ENVIRONMENTS, this.expand(env,testEnvironments));
-	          
-	        String revision = dynamicFields.get(com.xpandit.xray.model.QueryParameter.REVISION.getKey());
-	        queryParams.put(com.xpandit.xray.model.QueryParameter.REVISION, this.expand(env,revision));
-	        
-	        String fixVersion = dynamicFields.get(com.xpandit.xray.model.QueryParameter.FIX_VERSION.getKey());
-	        queryParams.put(com.xpandit.xray.model.QueryParameter.FIX_VERSION, this.expand(env,fixVersion));
-        	
-        	String importFilePath = dynamicFields.get(com.xpandit.xray.model.DataParameter.FILEPATH.getKey());
-        	String importInfo = dynamicFields.get(com.xpandit.xray.model.DataParameter.INFO.getKey());
-            
-            Map<com.xpandit.xray.model.DataParameter,Content> dataParams = new HashMap<>();
-            
-            if(StringUtils.isNotBlank(importFilePath)){
-            	String resolved = this.expand(env,importFilePath);
-				FilePath resultsFile = getFile(workspace,resolved,listener);
+		listener.getLogger().println("##########################################################");
+		listener.getLogger().println("####   Xray for JIRA is importing the feature files  ####");
+		listener.getLogger().println("##########################################################");
+		//---------------------------------------------
+		XrayImporter client = new XrayImporterImpl(xrayInstance.getServerAddress(),xrayInstance.getUsername(),xrayInstance.getPassword());
+		EnvVars env = build.getEnvironment(listener);
+		String importFilePath = dynamicFields.get(com.xpandit.xray.model.DataParameter.FILEPATH.getKey());
+		String resolved = this.expand(env,importFilePath);
+		List<FilePath> resultsFile = getFilePaths(workspace,resolved,listener);
 
+		for(FilePath fp : resultsFile){
+			uploadResults(build, workspace, listener,client, fp, env);
+		}
+
+
+		//---------------------------------------------
+
+	}
+
+	private void uploadResults(Run<?,?> build,
+							   FilePath workspace,
+							   TaskListener listener,
+							   XrayImporter client,
+							   FilePath resultsFile,
+							   EnvVars env)
+			throws AbortException, InterruptedException, IOException{
+		try {
+			Map<com.xpandit.xray.model.QueryParameter,String> queryParams = prepareQueryParam(env);
+
+			String importFilePath = dynamicFields.get(com.xpandit.xray.model.DataParameter.FILEPATH.getKey());
+			String importInfo = dynamicFields.get(com.xpandit.xray.model.DataParameter.INFO.getKey());
+
+			Map<com.xpandit.xray.model.DataParameter,Content> dataParams = new HashMap<>();
+
+			if(StringUtils.isNotBlank(importFilePath)){
 				Content results = new com.xpandit.xray.model.FileStream(resultsFile.getName(),resultsFile.read(),
-            																endpoint.getResultsMediaType());
+						endpoint.getResultsMediaType());
 
-            	dataParams.put(com.xpandit.xray.model.DataParameter.FILEPATH, results);
-            }
-            if(StringUtils.isNotBlank(importInfo)){
-            	String resolved = this.expand(env,importInfo);
-            	String inputInfoSwitcher = dynamicFields.get("inputInfoSwitcher");
+				dataParams.put(com.xpandit.xray.model.DataParameter.FILEPATH, results);
+			}
+			if(StringUtils.isNotBlank(importInfo)){
+				String resolved = this.expand(env,importInfo);
+				String inputInfoSwitcher = dynamicFields.get("inputInfoSwitcher");
 
 				Content info;
 				if(inputInfoSwitcher.equals("filePath")){
-					FilePath infoFile = getFile(workspace,resolved,listener);
+					FilePath infoFile = getInfoFile(workspace,resolved,listener);
 					info = new com.xpandit.xray.model.FileStream(infoFile.getName(),infoFile.read(),endpoint.getInfoFieldMediaType());
 				}else{
 					info = new com.xpandit.xray.model.StringContent(resolved, endpoint.getInfoFieldMediaType());
 				}
 
-    		    dataParams.put(com.xpandit.xray.model.DataParameter.INFO, info);
-            }
+				dataParams.put(com.xpandit.xray.model.DataParameter.INFO, info);
+			}
 
 			client.uploadResults(endpoint, dataParams, queryParams);
 
-            listener.getLogger().println("Sucessfully imported "+endpoint.getName()+" results");
-            
-        }catch(XrayClientCoreGenericException e){
-        	e.printStackTrace();
-        	throw new AbortException(e.getMessage());
-        }catch(XrayJenkinsGenericException e){
-            e.printStackTrace();
-            throw new AbortException(e.getMessage());
-        }catch (IOException e) {
-            e.printStackTrace();
-            listener.error(e.getMessage());
-            throw new IOException(e);
-        }finally{
+			listener.getLogger().println("Sucessfully imported "+endpoint.getName()+" results");
+
+		}catch(XrayClientCoreGenericException e){
+			e.printStackTrace();
+			throw new AbortException(e.getMessage());
+		}catch(XrayJenkinsGenericException e){
+			e.printStackTrace();
+			throw new AbortException(e.getMessage());
+		}catch (IOException e) {
+			e.printStackTrace();
+			listener.error(e.getMessage());
+			throw new IOException(e);
+		}finally{
 			client.shutdown();
 		}
+	}
+
+	private Map<com.xpandit.xray.model.QueryParameter, String> prepareQueryParam(EnvVars env){
+		Map<com.xpandit.xray.model.QueryParameter,String> queryParams = new HashMap<com.xpandit.xray.model.QueryParameter,String>();
+
+		String projectKey = dynamicFields.get(com.xpandit.xray.model.QueryParameter.PROJECT_KEY.getKey());
+		queryParams.put(com.xpandit.xray.model.QueryParameter.PROJECT_KEY, this.expand(env,projectKey));
+
+		String testExecKey = dynamicFields.get(com.xpandit.xray.model.QueryParameter.TEST_EXEC_KEY.getKey());
+		queryParams.put(com.xpandit.xray.model.QueryParameter.TEST_EXEC_KEY, this.expand(env,testExecKey));
+
+		String testPlanKey = dynamicFields.get(com.xpandit.xray.model.QueryParameter.TEST_PLAN_KEY.getKey());
+		queryParams.put(com.xpandit.xray.model.QueryParameter.TEST_PLAN_KEY, this.expand(env,testPlanKey));
+
+		String testEnvironments = dynamicFields.get(com.xpandit.xray.model.QueryParameter.TEST_ENVIRONMENTS.getKey());
+		queryParams.put(com.xpandit.xray.model.QueryParameter.TEST_ENVIRONMENTS, this.expand(env,testEnvironments));
+
+		String revision = dynamicFields.get(com.xpandit.xray.model.QueryParameter.REVISION.getKey());
+		queryParams.put(com.xpandit.xray.model.QueryParameter.REVISION, this.expand(env,revision));
+
+		String fixVersion = dynamicFields.get(com.xpandit.xray.model.QueryParameter.FIX_VERSION.getKey());
+		queryParams.put(com.xpandit.xray.model.QueryParameter.FIX_VERSION, this.expand(env,fixVersion));
+
+		return queryParams;
 	}
 
     private void validate(Map<String,String> dynamicFields) throws FormValidation{
