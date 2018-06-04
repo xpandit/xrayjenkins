@@ -7,7 +7,13 @@
  */
 package com.xpandit.plugins.xrayjenkins.task;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.PathMatcher;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +22,8 @@ import java.util.Set;
 import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
 import com.xpandit.xray.util.StringUtil;
 import hudson.util.IOUtils;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.StaplerRequest;
 import com.google.gson.Gson;
@@ -46,6 +54,9 @@ import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import jenkins.tasks.SimpleBuildStep;
 import net.sf.json.JSONObject;
+import java.nio.file.FileSystem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class description.
@@ -63,6 +74,8 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
     private String formatSuffix; //value of format select
     private String serverInstance;//Configuration ID of the JIRA instance
     private String inputInfoSwitcher;//value of the input type switcher
+
+	private static final Logger LOG = LoggerFactory.getLogger(XrayImportBuilder.class);
     
     
     private static Gson gson = new GsonBuilder().create();
@@ -137,11 +150,105 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 
 		FilePath file = readFile(workspace,filePath.trim(),listener);
 
+		getFileList(file.getRemote());
+
 		if(file.isDirectory() || !file.exists()){
             throw new XrayJenkinsGenericException("File path is a directory or the file doesn't exist");
         }
 		return file;
 	}
+
+	private List<File> getFileList(String globExpression) throws IllegalArgumentException, UnsupportedOperationException{
+		List<File> files = new ArrayList<>();
+		String [] parts = globExpression.split("\\\\");
+		String glob = parts[parts.length - 1];
+		PathMatcher matcher;
+		try{
+			matcher = FileSystems.getDefault().getPathMatcher("glob:"
+					+ glob);
+		} catch (IllegalArgumentException e){
+			LOG.error("pattern is invalid", e);
+			throw e;
+		} catch (UnsupportedOperationException e){
+			LOG.error("the pattern syntax is not known", e);
+			throw e;
+		}
+		for(File file : getFileList(resolveFolders(globExpression))){
+			Path fileName = file.toPath().getFileName();
+			if (matcher.matches(fileName)) {
+				files.add(file);
+			}
+		}
+		return files;
+	}
+
+	private List<File> getFileList(List<String> paths){
+		List<File> files = new ArrayList<>();
+    	for(String path : paths){
+			String [] parts = path.split("\\\\");
+			String parent_path = rebuildPath(parts);
+			File folder = new File(parent_path);
+			File[] listOfFiles = folder.listFiles();
+			files.addAll(Arrays.asList(listOfFiles));
+		}
+		return files;
+	}
+
+	private List<String> resolveFolders(String path) throws XrayJenkinsGenericException{
+		List<String> paths = new ArrayList<>();
+    	String [] parts = path.split("\\*\\*");
+    	if(parts.length == 1){
+    		paths.add(path);
+    		return paths;
+		}
+		File folder = new File(parts[0]);
+    	if(!folder.exists()){
+    		return new ArrayList<>();
+		}
+    	for(File f : folder.listFiles()){
+    		if(f.isDirectory()){
+    			String new_path = f.getPath() + mergeParts(Arrays.copyOfRange(parts, 1, parts.length));
+    			paths.addAll(resolveFolders(new_path));
+			}
+		}
+		return paths;
+	}
+
+	private String mergeParts(String [] parts){
+    	if(parts.length == 1){
+    		return parts[0];
+		}
+		String merged = parts[0];
+		for(int i = 1 ; i < parts.length; i ++){
+    		merged = merged + "**" + parts[i];
+		}
+		return merged;
+	}
+
+	private String rebuildPath(String [] parts){
+    	String res = "";
+    	for(int i = 0; i < parts.length - 1; i ++){
+    		res = res + parts[i] + "\\";
+		}
+		return res;
+	}
+
+	/*private List<File> getFileList(String regex){
+    	List<File> files = new ArrayList<>();
+		File folder = new File("C:\\git_repos\\xrayjenkins\\work\\workspace\\fresstyla\\joaquina");
+		File[] listOfFiles = folder.listFiles();
+		*//*PathMatcher matcher = FileSystems.getDefault().getPathMatcher("regex:"
+				+ "C:\\git_repos\\xrayjenkins\\work\\workspace\\fresstyla\\joaquina\\*.xml");*//*
+		PathMatcher matcher = FileSystems.getDefault().getPathMatcher("regex:"
+				+ "C:\\\\git_repos\\\\xrayjenkins\\\\work\\\\workspace\\\\fresstyla\\\\joaquina\\\\*.xml");
+		for(int i = 0; i < listOfFiles.length; i++){
+			Path fileName = listOfFiles[i].toPath();
+			if (matcher.matches(fileName)) {
+				files.add(listOfFiles[i]);
+			}
+		}
+		return files;
+	}*/
 	
 	private FilePath readFile(FilePath workspace, String filePath, TaskListener listener) throws IOException{
 		   FilePath f = new FilePath(workspace, filePath);
