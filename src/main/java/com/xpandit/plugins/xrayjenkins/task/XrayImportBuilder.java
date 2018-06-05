@@ -7,6 +7,7 @@
  */
 package com.xpandit.plugins.xrayjenkins.task;
 
+import com.xpandit.xray.model.UploadResult;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -140,31 +141,26 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
     }
     
 	private List<FilePath> getFilePaths(FilePath workspace, String filePath, TaskListener listener)
-			throws IOException, InterruptedException{
+			throws IOException {
     	List<FilePath> filePaths = new ArrayList<>();
 		if(workspace == null){
 			throw new XrayJenkinsGenericException("No workspace in this current node");
 		}
-
 		if(StringUtils.isBlank(filePath)){
 			throw new XrayJenkinsGenericException("No file path was specified");
 		}
-
 		FilePath file = readFile(workspace,filePath.trim(),listener);
-
 		List<File> files = getFileList(file.getRemote());
-
 		if(files.isEmpty()){
 			throw new XrayJenkinsGenericException("File path is a directory or no matching file exists");
 		}
 		for(File f : files){
 			filePaths.add(new FilePath(f));
 		}
-
 		return filePaths;
 	}
 
-	private FilePath getInfoFile(FilePath workspace, String filePath, TaskListener listener) throws IOException, InterruptedException{
+	private FilePath getFile(FilePath workspace, String filePath, TaskListener listener) throws IOException, InterruptedException{
 		if(workspace == null){
 			throw new XrayJenkinsGenericException("No workspace in this current node");
 		}
@@ -274,7 +270,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 
 	@Override
 	public void perform(Run<?,?> build, FilePath workspace, Launcher launcher, TaskListener listener)
-			throws AbortException, InterruptedException, IOException {
+			throws InterruptedException, IOException {
 		validate(dynamicFields);
 
 		listener.getLogger().println("Starting import task...");
@@ -284,29 +280,39 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		listener.getLogger().println("##########################################################");
 		listener.getLogger().println("####   Xray for JIRA is importing the feature files  ####");
 		listener.getLogger().println("##########################################################");
-		//---------------------------------------------
+
 		XrayImporter client = new XrayImporterImpl(xrayInstance.getServerAddress(),xrayInstance.getUsername(),xrayInstance.getPassword());
 		EnvVars env = build.getEnvironment(listener);
 		String importFilePath = dynamicFields.get(com.xpandit.xray.model.DataParameter.FILEPATH.getKey());
 		String resolved = this.expand(env,importFilePath);
-		List<FilePath> resultsFile = getFilePaths(workspace,resolved,listener);
 
-		for(FilePath fp : resultsFile){
-			uploadResults(build, workspace, listener,client, fp, env);
+		//todo - if (JUNIT || TESTNG || NUNIT || ROBOT FRAMEWORK)
+		if(Endpoint.JUNIT.equals(this.endpoint)
+				|| Endpoint.NUNIT.equals(this.endpoint)
+				|| Endpoint.TESTNG.equals(this.endpoint)
+				|| Endpoint.ROBOT.equals(this.endpoint)){
+			List<FilePath> resultsFile = getFilePaths(workspace,resolved,listener);
+
+			UploadResult result = null;
+			for(FilePath fp : resultsFile){
+				if (result != null){
+
+				}
+				result = uploadResults(workspace, listener,client, fp, env);
+			}
+		} else{
+			FilePath file = getFile(workspace, resolved, listener);
+			uploadResults(workspace, listener, client, file, env);
 		}
-
-
-		//---------------------------------------------
 
 	}
 
-	private void uploadResults(Run<?,?> build,
-							   FilePath workspace,
+	private UploadResult uploadResults(FilePath workspace,
 							   TaskListener listener,
 							   XrayImporter client,
 							   FilePath resultsFile,
 							   EnvVars env)
-			throws AbortException, InterruptedException, IOException{
+			throws InterruptedException, IOException{
 		try {
 			Map<com.xpandit.xray.model.QueryParameter,String> queryParams = prepareQueryParam(env);
 
@@ -327,7 +333,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 
 				Content info;
 				if(inputInfoSwitcher.equals("filePath")){
-					FilePath infoFile = getInfoFile(workspace,resolved,listener);
+					FilePath infoFile = getFile(workspace,resolved,listener);
 					info = new com.xpandit.xray.model.FileStream(infoFile.getName(),infoFile.read(),endpoint.getInfoFieldMediaType());
 				}else{
 					info = new com.xpandit.xray.model.StringContent(resolved, endpoint.getInfoFieldMediaType());
@@ -336,9 +342,10 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 				dataParams.put(com.xpandit.xray.model.DataParameter.INFO, info);
 			}
 
-			client.uploadResults(endpoint, dataParams, queryParams);
+			UploadResult resut = client.uploadResults(endpoint, dataParams, queryParams);
 
 			listener.getLogger().println("Sucessfully imported "+endpoint.getName()+" results");
+			return resut;
 
 		}catch(XrayClientCoreGenericException e){
 			e.printStackTrace();
