@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
@@ -73,6 +74,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
     private XrayInstance xrayInstance;
     private Endpoint endpoint;
     private Map<String,String> dynamicFields;
+    private boolean importToSameExecution;
     
     private String formatSuffix; //value of format select
     private String serverInstance;//Configuration ID of the JIRA instance
@@ -87,6 +89,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
     	this.xrayInstance = xrayInstance;
     	this.endpoint = endpoint;
     	this.dynamicFields = dynamicFields;
+    	this.importToSameExecution = Objects.equals(dynamicFields.get("sameExecutionCheckbox"), "true") ? true : false;
     	
     	this.formatSuffix = endpoint.getSuffix();
     	this.serverInstance = xrayInstance.getConfigID();
@@ -129,7 +132,11 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 	public void setInputInfoSwitcher(String inputInfoSwitcher) {
 		this.inputInfoSwitcher = inputInfoSwitcher;
 	}
-	
+
+	public boolean isImportToSameExecution() {
+		return importToSameExecution;
+	}
+
 	public String defaultFormats(){
         Map<String,FormatBean> formats = new HashMap<String,FormatBean>();
         for(Endpoint e : Endpoint.values()){
@@ -300,7 +307,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 			String key = null;
 			for(FilePath fp : resultsFile){
 				result = uploadResults(workspace, listener,client, fp, env, key);
-				if(key == null){ //todo - add the condition for same execution
+				if(key == null && this.importToSameExecution == true){ //todo - add the condition for same execution
 					Map<String, Map> map = mapper.readValue(result.getMessage(), Map.class);
 					key = (String) map.get("testExecIssue").get("key");
 					//todo - pass the test exec key as params for the next uploadings
@@ -433,13 +440,18 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
     public static class Descriptor extends BuildStepDescriptor<Publisher> {
         private static long BUILD_STEP_SEED = 0;
         private long buildID;
-                
+        private boolean sameExecutionCheckbox;
+
         public Descriptor() {
         	super(XrayImportBuilder.class);
             load();
         }
-        
-        @Override
+
+		public boolean isSameExecutionCheckbox() {
+			return sameExecutionCheckbox;
+		}
+
+		@Override
         public boolean configure(StaplerRequest req, JSONObject formData) throws FormException {
             save();
             return true;
@@ -469,6 +481,8 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 						dynamicFields.put(key, value);
         		}
         	}
+
+        	this.sameExecutionCheckbox = Objects.equals(dynamicFields.get("sameExecutionCheckbox"), "true") ? true : false;
         	
         	return dynamicFields;
         	
