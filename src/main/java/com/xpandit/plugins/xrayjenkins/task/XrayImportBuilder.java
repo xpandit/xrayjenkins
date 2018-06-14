@@ -7,6 +7,7 @@
  */
 package com.xpandit.plugins.xrayjenkins.task;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xpandit.xray.model.UploadResult;
 import java.io.File;
 import java.io.IOException;
@@ -25,6 +26,7 @@ import com.xpandit.xray.util.StringUtil;
 import hudson.util.IOUtils;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.StaplerRequest;
 import com.google.gson.Gson;
@@ -293,28 +295,39 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 				|| Endpoint.ROBOT.equals(this.endpoint)){
 			List<FilePath> resultsFile = getFilePaths(workspace,resolved,listener);
 
-			UploadResult result = null;
+			UploadResult result;
+			ObjectMapper mapper = new ObjectMapper();
+			String key = null;
 			for(FilePath fp : resultsFile){
-				if (result != null){
-
+				result = uploadResults(workspace, listener,client, fp, env, key);
+				if(key == null){ //todo - add the condition for same execution
+					Map<String, Map> map = mapper.readValue(result.getMessage(), Map.class);
+					key = (String) map.get("testExecIssue").get("key");
+					//todo - pass the test exec key as params for the next uploadings
 				}
-				result = uploadResults(workspace, listener,client, fp, env);
+				String cenas = "cenas";
 			}
 		} else{
 			FilePath file = getFile(workspace, resolved, listener);
-			uploadResults(workspace, listener, client, file, env);
+			uploadResults(workspace, listener, client, file, env, null);
 		}
 
 	}
 
 	private UploadResult uploadResults(FilePath workspace,
-							   TaskListener listener,
-							   XrayImporter client,
-							   FilePath resultsFile,
-							   EnvVars env)
+									   TaskListener listener,
+									   XrayImporter client,
+									   FilePath resultsFile,
+									   EnvVars env,
+									   @Nullable String testExecutionKey)
 			throws InterruptedException, IOException{
 		try {
 			Map<com.xpandit.xray.model.QueryParameter,String> queryParams = prepareQueryParam(env);
+
+			if(StringUtils.isBlank(dynamicFields.get(com.xpandit.xray.model.QueryParameter.TEST_EXEC_KEY.getKey()))
+					&& StringUtils.isNotBlank(testExecutionKey)){
+				queryParams.put(com.xpandit.xray.model.QueryParameter.TEST_EXEC_KEY, testExecutionKey);
+			}
 
 			String importFilePath = dynamicFields.get(com.xpandit.xray.model.DataParameter.FILEPATH.getKey());
 			String importInfo = dynamicFields.get(com.xpandit.xray.model.DataParameter.INFO.getKey());
