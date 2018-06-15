@@ -146,8 +146,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         return gson.toJson(formats);	
     }
     
-	private List<FilePath> getFilePaths(FilePath workspace, String filePath, TaskListener listener)
-			throws IOException {
+	private List<FilePath> getFilePaths(FilePath workspace, String filePath, TaskListener listener) throws IOException {
     	List<FilePath> filePaths = new ArrayList<>();
 		if(workspace == null){
 			throw new XrayJenkinsGenericException("No workspace in this current node");
@@ -176,9 +175,6 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		}
 
 		FilePath file = readFile(workspace,filePath.trim(),listener);
-
-		getFileList(file.getRemote());
-
 		if(file.isDirectory() || !file.exists()){
 			throw new XrayJenkinsGenericException("File path is a directory or the file doesn't exist");
 		}
@@ -201,8 +197,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 			throw e;
 		}
 		for(File file : getFileList(resolveFolders(globExpression))){
-			Path fileName = file.toPath().getFileName();
-			if (matcher.matches(fileName)) {
+			if (matcher.matches(file.toPath().getFileName())) {
 				files.add(file);
 			}
 		}
@@ -212,11 +207,8 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 	private List<File> getFileList(List<String> paths){
 		List<File> files = new ArrayList<>();
     	for(String path : paths){
-			String [] parts = path.split("\\\\");
-			String parentPath = rebuildPath(parts);
-			File folder = new File(parentPath);
-			File[] listOfFiles = folder.listFiles();
-			files.addAll(Arrays.asList(listOfFiles));
+			File folder = new File(rebuildPath(path.split("\\\\")));
+			files.addAll(Arrays.asList(folder.listFiles()));
 		}
 		return files;
 	}
@@ -297,11 +289,10 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 				|| Endpoint.NUNIT.equals(this.endpoint)
 				|| Endpoint.TESTNG.equals(this.endpoint)
 				|| Endpoint.ROBOT.equals(this.endpoint)){
-			List<FilePath> resultsFile = getFilePaths(workspace,resolved,listener);
 			UploadResult result;
 			ObjectMapper mapper = new ObjectMapper();
 			String key = null;
-			for(FilePath fp : resultsFile){
+			for(FilePath fp : getFilePaths(workspace,resolved,listener)){
 				result = uploadResults(workspace, listener,client, fp, env, key);
 				if(key == null && this.importToSameExecution){
 					Map<String, Map> map = mapper.readValue(result.getMessage(), Map.class);
@@ -320,8 +311,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 									   XrayImporter client,
 									   FilePath resultsFile,
 									   EnvVars env,
-									   @Nullable String testExecutionKey)
-			throws InterruptedException, IOException{
+									   @Nullable String testExecutionKey) throws InterruptedException, IOException{
 		try {
 			Map<com.xpandit.xray.model.QueryParameter,String> queryParams = prepareQueryParam(env);
 
@@ -357,10 +347,10 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 				dataParams.put(com.xpandit.xray.model.DataParameter.INFO, info);
 			}
 
-			UploadResult resut = client.uploadResults(endpoint, dataParams, queryParams);
+			UploadResult result = client.uploadResults(endpoint, dataParams, queryParams);
 
 			listener.getLogger().println("Sucessfully imported "+endpoint.getName()+" results");
-			return resut;
+			return result;
 
 		}catch(XrayClientCoreGenericException e){
 			e.printStackTrace();
