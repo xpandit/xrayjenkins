@@ -8,6 +8,7 @@
 package com.xpandit.plugins.xrayjenkins.task;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.xpandit.xray.model.QueryParameter;
 import com.xpandit.xray.model.UploadResult;
 import java.io.File;
 import java.io.IOException;
@@ -16,6 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -183,7 +185,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		return file;
 	}
 
-	private List<File> getFileList(String globExpression) throws IllegalArgumentException, UnsupportedOperationException{
+	private List<File> getFileList(String globExpression) {
 		List<File> files = new ArrayList<>();
 		String [] parts = globExpression.split("\\\\");
 		String glob = parts[parts.length - 1];
@@ -211,15 +213,15 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		List<File> files = new ArrayList<>();
     	for(String path : paths){
 			String [] parts = path.split("\\\\");
-			String parent_path = rebuildPath(parts);
-			File folder = new File(parent_path);
+			String parentPath = rebuildPath(parts);
+			File folder = new File(parentPath);
 			File[] listOfFiles = folder.listFiles();
 			files.addAll(Arrays.asList(listOfFiles));
 		}
 		return files;
 	}
 
-	private List<String> resolveFolders(String path) throws XrayJenkinsGenericException{
+	private List<String> resolveFolders(String path) {
 		List<String> paths = new ArrayList<>();
     	String [] parts = path.split("\\*\\*");
     	if(parts.length == 1){
@@ -232,8 +234,8 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		}
     	for(File f : folder.listFiles()){
     		if(f.isDirectory()){
-    			String new_path = f.getPath() + mergeParts(Arrays.copyOfRange(parts, 1, parts.length));
-    			paths.addAll(resolveFolders(new_path));
+    			String newPath = f.getPath() + mergeParts(Arrays.copyOfRange(parts, 1, parts.length));
+    			paths.addAll(resolveFolders(newPath));
 			}
 		}
 		return paths;
@@ -243,19 +245,20 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
     	if(parts.length == 1){
     		return parts[0];
 		}
-		String merged = parts[0];
+		StringBuilder sb = new StringBuilder();
+    	sb.append(parts[0]);
 		for(int i = 1 ; i < parts.length; i ++){
-    		merged = merged + "**" + parts[i];
+    		sb.append("**").append(parts[i]);
 		}
-		return merged;
+		return sb.toString();
 	}
 
 	private String rebuildPath(String [] parts){
-    	String res = "";
+    	StringBuilder sb = new StringBuilder();
     	for(int i = 0; i < parts.length - 1; i ++){
-    		res = res + parts[i] + "\\";
+    		sb.append(parts[i]).append("\\");
 		}
-		return res;
+		return sb.toString();
 	}
 	
 	private FilePath readFile(FilePath workspace, String filePath, TaskListener listener) throws IOException{
@@ -300,7 +303,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 			String key = null;
 			for(FilePath fp : resultsFile){
 				result = uploadResults(workspace, listener,client, fp, env, key);
-				if(key == null && this.importToSameExecution == true){
+				if(key == null && this.importToSameExecution){
 					Map<String, Map> map = mapper.readValue(result.getMessage(), Map.class);
 					key = (String) map.get("testExecIssue").get("key");
 				}
@@ -375,8 +378,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 	}
 
 	private Map<com.xpandit.xray.model.QueryParameter, String> prepareQueryParam(EnvVars env){
-		Map<com.xpandit.xray.model.QueryParameter,String> queryParams = new HashMap<com.xpandit.xray.model.QueryParameter,String>();
-
+		Map<com.xpandit.xray.model.QueryParameter,String> queryParams = new EnumMap<>(QueryParameter.class);
 		String projectKey = dynamicFields.get(com.xpandit.xray.model.QueryParameter.PROJECT_KEY.getKey());
 		queryParams.put(com.xpandit.xray.model.QueryParameter.PROJECT_KEY, this.expand(env,projectKey));
 
