@@ -295,24 +295,20 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		String importFilePath = dynamicFields.get(com.xpandit.xray.model.DataParameter.FILEPATH.getKey());
 		String resolved = this.expand(env,importFilePath);
 
-		//todo - if (JUNIT || TESTNG || NUNIT || ROBOT FRAMEWORK)
 		if(Endpoint.JUNIT.equals(this.endpoint)
 				|| Endpoint.NUNIT.equals(this.endpoint)
 				|| Endpoint.TESTNG.equals(this.endpoint)
 				|| Endpoint.ROBOT.equals(this.endpoint)){
 			List<FilePath> resultsFile = getFilePaths(workspace,resolved,listener);
-
 			UploadResult result;
 			ObjectMapper mapper = new ObjectMapper();
 			String key = null;
 			for(FilePath fp : resultsFile){
 				result = uploadResults(workspace, listener,client, fp, env, key);
-				if(key == null && this.importToSameExecution == true){ //todo - add the condition for same execution
+				if(key == null && this.importToSameExecution == true){
 					Map<String, Map> map = mapper.readValue(result.getMessage(), Map.class);
 					key = (String) map.get("testExecIssue").get("key");
-					//todo - pass the test exec key as params for the next uploadings
 				}
-				String cenas = "cenas";
 			}
 		} else{
 			FilePath file = getFile(workspace, resolved, listener);
@@ -332,7 +328,8 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 			Map<com.xpandit.xray.model.QueryParameter,String> queryParams = prepareQueryParam(env);
 
 			if(StringUtils.isBlank(dynamicFields.get(com.xpandit.xray.model.QueryParameter.TEST_EXEC_KEY.getKey()))
-					&& StringUtils.isNotBlank(testExecutionKey)){
+					&& StringUtils.isNotBlank(testExecutionKey)
+					&& this.importToSameExecution){
 				queryParams.put(com.xpandit.xray.model.QueryParameter.TEST_EXEC_KEY, testExecutionKey);
 			}
 
@@ -440,15 +437,15 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
     public static class Descriptor extends BuildStepDescriptor<Publisher> {
         private static long BUILD_STEP_SEED = 0;
         private long buildID;
-        private boolean sameExecutionCheckbox;
+        private boolean sameExecutionEnabled;
 
         public Descriptor() {
         	super(XrayImportBuilder.class);
             load();
         }
 
-		public boolean isSameExecutionCheckbox() {
-			return sameExecutionCheckbox;
+		public boolean isSameExecutionEnabled() {
+			return sameExecutionEnabled;
 		}
 
 		@Override
@@ -482,7 +479,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         		}
         	}
 
-        	this.sameExecutionCheckbox = Objects.equals(dynamicFields.get("sameExecutionCheckbox"), "true") ? true : false;
+        	this.sameExecutionEnabled = Objects.equals(dynamicFields.get("sameExecutionCheckbox"), "true") ? true : false;
         	
         	return dynamicFields;
         	
