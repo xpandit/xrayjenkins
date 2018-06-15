@@ -23,10 +23,6 @@ import java.util.Objects;
 import java.util.Set;
 
 import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
-import com.xpandit.xray.util.StringUtil;
-import hudson.util.IOUtils;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.StaplerRequest;
@@ -58,7 +54,6 @@ import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import jenkins.tasks.SimpleBuildStep;
 import net.sf.json.JSONObject;
-import java.nio.file.FileSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
