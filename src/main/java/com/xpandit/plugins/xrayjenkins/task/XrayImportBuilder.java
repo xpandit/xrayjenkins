@@ -7,6 +7,7 @@
  */
 package com.xpandit.plugins.xrayjenkins.task;
 
+import com.xpandit.xray.model.UploadResult;
 import com.xpandit.plugins.xrayjenkins.Utils.BuilderUtils;
 import java.io.IOException;
 import java.util.HashMap;
@@ -224,18 +225,20 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
     		    dataParams.put(com.xpandit.xray.model.DataParameter.INFO, info);
             }
 
-			client.uploadResults(endpoint, dataParams, queryParams);
+			UploadResult result = client.uploadResults(endpoint, dataParams, queryParams);
+
+            listener.getLogger().println("response: " + result.getMessage());
 
             listener.getLogger().println("Sucessfully imported "+endpoint.getName()+" results");
             
         }catch(XrayClientCoreGenericException e){
-        	e.printStackTrace();
+			LOG.error("Error while performing import tasks", e);
         	throw new AbortException(e.getMessage());
         }catch(XrayJenkinsGenericException e){
-            e.printStackTrace();
+			LOG.error("Error while performing import tasks", e);
             throw new AbortException(e.getMessage());
         }catch (IOException e) {
-            e.printStackTrace();
+			LOG.error("Error while performing import tasks", e);
             listener.error(e.getMessage());
             throw new IOException(e);
         }finally{
