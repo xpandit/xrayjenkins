@@ -28,7 +28,7 @@
   
  <j:file xmlns:j="jelly:core" var="addSwitchableField" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='HTML'>
   		<f:entry title="{{label}}">
-		    <select name="_.inputInfoSwitcher" class="setting-input  select" id="selectInputType_${descriptor.defaultBuildID()}" onchange='switchInput_${descriptor.defaultBuildID()}("#switchContainer_${descriptor.defaultBuildID()}")'>
+		    <select name="_.inputInfoSwitcher" class="setting-input" id="selectInputType_${descriptor.defaultBuildID()}" onchange='switchInput_${descriptor.defaultBuildID()}("#switchContainer_${descriptor.defaultBuildID()}")'>
 		        <option value='filePath'>${%import-parameter.content-type-filepath}</option>
 		        <option value='fileContent'>${%import-parameter.content-type-filecontent}</option>
 		    </select>
