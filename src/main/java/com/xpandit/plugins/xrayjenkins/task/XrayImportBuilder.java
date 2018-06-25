@@ -11,6 +11,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xpandit.xray.model.QueryParameter;
 import com.xpandit.xray.model.UploadResult;
 import java.io.File;
+import com.xpandit.xray.model.UploadResult;
+import com.xpandit.plugins.xrayjenkins.Utils.BuilderUtils;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.PathMatcher;
@@ -44,7 +46,6 @@ import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractProject;
-import hudson.model.FreeStyleProject;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.tasks.BuildStepDescriptor;
@@ -71,14 +72,13 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
     private Endpoint endpoint;
     private Map<String,String> dynamicFields;
     private boolean importToSameExecution;
-    
+
     private String formatSuffix; //value of format select
     private String serverInstance;//Configuration ID of the JIRA instance
     private String inputInfoSwitcher;//value of the input type switcher
 
 	private static final Logger LOG = LoggerFactory.getLogger(XrayImportBuilder.class);
-    
-    
+
     private static Gson gson = new GsonBuilder().create();
     
     public XrayImportBuilder(XrayInstance xrayInstance, Endpoint endpoint, Map<String, String> dynamicFields) {
@@ -251,7 +251,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		}
 		return sb.toString();
 	}
-	
+
 	private FilePath readFile(FilePath workspace, String filePath, TaskListener listener) throws IOException{
 		   FilePath f = new FilePath(workspace, filePath);
 		   listener.getLogger().println("File: "+f.getRemote());
@@ -347,20 +347,19 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 			}
 
 			listener.getLogger().println("Starting to import results from " + resultsFile.getName() );
-
 			UploadResult result = client.uploadResults(endpoint, dataParams, queryParams);
-
+            listener.getLogger().println("response: " + result.getMessage());
 			listener.getLogger().println("Sucessfully imported " + endpoint.getName() + " results from " + resultsFile.getName() );
 			return result;
 
 		}catch(XrayClientCoreGenericException e){
-			e.printStackTrace();
+			LOG.error("Error while performing import tasks", e);
 			throw new AbortException(e.getMessage());
 		}catch(XrayJenkinsGenericException e){
-			e.printStackTrace();
+			LOG.error("Error while performing import tasks", e);
 			throw new AbortException(e.getMessage());
 		}catch (IOException e) {
-			e.printStackTrace();
+			LOG.error("Error while performing import tasks", e);
 			listener.error(e.getMessage());
 			throw new IOException(e);
 		}finally{
@@ -468,7 +467,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         	}
 
 			this.sameExecutionEnabled = Objects.equals(gson.fromJson(dynamicFields.get("same-exec-section"), HashMap.class).get("sameExecutionCheckbox"), true);
-        	
+
         	return dynamicFields;
         	
         }
@@ -484,12 +483,13 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         	}
         	return config;
         }
-   
-        
-        @Override
-        public boolean isApplicable(Class<? extends AbstractProject> jobType) {
-            return FreeStyleProject.class.isAssignableFrom(jobType);
-        }
+
+
+		@Override
+		public boolean isApplicable(Class<? extends AbstractProject> jobType) {
+			LOG.info("applying XrayImportBuilder to following jobType class: {}", jobType.getSimpleName());
+			return BuilderUtils.isSupportedJobType(jobType);
+		}
 
         @Override
         public String getDisplayName() {
