@@ -346,9 +346,11 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 				dataParams.put(com.xpandit.xray.model.DataParameter.INFO, info);
 			}
 
+			listener.getLogger().println("Starting to import results from " + resultsFile.getName() );
+
 			UploadResult result = client.uploadResults(endpoint, dataParams, queryParams);
 
-			listener.getLogger().println("Sucessfully imported "+endpoint.getName()+" results");
+			listener.getLogger().println("Sucessfully imported " + endpoint.getName() + " results from " + resultsFile.getName() );
 			return result;
 
 		}catch(XrayClientCoreGenericException e){
