@@ -32,13 +32,4 @@ public class BuilderUtils {
                 || MavenModuleSet.class.isAssignableFrom(jobType);
     }
 
-    public static ListBoxModel doFillServerInstanceItems() {
-
-        ListBoxModel items = new ListBoxModel();
-        for(XrayInstance sc : ServerConfiguration.get().getServerInstances()){
-            items.add(sc.getAlias(),sc.getConfigID());
-        }
-        return items;
-    }
-
 }
