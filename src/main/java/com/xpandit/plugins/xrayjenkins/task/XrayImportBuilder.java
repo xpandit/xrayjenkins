@@ -86,8 +86,9 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
     	this.xrayInstance = xrayInstance;
     	this.endpoint = endpoint;
     	this.dynamicFields = dynamicFields;
-    	this.importToSameExecution = Objects.equals(dynamicFields.get("sameExecutionCheckbox"), "true") ? true : false;
-    	
+    	/*this.importToSameExecution = Objects.equals(dynamicFields.get("sameExecutionCheckbox"), "true") ? true : false;*/
+		this.importToSameExecution = Objects.equals(gson.fromJson(dynamicFields.get("same-exec-section"), HashMap.class).get("sameExecutionCheckbox"), true);
+
     	this.formatSuffix = endpoint.getSuffix();
     	this.serverInstance = xrayInstance.getConfigID();
     	this.inputInfoSwitcher = dynamicFields.get("inputInfoSwitcher");
@@ -466,7 +467,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         		}
         	}
 
-        	this.sameExecutionEnabled = Objects.equals(dynamicFields.get("sameExecutionCheckbox"), "true") ? true : false;
+			this.sameExecutionEnabled = Objects.equals(gson.fromJson(dynamicFields.get("same-exec-section"), HashMap.class).get("sameExecutionCheckbox"), true);
         	
         	return dynamicFields;
         	

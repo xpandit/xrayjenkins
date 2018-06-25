@@ -190,7 +190,7 @@
             var selector = "selectFormat_"+${descriptor.defaultBuildID()};
             var selectList = document.getElementById(selector);
             var selectedImportFormat = selectList.options[selectList.selectedIndex].value;
-            //since this is assyncronous we canno't relie on id's when loading the page
+            //since this is assyncronous we canno't rely on id's when loading the page
 			if(!(selectedImportFormat === "/junit" || selectedImportFormat === "/testng" || selectedImportFormat === "/nunit" || selectedImportFormat ==="/robot")){
 			    var parentRow = document.getElementById('same-exec-chkbx').parentElement.parentElement;
                 var uncleRow1 = document.getElementById('same-exec-chkbx').parentElement.parentElement.nextSibling;
@@ -214,7 +214,7 @@
    		<f:select id="selectFormat_${descriptor.defaultBuildID()}"/>
    		<f:section name="dynamicFields">
             <f:section name="same-exec-section">
-                <f:entry id="mon-id" name="id-da-cena" title="Import to Same Test Execution  Executions" description="When this option is checked, if you are importing multiple Execution Report files using a glob expression, the results will be imported to the same Test Execution">
+                <f:entry title="Import to Same Test Execution  Executions" description="When this option is checked, if you are importing multiple Execution Report files using a glob expression, the results will be imported to the same Test Execution">
                     <f:checkbox name="sameExecutionCheckbox" id="same-exec-chkbx" checked="${descriptor.isSameExecutionEnabled()}"/>
                 </f:entry>
             </f:section>
