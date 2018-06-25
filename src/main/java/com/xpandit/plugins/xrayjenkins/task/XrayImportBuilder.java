@@ -13,7 +13,6 @@ import com.xpandit.xray.model.UploadResult;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
-import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -86,7 +85,6 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
     	this.xrayInstance = xrayInstance;
     	this.endpoint = endpoint;
     	this.dynamicFields = dynamicFields;
-    	/*this.importToSameExecution = Objects.equals(dynamicFields.get("sameExecutionCheckbox"), "true") ? true : false;*/
 		this.importToSameExecution = Objects.equals(gson.fromJson(dynamicFields.get("same-exec-section"), HashMap.class).get("sameExecutionCheckbox"), true);
 
     	this.formatSuffix = endpoint.getSuffix();
