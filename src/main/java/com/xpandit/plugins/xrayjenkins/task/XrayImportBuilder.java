@@ -186,8 +186,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		String glob = parts[parts.length - 1];
 		PathMatcher matcher;
 		try{
-			matcher = FileSystems.getDefault().getPathMatcher("glob:"
-					+ glob);
+			matcher = FileSystems.getDefault().getPathMatcher("glob:" + glob);
 		} catch (IllegalArgumentException e){
 			LOG.error("pattern is invalid", e);
 			throw e;
@@ -207,7 +206,10 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		List<File> files = new ArrayList<>();
     	for(String path : paths){
 			File folder = new File(rebuildPath(path.split("\\\\")));
-			files.addAll(Arrays.asList(folder.listFiles()));
+			File [] folderFiles = folder.listFiles();
+			if(folderFiles != null){
+				files.addAll(Arrays.asList(folderFiles));
+			}
 		}
 		return files;
 	}
@@ -223,7 +225,11 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
     	if(!folder.exists()){
     		return new ArrayList<>();
 		}
-    	for(File f : folder.listFiles()){
+		File [] files = folder.listFiles();
+    	if(files == null){
+			return new ArrayList<>();
+		}
+    	for(File f : files){
     		if(f.isDirectory()){
     			String newPath = f.getPath() + mergeParts(Arrays.copyOfRange(parts, 1, parts.length));
     			paths.addAll(resolveFolders(newPath));
@@ -279,7 +285,9 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		listener.getLogger().println("####   Xray for JIRA is importing the feature files  ####");
 		listener.getLogger().println("##########################################################");
 
-		XrayImporter client = new XrayImporterImpl(xrayInstance.getServerAddress(),xrayInstance.getUsername(),xrayInstance.getPassword());
+		XrayImporter client = new XrayImporterImpl(xrayInstance.getServerAddress(),
+				xrayInstance.getUsername(),
+				xrayInstance.getPassword());
 		EnvVars env = build.getEnvironment(listener);
 		String importFilePath = dynamicFields.get(com.xpandit.xray.model.DataParameter.FILEPATH.getKey());
 		String resolved = this.expand(env,importFilePath);
