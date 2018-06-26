@@ -26,6 +26,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.StaplerRequest;
@@ -273,7 +274,10 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 	}
 
 	@Override
-	public void perform(Run<?,?> build, FilePath workspace, Launcher launcher, TaskListener listener)
+	public void perform(@Nonnull Run<?,?> build,
+						@Nonnull FilePath workspace,
+						@Nonnull Launcher launcher,
+						@Nonnull TaskListener listener)
 			throws InterruptedException, IOException {
 		validate(dynamicFields);
 
