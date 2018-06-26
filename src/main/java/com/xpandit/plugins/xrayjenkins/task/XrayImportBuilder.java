@@ -116,7 +116,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 							 String importInfo,
 							 String inputInfoSwitcher){
     	this.serverInstance = serverInstance;
-    	this.endpoint = endpoint != null ? getEndpointValue(endpoint) : null;
+    	this.endpoint = Endpoint.lookupByName(endpoint);
     	this.xrayInstance = ConfigurationUtils.getConfiguration(serverInstance);
 		this.formatSuffix = this.endpoint != null ? this.endpoint.getSuffix() : null;
 
@@ -131,38 +131,6 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 				inputInfoSwitcher);
 
 		this.inputInfoSwitcher = dynamicFields.get("inputInfoSwitcher");
-	}
-
-	private Endpoint getEndpointValue(String endpoint){
-		switch(endpoint){
-			case "xrayjson":
-				return Endpoint.XRAY;
-			case "cucumber":
-				return Endpoint.CUCUMBER;
-			case "cucumbermultipart":
-				return Endpoint.CUCUMBER_MULTIPART;
-			case "behave":
-				return Endpoint.BEHAVE;
-			case "behavemultipart":
-				return Endpoint.BEHAVE_MULTIPART;
-			case "junit":
-				return Endpoint.JUNIT;
-			case "junitmultipart":
-				return Endpoint.JUNIT_MULTIPART;
-			case "nunit":
-				return Endpoint.NUNIT;
-			case "nunitmultipart":
-				return Endpoint.NUNIT_MULTIPART;
-			case "robot":
-				return Endpoint.ROBOT;
-			case "robotmultipart":
-				return Endpoint.ROBOT_MULTIPART;
-			case "bundle":
-				return Endpoint.BUNDLE;
-			default:
-				LOG.error("provided Xray Endpoint is not valid");
-				return null;
-		}
 	}
 
 	private void setDynamicFields(String projectKey,
