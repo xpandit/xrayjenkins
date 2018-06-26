@@ -14,11 +14,15 @@ import com.xpandit.plugins.xrayjenkins.Utils.FormUtils;
 import com.xpandit.plugins.xrayjenkins.model.ServerConfiguration;
 import com.xpandit.plugins.xrayjenkins.model.XrayInstance;
 import hudson.Extension;
+import hudson.Launcher;
+import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
+import hudson.model.BuildListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
+import java.io.IOException;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -63,6 +67,11 @@ public class XrayImportFeatureBuilder extends Builder {
         this.lastModified = lastModified;
     }
 
+    @Override
+    public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
+        XrayInstance instance = ConfigurationUtils.getConfiguration(this.serverInstance);
+    }
+
     @Extension
     public static class Descriptor extends BuildStepDescriptor<Builder> {
 
@@ -85,7 +94,6 @@ public class XrayImportFeatureBuilder extends Builder {
             return FormUtils.getServerInstanceItems();
         }
 
-        //TODO - validation of fields folder and server
         public FormValidation doCheckFilesFolder(@QueryParameter String filesFolder){
             return StringUtils.isNotBlank(filesFolder) ? FormValidation.ok() : FormValidation.error("You must specify the base directory.");
         }
