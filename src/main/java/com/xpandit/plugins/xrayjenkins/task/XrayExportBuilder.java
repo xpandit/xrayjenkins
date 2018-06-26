@@ -62,7 +62,7 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
     public XrayExportBuilder(XrayInstance xrayInstance,  Map<String, String> fields) {
     	this.xrayInstance = xrayInstance;
     	this.fields = fields;
-    	
+
     	this.issues = fields.get("issues");
     	this.filter = fields.get("filter");
     	this.filePath = fields.get("filePath");
@@ -87,29 +87,9 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
                              String issues){
         this.xrayInstance = ConfigurationUtils.getConfiguration(serverInstance);
         this.fields = new HashMap<>();
-        setFields(filter, filePath, issues);
-        this.issues = fields.get("issues");
-        this.filter = fields.get("filter");
-        this.filePath = fields.get("filePath");
-    }
-
-    private void setFields(String filter,
-                           String filePath,
-                           String issues){
-
-        if(!StringUtils.isBlank(filter)){
-            this.fields.put("filter", filter);
-        }
-        if(!StringUtils.isBlank(filePath)){
-            this.fields.put("filePath", filePath);
-        }
-        if(!StringUtils.isBlank(issues)){
-            this.fields.put("issues", issues);
-        }
-    }
-
-    private void setXrayInstance(String serverInstance){
-        this.xrayInstance = ConfigurationUtils.getConfiguration(serverInstance);
+        this.issues = issues;
+        this.filter = filter;
+        this.filePath = filePath;
     }
 
     @Override
@@ -122,22 +102,23 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
         listener.getLogger().println("##########################################################");
 
         if(this.xrayInstance == null){
-            LOG.error("XrayInstance is null. please check the passed configuration ID");
+            listener.getLogger().println("XrayInstance is null. please check the passed configuration ID");
+            throw new AbortException("XrayInstance is null. please check the passed configuration ID");
         }
 
         XrayExporter client = new XrayExporterImpl(xrayInstance.getServerAddress(),xrayInstance.getUsername(),xrayInstance.getPassword());
         
         try{
 
-            if (StringUtils.isNotBlank(issues)) 
+            if (StringUtils.isNotBlank(issues)) {
                 listener.getLogger().println("Issues: "+issues);
-
-            if (StringUtils.isNotBlank(filter)) 
-                listener.getLogger().println("Filter: "+filter);
-
-            if (StringUtils.isNotBlank(filePath)) 
-                listener.getLogger().println("Will save the feature files in: "+filePath);
-           
+            }
+            if (StringUtils.isNotBlank(filter)) {
+                listener.getLogger().println("Filter: " + filter);
+            }
+            if (StringUtils.isNotBlank(filePath)) {
+                listener.getLogger().println("Will save the feature files in: " + filePath);
+            }
             InputStream file = client.downloadFeatures(issues,filter,"true");
             this.unzipFeatures(listener, workspace, filePath, file);
             listener.getLogger().println("Sucessfully exported the Cucumber features");
