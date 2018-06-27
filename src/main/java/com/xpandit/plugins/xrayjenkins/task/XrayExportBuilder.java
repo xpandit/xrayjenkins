@@ -7,6 +7,7 @@
  */
 package com.xpandit.plugins.xrayjenkins.task;
 
+import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
 import com.xpandit.plugins.xrayjenkins.Utils.BuilderUtils;
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,36 +48,41 @@ import org.slf4j.LoggerFactory;
  */
 public class XrayExportBuilder extends Builder implements SimpleBuildStep {
 
-	private XrayInstance xrayInstance;
-    private Map<String,String> fields;
-    
+    private static final Logger LOG = LoggerFactory.getLogger(XrayExportBuilder.class);
+
     private String serverInstance;//Configuration ID of the JIRA instance
     private String issues;
     private String filter;
     private String filePath;
 
-    private static final Logger LOG = LoggerFactory.getLogger(XrayExportBuilder.class);
-
-    public XrayExportBuilder(XrayInstance xrayInstance,  Map<String, String> fields) {
-    	this.xrayInstance = xrayInstance;
-    	this.fields = fields;
-    	
-    	this.issues = fields.get("issues");
-    	this.filter = fields.get("filter");
-    	this.filePath = fields.get("filePath");
-    	this.serverInstance = xrayInstance.getConfigID();
+    public XrayExportBuilder(String serverInstance,
+                             String issues,
+                             String filter,
+                             String filePath) {
+        this.issues = issues;
+        this.filter = filter;
+        this.filePath = filePath;
+    	this.serverInstance = serverInstance;
 	}
    
     @Override
-    public void perform(Run<?,?> build, FilePath workspace, Launcher launcher, TaskListener listener) throws AbortException, IOException {
+    public void perform(Run<?,?> build,
+                        FilePath workspace,
+                        Launcher launcher,
+                        TaskListener listener) throws AbortException, IOException {
         
         listener.getLogger().println("Starting export task...");
         
         listener.getLogger().println("##########################################################");
         listener.getLogger().println("####   Xray for JIRA is exporting the feature files  ####");
         listener.getLogger().println("##########################################################");
-        
-        XrayExporter client = new XrayExporterImpl(xrayInstance.getServerAddress(),xrayInstance.getUsername(),xrayInstance.getPassword());
+        XrayInstance serverInstance = ConfigurationUtils.getConfiguration(this.serverInstance);
+        if(serverInstance == null){
+            throw new AbortException("The Jira server configuration of this task was not found.");
+        }
+        XrayExporter client = new XrayExporterImpl(serverInstance.getServerAddress(),
+                serverInstance.getUsername(),
+                serverInstance.getPassword());
         
         try{
 
@@ -155,15 +161,6 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
 		this.filePath = filePath;
 	}
 
-
-	public Map<String,String> getFields() {
-		return fields;
-	}
-
-	public void setFields(Map<String,String> fields) {
-		this.fields = fields;
-	}
-
 	@Extension
     public static class Descriptor extends BuildStepDescriptor<Builder> {
 
@@ -182,12 +179,11 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
         
         @Override
 		public XrayExportBuilder newInstance(StaplerRequest req, JSONObject formData){
-			
-        	Map<String,String> fields = getFields(formData.getJSONObject("fields"));
-			XrayInstance server = getConfiguration(formData.getString("serverInstance"));
-			
-			return new XrayExportBuilder(server,fields);
-			
+            Map<String,String> fields = getFields(formData.getJSONObject("fields"));
+			return new XrayExportBuilder(formData.getString("serverInstance"),
+                    fields.get("issues"),
+                    fields.get("filter"),
+                    fields.get("filePath"));
         }
         
         
@@ -200,18 +196,6 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
             
             return items;
         }
-        
-        private XrayInstance getConfiguration(String configID) {
-        	XrayInstance config =  null;
-        	List<XrayInstance> serverInstances =  getServerInstances();
-        	for(XrayInstance sc : serverInstances){
-        		if(sc.getConfigID().equals(configID)){
-        			config = sc;break;
-        		}
-        	}
-        	return config;
-		}
-        
 
         private Map<String, String> getFields(JSONObject configuredFields) {
         	Map<String,String> fields = new HashMap<String,String>();
