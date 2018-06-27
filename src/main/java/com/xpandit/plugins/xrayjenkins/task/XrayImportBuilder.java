@@ -12,7 +12,6 @@ import com.xpandit.xray.model.QueryParameter;
 import com.xpandit.xray.model.UploadResult;
 import java.io.File;
 import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
-import com.xpandit.xray.model.UploadResult;
 import com.xpandit.plugins.xrayjenkins.Utils.BuilderUtils;
 import java.io.IOException;
 import java.nio.file.FileSystems;
