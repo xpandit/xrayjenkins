@@ -73,7 +73,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
     public XrayImportBuilder(String serverInstance , Endpoint endpoint, Map<String, String> dynamicFields) {
     	this.endpoint = endpoint;
     	this.dynamicFields = dynamicFields;
-    	
+
     	this.formatSuffix = endpoint.getSuffix();
     	this.serverInstance = serverInstance;
     	this.inputInfoSwitcher = dynamicFields.get("inputInfoSwitcher");
@@ -112,8 +112,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 							 String inputInfoSwitcher){
     	this.serverInstance = serverInstance;
     	this.endpoint = Endpoint.lookupByName(endpoint);
-    	this.xrayInstance = ConfigurationUtils.getConfiguration(serverInstance);
-		this.formatSuffix = this.endpoint != null ? this.endpoint.getSuffix() : null;
+   		this.formatSuffix = this.endpoint != null ? this.endpoint.getSuffix() : null;
 
 		setDynamicFields(projectKey,
 				testEnvironments,
@@ -348,10 +347,6 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		if(serverInstance == null){
 			LOG.error("configuration id is null");
 			throw new XrayJenkinsGenericException("configuration id is null");
-		}
-		if(xrayInstance == null){
-			LOG.error("Xray instance is null");
-			throw new XrayJenkinsGenericException("Xray instance is null");
 		}
 		if(endpoint == null){
 			LOG.error("passed endpoint is null or could not be found");

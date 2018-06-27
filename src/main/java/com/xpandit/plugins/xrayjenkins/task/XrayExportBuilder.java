@@ -56,16 +56,6 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
     private String filter;
     private String filePath;
 
-    public XrayExportBuilder(String serverInstance,
-                             String issues,
-                             String filter,
-                             String filePath) {
-        this.issues = issues;
-        this.filter = filter;
-        this.filePath = filePath;
-    	this.serverInstance = serverInstance;
-	}
-
     /**
      * Constructor used in pipelines projects
      *
@@ -73,20 +63,19 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
      * and make no attempt to perform variable substitution"
      * @see <a href="https://jenkins.io/doc/developer/plugin-development/pipeline-integration/">Writing Pipeline-Compatible Plugins </a>
      * @param serverInstance the server configuration id
+     * @param issues the issues to export
      * @param filter the saved filter id
      * @param filePath the file path to export
-     * @param issues the issues to export
      */
     @DataBoundConstructor
 	public XrayExportBuilder(String serverInstance,
+                             String issues,
                              String filter,
-                             String filePath,
-                             String issues){
-        this.xrayInstance = ConfigurationUtils.getConfiguration(serverInstance);
-        this.fields = new HashMap<>();
+                             String filePath){
         this.issues = issues;
         this.filter = filter;
         this.filePath = filePath;
+        this.serverInstance = serverInstance;
     }
 
     @Override
