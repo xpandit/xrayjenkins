@@ -9,6 +9,7 @@ package com.xpandit.plugins.xrayjenkins.task;
 
 import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
 import com.xpandit.plugins.xrayjenkins.Utils.FormUtils;
+import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
 import com.xpandit.xray.model.UploadResult;
 import com.xpandit.plugins.xrayjenkins.Utils.BuilderUtils;
 import java.io.IOException;
@@ -58,8 +59,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
-    
-    private XrayInstance xrayInstance;
+
     private Endpoint endpoint;
     private Map<String,String> dynamicFields;
     
@@ -71,13 +71,12 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
     
     private static Gson gson = new GsonBuilder().create();
     
-    public XrayImportBuilder(XrayInstance xrayInstance, Endpoint endpoint, Map<String, String> dynamicFields) {
-    	this.xrayInstance = xrayInstance;
+    public XrayImportBuilder(String serverInstance , Endpoint endpoint, Map<String, String> dynamicFields) {
     	this.endpoint = endpoint;
     	this.dynamicFields = dynamicFields;
     	
     	this.formatSuffix = endpoint.getSuffix();
-    	this.serverInstance = xrayInstance.getConfigID();
+    	this.serverInstance = serverInstance;
     	this.inputInfoSwitcher = dynamicFields.get("inputInfoSwitcher");
 	}
 	
@@ -162,7 +161,10 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 	}
 
 	@Override
-    public void perform(Run<?,?> build, FilePath workspace, Launcher launcher, TaskListener listener)throws AbortException, InterruptedException, IOException {
+    public void perform(Run<?,?> build,
+						FilePath workspace,
+						Launcher launcher,
+						TaskListener listener) throws AbortException, InterruptedException, IOException {
 		validate(dynamicFields);
 		
         listener.getLogger().println("Starting import task...");
@@ -172,8 +174,13 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         listener.getLogger().println("##########################################################");
         listener.getLogger().println("#### Importing the execution results to Xray  ####");
         listener.getLogger().println("##########################################################");
-
-        XrayImporter client = new XrayImporterImpl(xrayInstance.getServerAddress(),xrayInstance.getUsername(),xrayInstance.getPassword());
+        XrayInstance serverInstance = ConfigurationUtils.getConfiguration(this.serverInstance);
+        if(serverInstance == null){
+        	throw new AbortException("The Jira server configuration of this task was not found.");
+		}
+        XrayImporter client = new XrayImporterImpl(serverInstance.getServerAddress(),
+				serverInstance.getUsername(),
+				serverInstance.getPassword());
 
         try {
         	EnvVars env = build.getEnvironment(listener);
@@ -301,7 +308,10 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 			XrayInstance server = getConfiguration(formData.getString("serverInstance"));
 			Endpoint endpoint = Endpoint.lookupBySuffix(formData.getString("formatSuffix"));
 
-			return new XrayImportBuilder(server,endpoint,dynamicFields);
+			/*return new XrayImportBuilder(server,endpoint,dynamicFields);*/
+            return new XrayImportBuilder(formData.getString("serverInstance"),
+                    endpoint,
+                    getDynamicFields(formData.getJSONObject("dynamicFields")));
 			
         }
 
