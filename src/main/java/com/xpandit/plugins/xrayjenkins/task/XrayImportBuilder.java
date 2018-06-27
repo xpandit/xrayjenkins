@@ -9,7 +9,6 @@ package com.xpandit.plugins.xrayjenkins.task;
 
 import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
 import com.xpandit.plugins.xrayjenkins.Utils.FormUtils;
-import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
 import com.xpandit.xray.model.UploadResult;
 import com.xpandit.plugins.xrayjenkins.Utils.BuilderUtils;
 import java.io.IOException;
@@ -304,11 +303,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         @Override
 		public XrayImportBuilder newInstance(StaplerRequest req, JSONObject formData) throws Descriptor.FormException{
         	validateFormData(formData);
-        	Map<String,String> dynamicFields = getDynamicFields(formData.getJSONObject("dynamicFields"));
-			XrayInstance server = getConfiguration(formData.getString("serverInstance"));
 			Endpoint endpoint = Endpoint.lookupBySuffix(formData.getString("formatSuffix"));
-
-			/*return new XrayImportBuilder(server,endpoint,dynamicFields);*/
             return new XrayImportBuilder(formData.getString("serverInstance"),
                     endpoint,
                     getDynamicFields(formData.getJSONObject("dynamicFields")));

@@ -9,7 +9,6 @@ package com.xpandit.plugins.xrayjenkins.task;
 
 import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
 import com.xpandit.plugins.xrayjenkins.Utils.FormUtils;
-import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
 import com.xpandit.plugins.xrayjenkins.Utils.BuilderUtils;
 import java.io.IOException;
 import java.io.InputStream;
@@ -185,9 +184,6 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
 		public XrayExportBuilder newInstance(StaplerRequest req, JSONObject formData) throws Descriptor.FormException{
 			validateFormData(formData);
         	Map<String,String> fields = getFields(formData.getJSONObject("fields"));
-			XrayInstance server = getConfiguration(formData.getString("serverInstance"));
-			
-			/*return new XrayExportBuilder(server,fields);*/
             return new XrayExportBuilder(formData.getString("serverInstance"),
                     fields.get("issues"),
                     fields.get("filter"),
