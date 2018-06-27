@@ -4,7 +4,11 @@
         <f:select/>
     </f:entry>
 
-    <f:entry title="${%Cucumber feature files folder}" field="filesFolder">
+    <f:entry title="${%Project Key}" field="projectKey">
+        <f:textbox/>
+    </f:entry>
+
+    <f:entry title="${%Cucumber feature files folder}" field="folderPath">
         <f:textbox/>
     </f:entry>
 
