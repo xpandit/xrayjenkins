@@ -8,6 +8,7 @@
 package com.xpandit.plugins.xrayjenkins.task;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.xpandit.xray.model.ParameterBean;
 import com.xpandit.xray.model.QueryParameter;
 import com.xpandit.xray.model.UploadResult;
 import java.io.File;
@@ -84,7 +85,11 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
     public XrayImportBuilder(String serverInstance , Endpoint endpoint, Map<String, String> dynamicFields) {
     	this.endpoint = endpoint;
     	this.dynamicFields = dynamicFields;
-		this.importToSameExecution = Objects.equals(gson.fromJson(dynamicFields.get("same-exec-section"), HashMap.class).get("sameExecutionCheckbox"), true);
+		if(dynamicFields.get("sameExecutionCheckbox") != null){
+			this.importToSameExecution = dynamicFields.get("sameExecutionCheckbox").equals("true") ? true : false;
+		} else {
+			this.importToSameExecution = false;
+		}
 
     	this.formatSuffix = endpoint.getSuffix();
     	this.serverInstance = serverInstance;
@@ -477,7 +482,12 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         		}
         	}
 
-			this.sameExecutionEnabled = Objects.equals(gson.fromJson(dynamicFields.get("same-exec-section"), HashMap.class).get("sameExecutionCheckbox"), true);
+        	if(dynamicFields.get("sameExecutionCheckbox") != null){
+				this.sameExecutionEnabled = dynamicFields.get("sameExecutionCheckbox").equals("true") ? true : false;
+			} else {
+				this.sameExecutionEnabled = false;
+			}
+
 
         	return dynamicFields;
         	
@@ -538,10 +548,21 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
             Map<String,FormatBean> formats = new HashMap<String,FormatBean>();
             for(Endpoint e : Endpoint.values()){
             	FormatBean bean = e.toBean();
+            	addImportToSameExecField(e, bean);//todo - enfiar aí o campo da checkbox para os respectivos endpoints
             	formats.put(e.getSuffix(),bean);
             }
             return gson.toJson(formats);	
         }
+
+        private void addImportToSameExecField(Endpoint e, FormatBean bean){
+        	if(Endpoint.JUNIT.equals(e)
+					|| Endpoint.TESTNG.equals(e)
+					|| Endpoint.NUNIT.equals(e)
+					|| Endpoint.ROBOT.equals(e)){
+				ParameterBean pb = new ParameterBean("sameExecutionEnabled", "same exec text box", false);
+				bean.getConfigurableFields().add(0, pb);
+			}
+		}
         
         public List<XrayInstance> getServerInstances() {
 			return ServerConfiguration.get().getServerInstances();

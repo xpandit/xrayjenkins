@@ -15,6 +15,12 @@
   <j:file xmlns:j="jelly:core" var="addInputEntry" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='XML'>
  		<f:entry title='{{label}}' field='{{key}}'>${addInput}</f:entry>   
   </j:file>
+
+  <j:file xmlns:j="jelly:core" var="addSameExecutionCheckboxEntry" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='HTML'>
+        <f:entry title="Import to Same Test Execution  Executions" description="When this option is checked, if you are importing multiple Execution Report files using a glob expression, the results will be imported to the same Test Execution">
+              <f:checkbox name="sameExecutionCheckbox" id="same-exec-chkbx" checked="${descriptor.isSameExecutionEnabled()}"/>
+        </f:entry>
+  </j:file>
  
   <j:file xmlns:j="jelly:core" var="addTextarea" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='XML'>
   	 	<f:textarea field='{{key}}' value="{{configuration}}" style="width:100%"/>
@@ -147,32 +153,14 @@
 				
 				Handlebars.registerPartial("addTextareaEntry",'${addTextareaEntry}');
 				Handlebars.registerPartial("addTextarea", '${addTextarea}');
+
+				Handlebars.registerPartial("addSameExecutionCheckboxEntry",'${addSameExecutionCheckboxEntry}')
 				
 				Handlebars.registerPartial("addSwitchableField", '${addSwitchableField}');
 				
 				//register event-handler
 		    	Q('#selectFormat_${descriptor.defaultBuildID()}').on('change',function(e){
 		    		addXrayFields_${descriptor.defaultBuildID()}(e.currentTarget.options[e.currentTarget.selectedIndex].value);
-
-                    var selector = "selectFormat_"+${descriptor.defaultBuildID()};
-                    var selectList = document.getElementById(selector);
-                    var selectedImportFormat = selectList.options[selectList.selectedIndex].value;
-                    var id = document.querySelectorAll('[name="same-exec-section"]')[0].getAttribute("id");
-                    var elements = document.querySelectorAll("[nameref=\""+id+"\"]");
-                    if(selectedImportFormat === "/junit" || selectedImportFormat === "/testng" || selectedImportFormat === "/nunit" || selectedImportFormat ==="/robot"){
-                        for(var key in elements){
-                            if(elements[key].style !== undefined){
-                                elements[key].style.display = "";
-                            }
-                        }
-                    } else{
-                        for(var key in elements){
-                            if(elements[key].style !== undefined){
-                                elements[key].style.display = "none";
-                            }
-                        }
-                    }
-
 		    	});
 				
 				//get last chosen format
@@ -187,18 +175,6 @@
 		     	}
 			});
 
-            var selector = "selectFormat_"+${descriptor.defaultBuildID()};
-            var selectList = document.getElementById(selector);
-            var selectedImportFormat = selectList.options[selectList.selectedIndex].value;
-            //since this is assyncronous we canno't rely on id's when loading the page
-			if(!(selectedImportFormat === "/junit" || selectedImportFormat === "/testng" || selectedImportFormat === "/nunit" || selectedImportFormat ==="/robot")){
-			    var parentRow = document.getElementById('same-exec-chkbx').parentElement.parentElement;
-                var uncleRow1 = document.getElementById('same-exec-chkbx').parentElement.parentElement.nextSibling;
-                var uncleRow2 = document.getElementById('same-exec-chkbx').parentElement.parentElement.nextSibling.nextSibling;
-                parentRow.style.display = "none";
-                uncleRow1.style.display = "none";
-                uncleRow2.style.display = "none";
-			}
 	 });
    			
    			
@@ -212,12 +188,8 @@
 
    <f:entry title="${%Format}" field="formatSuffix">
    		<f:select id="selectFormat_${descriptor.defaultBuildID()}"/>
+
    		<f:section name="dynamicFields">
-            <f:section name="same-exec-section">
-                <f:entry title="Import to Same Test Execution  Executions" description="When this option is checked, if you are importing multiple Execution Report files using a glob expression, the results will be imported to the same Test Execution">
-                    <f:checkbox name="sameExecutionCheckbox" id="same-exec-chkbx" checked="${descriptor.isSameExecutionEnabled()}"/>
-                </f:entry>
-            </f:section>
    			<f:entry title="Parameters">
    				<p id="configurableFields_${descriptor.defaultBuildID()}" style="border-left:solid;border-color:#00a3ac;width:50vw"></p>
    			</f:entry>

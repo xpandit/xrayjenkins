@@ -1,11 +1,15 @@
   <!--Renders an HTML element for each additional field-->
 
-	{{#each configurableFields}}
+  {{#each configurableFields}}
 		{{#ifEquals key "importInfo"}}
 			{{>addSwitchableField}}
 		{{else}}
-			{{>addInputEntry}}
+			{{#ifEquals key "sameExecutionEnabled"}}
+				{{>addSameExecutionCheckboxEntry}}
+			{{else}}
+				{{>addInputEntry}}
+			{{/ifEquals}}
 		{{/ifEquals}}
-	{{/each}}
+  {{/each}}
 
   
