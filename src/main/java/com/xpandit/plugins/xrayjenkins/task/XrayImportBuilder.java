@@ -404,8 +404,6 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         
         @Override
 		public XrayImportBuilder newInstance(StaplerRequest req, JSONObject formData) throws Descriptor.FormException{
-			Map<String,String> dynamicFields = getDynamicFields(formData.getJSONObject("dynamicFields"));
-			XrayInstance server = ConfigurationUtils.getConfiguration(formData.getString("serverInstance"));
         	validateFormData(formData);
 			Endpoint endpoint = Endpoint.lookupBySuffix(formData.getString("formatSuffix"));
             return new XrayImportBuilder(formData.getString("serverInstance"),
