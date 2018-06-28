@@ -112,7 +112,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 							 String importInfo,
 							 String inputInfoSwitcher){
     	this.serverInstance = serverInstance;
-    	this.endpoint = Endpoint.lookupByName(endpoint);
+    	this.endpoint = StringUtils.isNotBlank(endpoint) ? Endpoint.lookupByName(endpoint.trim()) : null;
    		this.formatSuffix = this.endpoint != null ? this.endpoint.getSuffix() : null;
 
 		setDynamicFields(projectKey,
