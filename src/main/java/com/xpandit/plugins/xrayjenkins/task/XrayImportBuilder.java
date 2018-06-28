@@ -8,6 +8,7 @@
 package com.xpandit.plugins.xrayjenkins.task;
 
 import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
+import com.xpandit.plugins.xrayjenkins.Utils.FormUtils;
 import com.xpandit.xray.model.UploadResult;
 import com.xpandit.plugins.xrayjenkins.Utils.BuilderUtils;
 import java.io.IOException;
@@ -170,7 +171,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         listener.getLogger().println("Import Cucumber features Task started...");
 
         listener.getLogger().println("##########################################################");
-        listener.getLogger().println("####   Xray for JIRA is importing the feature files  ####");
+        listener.getLogger().println("#### Importing the execution results to Xray  ####");
         listener.getLogger().println("##########################################################");
         XrayInstance serverInstance = ConfigurationUtils.getConfiguration(this.serverInstance);
         if(serverInstance == null){
@@ -300,14 +301,21 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         }
         
         @Override
-		public XrayImportBuilder newInstance(StaplerRequest req, JSONObject formData){
+		public XrayImportBuilder newInstance(StaplerRequest req, JSONObject formData) throws Descriptor.FormException{
+        	validateFormData(formData);
 			Endpoint endpoint = Endpoint.lookupBySuffix(formData.getString("formatSuffix"));
-			return new XrayImportBuilder(formData.getString("serverInstance"),
-					endpoint,
-					getDynamicFields(formData.getJSONObject("dynamicFields")));
+            return new XrayImportBuilder(formData.getString("serverInstance"),
+                    endpoint,
+                    getDynamicFields(formData.getJSONObject("dynamicFields")));
 			
         }
-        
+
+        private void validateFormData(JSONObject formData) throws Descriptor.FormException{
+			if(StringUtils.isBlank(formData.getString("serverInstance"))){
+				throw new Descriptor.FormException("Xray Results Import Task error, you must provide a valid JIRA Instance","serverInstance");
+			}
+		}
+
         private Map<String,String> getDynamicFields(JSONObject configuredFields){
         	
         	Map<String,String> dynamicFields = new HashMap<String,String>();
@@ -360,13 +368,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         }
         
         public ListBoxModel doFillServerInstanceItems() {
-        	
-            ListBoxModel items = new ListBoxModel();
-            List<XrayInstance> serverInstances =  getServerInstances();
-            for(XrayInstance sc : serverInstances)
-            	items.add(sc.getAlias(),sc.getConfigID());
-            
-            return items;
+			return FormUtils.getServerInstanceItems();
         }
         
         public long defaultBuildID(){
@@ -389,7 +391,11 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         public List<XrayInstance> getServerInstances() {
 			return ServerConfiguration.get().getServerInstances();
 		}
-        
+
+		public FormValidation doCheckServerInstance(){
+			return ConfigurationUtils.anyAvailableConfiguration() ? FormValidation.ok() : FormValidation.error("No configured Server Instances found");
+		}
+
     }
 
 }
