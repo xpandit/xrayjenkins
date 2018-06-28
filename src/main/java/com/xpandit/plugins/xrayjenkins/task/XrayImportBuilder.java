@@ -143,11 +143,23 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         	FormatBean bean = e.toBean();
         	formats.put(e.getSuffix(),bean);
         	
-        	if(e.name().equals(endpoint.name()))
-        		bean.setFieldsConfiguration(dynamicFields);
+        	if(e.name().equals(endpoint.name())){
+				bean.setFieldsConfiguration(dynamicFields);
+				addImportToSameExecField(e, bean);
+			}
         }
         return gson.toJson(formats);	
     }
+
+	private void addImportToSameExecField(Endpoint e, FormatBean bean){
+		if(Endpoint.JUNIT.equals(e)
+				|| Endpoint.TESTNG.equals(e)
+				|| Endpoint.NUNIT.equals(e)
+				|| Endpoint.ROBOT.equals(e)){
+			ParameterBean pb = new ParameterBean("sameExecutionEnabled", "same exec text box", false);
+			bean.getConfigurableFields().add(0, pb);
+		}
+	}
     
 	private List<FilePath> getFilePaths(FilePath workspace, String filePath, TaskListener listener) throws IOException {
     	List<FilePath> filePaths = new ArrayList<>();
