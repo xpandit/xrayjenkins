@@ -84,10 +84,6 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
     private String formatSuffix; //value of format select
     private String serverInstance;//Configuration ID of the JIRA instance
     private String inputInfoSwitcher;//value of the input type switcher
-
-	private static final Logger LOG = LoggerFactory.getLogger(XrayImportBuilder.class);
-
-    private static Gson gson = new GsonBuilder().create();
     
     public XrayImportBuilder(String serverInstance , Endpoint endpoint, Map<String, String> dynamicFields) {
     	this.endpoint = endpoint;
