@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
+import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import com.xpandit.plugins.xrayjenkins.model.ServerConfiguration;
@@ -58,16 +59,28 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
     private String filter;
     private String filePath;
 
-    public XrayExportBuilder(String serverInstance,
+    /**
+     * Constructor used in pipelines projects
+     *
+     * "Anyway code run from Pipeline should take any configuration values as literal strings
+     * and make no attempt to perform variable substitution"
+     * @see <a href="https://jenkins.io/doc/developer/plugin-development/pipeline-integration/">Writing Pipeline-Compatible Plugins </a>
+     * @param serverInstance the server configuration id
+     * @param issues the issues to export
+     * @param filter the saved filter id
+     * @param filePath the file path to export
+     */
+    @DataBoundConstructor
+	public XrayExportBuilder(String serverInstance,
                              String issues,
                              String filter,
-                             String filePath) {
+                             String filePath){
         this.issues = issues;
         this.filter = filter;
         this.filePath = filePath;
-    	this.serverInstance = serverInstance;
-	}
-   
+        this.serverInstance = serverInstance;
+    }
+
     @Override
     public void perform(Run<?,?> build,
                         FilePath workspace,
@@ -81,6 +94,7 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
         listener.getLogger().println("##########################################################");
         XrayInstance serverInstance = getConfiguration(this.serverInstance);
         if(serverInstance == null){
+            listener.getLogger().println("XrayInstance is null. please check the passed configuration ID");
             throw new AbortException("The Jira server configuration of this task was not found.");
         }
         XrayExporter client = new XrayExporterImpl(serverInstance.getServerAddress(),
@@ -89,15 +103,15 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
         
         try{
 
-            if (StringUtils.isNotBlank(issues)) 
+            if (StringUtils.isNotBlank(issues)) {
                 listener.getLogger().println("Issues: "+issues);
-
-            if (StringUtils.isNotBlank(filter)) 
-                listener.getLogger().println("Filter: "+filter);
-
-            if (StringUtils.isNotBlank(filePath)) 
-                listener.getLogger().println("Will save the feature files in: "+filePath);
-           
+            }
+            if (StringUtils.isNotBlank(filter)) {
+                listener.getLogger().println("Filter: " + filter);
+            }
+            if (StringUtils.isNotBlank(filePath)) {
+                listener.getLogger().println("Will save the feature files in: " + filePath);
+            }
             InputStream file = client.downloadFeatures(issues,filter,"true");
             this.unzipFeatures(listener, workspace, filePath, file);
             listener.getLogger().println("Sucessfully exported the Cucumber features");
