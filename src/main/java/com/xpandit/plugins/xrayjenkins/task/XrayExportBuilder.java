@@ -8,6 +8,7 @@
 package com.xpandit.plugins.xrayjenkins.task;
 
 import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
+import com.xpandit.plugins.xrayjenkins.Utils.FormUtils;
 import com.xpandit.plugins.xrayjenkins.Utils.BuilderUtils;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
+import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import com.xpandit.plugins.xrayjenkins.model.ServerConfiguration;
@@ -39,6 +41,8 @@ import net.sf.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils.getConfiguration;
+
 /**
  * Class description.
  *
@@ -55,16 +59,28 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
     private String filter;
     private String filePath;
 
-    public XrayExportBuilder(String serverInstance,
+    /**
+     * Constructor used in pipelines projects
+     *
+     * "Anyway code run from Pipeline should take any configuration values as literal strings
+     * and make no attempt to perform variable substitution"
+     * @see <a href="https://jenkins.io/doc/developer/plugin-development/pipeline-integration/">Writing Pipeline-Compatible Plugins </a>
+     * @param serverInstance the server configuration id
+     * @param issues the issues to export
+     * @param filter the saved filter id
+     * @param filePath the file path to export
+     */
+    @DataBoundConstructor
+	public XrayExportBuilder(String serverInstance,
                              String issues,
                              String filter,
-                             String filePath) {
+                             String filePath){
         this.issues = issues;
         this.filter = filter;
         this.filePath = filePath;
-    	this.serverInstance = serverInstance;
-	}
-   
+        this.serverInstance = serverInstance;
+    }
+
     @Override
     public void perform(Run<?,?> build,
                         FilePath workspace,
@@ -74,10 +90,11 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
         listener.getLogger().println("Starting export task...");
         
         listener.getLogger().println("##########################################################");
-        listener.getLogger().println("####   Xray for JIRA is exporting the feature files  ####");
+        listener.getLogger().println("####   Xray is exporting the feature files  ####");
         listener.getLogger().println("##########################################################");
-        XrayInstance serverInstance = ConfigurationUtils.getConfiguration(this.serverInstance);
+        XrayInstance serverInstance = getConfiguration(this.serverInstance);
         if(serverInstance == null){
+            listener.getLogger().println("XrayInstance is null. please check the passed configuration ID");
             throw new AbortException("The Jira server configuration of this task was not found.");
         }
         XrayExporter client = new XrayExporterImpl(serverInstance.getServerAddress(),
@@ -86,15 +103,15 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
         
         try{
 
-            if (StringUtils.isNotBlank(issues)) 
+            if (StringUtils.isNotBlank(issues)) {
                 listener.getLogger().println("Issues: "+issues);
-
-            if (StringUtils.isNotBlank(filter)) 
-                listener.getLogger().println("Filter: "+filter);
-
-            if (StringUtils.isNotBlank(filePath)) 
-                listener.getLogger().println("Will save the feature files in: "+filePath);
-           
+            }
+            if (StringUtils.isNotBlank(filter)) {
+                listener.getLogger().println("Filter: " + filter);
+            }
+            if (StringUtils.isNotBlank(filePath)) {
+                listener.getLogger().println("Will save the feature files in: " + filePath);
+            }
             InputStream file = client.downloadFeatures(issues,filter,"true");
             this.unzipFeatures(listener, workspace, filePath, file);
             listener.getLogger().println("Sucessfully exported the Cucumber features");
@@ -178,23 +195,25 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
         }
         
         @Override
-		public XrayExportBuilder newInstance(StaplerRequest req, JSONObject formData){
-            Map<String,String> fields = getFields(formData.getJSONObject("fields"));
-			return new XrayExportBuilder(formData.getString("serverInstance"),
+		public XrayExportBuilder newInstance(StaplerRequest req, JSONObject formData) throws Descriptor.FormException{
+			validateFormData(formData);
+        	Map<String,String> fields = getFields(formData.getJSONObject("fields"));
+            return new XrayExportBuilder(formData.getString("serverInstance"),
                     fields.get("issues"),
                     fields.get("filter"),
                     fields.get("filePath"));
+			
         }
-        
+
+        private void validateFormData(JSONObject formData) throws Descriptor.FormException{
+            if(StringUtils.isBlank(formData.getString("serverInstance"))){
+                throw new Descriptor.FormException("Xray Cucumber Features Export Task error, you must provide a valid JIRA Instance","serverInstance");
+            }
+        }
+
         
         public ListBoxModel doFillServerInstanceItems() {
-        	
-            ListBoxModel items = new ListBoxModel();
-            List<XrayInstance> serverInstances =  getServerInstances();
-            for(XrayInstance sc : serverInstances)
-            	items.add(sc.getAlias(),sc.getConfigID());
-            
-            return items;
+        	return FormUtils.getServerInstanceItems();
         }
 
         private Map<String, String> getFields(JSONObject configuredFields) {
@@ -257,7 +276,11 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
                 return FormValidation.ok();
             }
         }
-        
+
+        public FormValidation doCheckServerInstance(){
+            return ConfigurationUtils.anyAvailableConfiguration() ? FormValidation.ok() : FormValidation.error("No configured Server Instances found");
+        }
+
         
         public List<XrayInstance> getServerInstances() {
 			return ServerConfiguration.get().getServerInstances();

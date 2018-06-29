@@ -10,6 +10,8 @@ package com.xpandit.plugins.xrayjenkins.task;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xpandit.xray.model.ParameterBean;
 import com.xpandit.xray.model.QueryParameter;
+import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
+import com.xpandit.plugins.xrayjenkins.Utils.FormUtils;
 import com.xpandit.xray.model.UploadResult;
 import java.io.File;
 import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
@@ -29,6 +31,8 @@ import java.util.Set;
 import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import org.kohsuke.stapler.DataBoundConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.StaplerRequest;
 import com.google.gson.Gson;
@@ -70,6 +74,9 @@ import org.slf4j.LoggerFactory;
  */
 public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 
+	private static final Logger LOG = LoggerFactory.getLogger(XrayImportBuilder.class);
+	private static Gson gson = new GsonBuilder().create();
+
     private Endpoint endpoint;
     private Map<String,String> dynamicFields;
     private boolean importToSameExecution;
@@ -91,13 +98,102 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 			this.importToSameExecution = false;
 		}
 
+
     	this.formatSuffix = endpoint.getSuffix();
     	this.serverInstance = serverInstance;
     	this.inputInfoSwitcher = dynamicFields.get("inputInfoSwitcher");
 	}
-	
-    
-    public Map<String,String> getDynamicFields(){
+
+	/**
+	 * Constructor used in pipelines projects
+     *
+	 * "Anyway code run from Pipeline should take any configuration values as literal strings
+	 * and make no attempt to perform variable substitution"
+	 * @see <a href="https://jenkins.io/doc/developer/plugin-development/pipeline-integration/">Writing Pipeline-Compatible Plugins </a>
+	 *
+	 * @param serverInstance the server configuration id
+	 * @param endpoint the endpoint to be used
+	 * @param projectKey the project key
+	 * @param testEnvironments the test environments
+	 * @param testPlanKey the test plan key
+	 * @param fixVersion the fix version
+	 * @param importFilePath the path of the result file to be imported
+	 * @param testExecKey the test execution key
+	 * @param revision the revision
+	 * @param importInfo the importation info file or json content
+	 * @param inputInfoSwitcher filePath or fileContent switcher
+	 */
+	@DataBoundConstructor
+	public XrayImportBuilder(String serverInstance,
+							 String endpoint,
+							 String projectKey,
+							 String testEnvironments,
+							 String testPlanKey,
+							 String fixVersion,
+							 String importFilePath,
+							 String testExecKey,
+							 String revision,
+							 String importInfo,
+							 String inputInfoSwitcher){
+    	this.serverInstance = serverInstance;
+    	this.endpoint = StringUtils.isNotBlank(endpoint) ? Endpoint.lookupByName(endpoint.trim()) : null;
+   		this.formatSuffix = this.endpoint != null ? this.endpoint.getSuffix() : null;
+
+		setDynamicFields(projectKey,
+				testEnvironments,
+				testPlanKey,
+				fixVersion,
+				importFilePath,
+				testExecKey,
+				revision,
+				importInfo,
+				inputInfoSwitcher);
+
+		this.inputInfoSwitcher = dynamicFields.get("inputInfoSwitcher");
+	}
+
+	private void setDynamicFields(String projectKey,
+								  String testEnvironments,
+								  String testPlanKey,
+								  String fixVersion,
+								  String importFilePath,
+								  String testExecKey,
+								  String revision,
+								  String importInfo,
+								  String inputInfoSwitcher){
+    	if(dynamicFields == null){
+    		dynamicFields = new HashMap<>();
+		}
+    	if (!StringUtils.isBlank(projectKey)){
+    		dynamicFields.put("projectKey",projectKey);
+		}
+		if (!StringUtils.isBlank(testEnvironments)){
+			dynamicFields.put("testEnvironments",testEnvironments);
+		}
+		if (!StringUtils.isBlank(testPlanKey)){
+			dynamicFields.put("testPlanKey",testPlanKey);
+		}
+		if (!StringUtils.isBlank(fixVersion)){
+			dynamicFields.put("fixVersion",fixVersion);
+		}
+		if (!StringUtils.isBlank(importFilePath)){
+			dynamicFields.put("importFilePath",importFilePath);
+		}
+		if (!StringUtils.isBlank(testExecKey)){
+			dynamicFields.put("testExecKey",testExecKey);
+		}
+		if (!StringUtils.isBlank(projectKey)){
+			dynamicFields.put("revision",revision);
+		}
+		if(!StringUtils.isBlank(importInfo)){
+    		dynamicFields.put("importInfo", importInfo);
+		}
+		if(!StringUtils.isBlank(inputInfoSwitcher)){
+    		dynamicFields.put("inputInfoSwitcher", inputInfoSwitcher);
+		}
+	}
+
+	public Map<String,String> getDynamicFields(){
     	return dynamicFields;
     }
     
@@ -162,7 +258,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 
 		}
 	}
-    
+
 	private List<FilePath> getFilePaths(FilePath workspace, String filePath, TaskListener listener) throws IOException {
     	List<FilePath> filePaths = new ArrayList<>();
 		if(workspace == null){
@@ -302,12 +398,12 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 
 		listener.getLogger().println("Import Cucumber features Task started...");
 
-		listener.getLogger().println("##########################################################");
-		listener.getLogger().println("####   Xray for JIRA is importing the feature files  ####");
-		listener.getLogger().println("##########################################################");
-		XrayInstance serverInstance = ConfigurationUtils.getConfiguration(this.serverInstance);
-		if(serverInstance == null){
-			throw new AbortException("The Jira server configuration of this task was not found.");
+        listener.getLogger().println("##########################################################");
+        listener.getLogger().println("#### Importing the execution results to Xray  ####");
+        listener.getLogger().println("##########################################################");
+        XrayInstance serverInstance = ConfigurationUtils.getConfiguration(this.serverInstance);
+        if(serverInstance == null){
+        	throw new AbortException("The Jira server configuration of this task was not found.");
 		}
 		XrayImporter client = new XrayImporterImpl(serverInstance.getServerAddress(),
 				serverInstance.getUsername(),
@@ -423,7 +519,19 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 	}
 
     private void validate(Map<String,String> dynamicFields) throws FormValidation{
-      	 
+
+		if(serverInstance == null){
+			LOG.error("configuration id is null");
+			throw new XrayJenkinsGenericException("configuration id is null");
+		}
+		if(endpoint == null){
+			LOG.error("passed endpoint is null or could not be found");
+			throw new XrayJenkinsGenericException("passed endpoint is null or could not be found");
+		}
+		if(dynamicFields.get("importFilePath") == null){
+			LOG.error("importFilePath is null");
+			throw new XrayJenkinsGenericException("importFilePath is null");
+		}
       	 for(com.xpandit.xray.model.DataParameter dp : com.xpandit.xray.model.DataParameter.values()){
       		 if(dynamicFields.containsKey(dp.getKey()) && dp.isRequired()){
       			 String value = dynamicFields.get(dp.getKey());
@@ -431,7 +539,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
       				throw FormValidation.error("You must configure the field "+dp.getLabel());
       		 }
       	 }
-      	 
+
       	for(com.xpandit.xray.model.QueryParameter qp : com.xpandit.xray.model.QueryParameter.values()){
       		 if(dynamicFields.containsKey(qp.getKey()) && qp.isRequired()){
       			 String value = dynamicFields.get(qp.getKey());
@@ -444,6 +552,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 
       	 if(importFilePath.contains("../"))
       		throw FormValidation.error("You cannot provide file paths for upper directories.");
+
    }
     
 	@Override
@@ -474,14 +583,21 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         }
         
         @Override
-		public XrayImportBuilder newInstance(StaplerRequest req, JSONObject formData){
+		public XrayImportBuilder newInstance(StaplerRequest req, JSONObject formData) throws Descriptor.FormException{
+        	validateFormData(formData);
 			Endpoint endpoint = Endpoint.lookupBySuffix(formData.getString("formatSuffix"));
-			return new XrayImportBuilder(formData.getString("serverInstance"),
-					endpoint,
-					getDynamicFields(formData.getJSONObject("dynamicFields")));
+            return new XrayImportBuilder(formData.getString("serverInstance"),
+                    endpoint,
+                    getDynamicFields(formData.getJSONObject("dynamicFields")));
 			
         }
-        
+
+        private void validateFormData(JSONObject formData) throws Descriptor.FormException{
+			if(StringUtils.isBlank(formData.getString("serverInstance"))){
+				throw new Descriptor.FormException("Xray Results Import Task error, you must provide a valid JIRA Instance","serverInstance");
+			}
+		}
+
         private Map<String,String> getDynamicFields(JSONObject configuredFields){
         	
         	Map<String,String> dynamicFields = new HashMap<String,String>();
@@ -506,19 +622,6 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         	return dynamicFields;
         	
         }
-        
-        
-        private XrayInstance getConfiguration(String configID){
-        	XrayInstance config =  null;
-        	List<XrayInstance> serverInstances =  getServerInstances();
-        	for(XrayInstance sc : serverInstances){
-        		if(sc.getConfigID().equals(configID)){
-        			config = sc;break;
-        		}
-        	}
-        	return config;
-        }
-
 
 		@Override
 		public boolean isApplicable(Class<? extends AbstractProject> jobType) {
@@ -541,13 +644,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         }
         
         public ListBoxModel doFillServerInstanceItems() {
-        	
-            ListBoxModel items = new ListBoxModel();
-            List<XrayInstance> serverInstances =  getServerInstances();
-            for(XrayInstance sc : serverInstances)
-            	items.add(sc.getAlias(),sc.getConfigID());
-            
-            return items;
+			return FormUtils.getServerInstanceItems();
         }
         
         public long defaultBuildID(){
@@ -577,11 +674,15 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 				bean.getConfigurableFields().add(0, pb);
 			}
 		}
-        
+
         public List<XrayInstance> getServerInstances() {
 			return ServerConfiguration.get().getServerInstances();
 		}
-        
+
+		public FormValidation doCheckServerInstance(){
+			return ConfigurationUtils.anyAvailableConfiguration() ? FormValidation.ok() : FormValidation.error("No configured Server Instances found");
+		}
+
     }
 
 }
