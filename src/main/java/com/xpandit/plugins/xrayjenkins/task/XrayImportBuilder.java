@@ -14,7 +14,6 @@ import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
 import com.xpandit.plugins.xrayjenkins.Utils.FormUtils;
 import com.xpandit.xray.model.UploadResult;
 import java.io.File;
-import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
 import com.xpandit.plugins.xrayjenkins.Utils.BuilderUtils;
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -25,7 +24,6 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
@@ -120,7 +118,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 	 * @param inputInfoSwitcher filePath or fileContent switcher
 	 */
 	@DataBoundConstructor
-	public XrayImportBuilder(String serverInstance,
+	public XrayImportBuilder(String serverInstance, //todo - add the import to same execution field
 							 String endpoint,
 							 String projectKey,
 							 String testEnvironments,
@@ -130,10 +128,12 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 							 String testExecKey,
 							 String revision,
 							 String importInfo,
-							 String inputInfoSwitcher){
+							 String inputInfoSwitcher,
+							 String importToSameExecution){
     	this.serverInstance = serverInstance;
     	this.endpoint = StringUtils.isNotBlank(endpoint) ? Endpoint.lookupByName(endpoint.trim()) : null;
    		this.formatSuffix = this.endpoint != null ? this.endpoint.getSuffix() : null;
+   		this.importToSameExecution = "true".equals(importToSameExecution);
 
 		setDynamicFields(projectKey,
 				testEnvironments,
@@ -561,16 +561,11 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
     public static class Descriptor extends BuildStepDescriptor<Publisher> {
         private static long BUILD_STEP_SEED = 0;
         private long buildID;
-        private boolean sameExecutionEnabled;
 
         public Descriptor() {
         	super(XrayImportBuilder.class);
             load();
         }
-
-		public boolean isSameExecutionEnabled() {
-			return sameExecutionEnabled;
-		}
 
 		@Override
         public boolean configure(StaplerRequest req, JSONObject formData) throws FormException {
@@ -607,13 +602,6 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 						dynamicFields.put(key, value);
         		}
         	}
-
-        	if(dynamicFields.get("sameExecutionCheckbox") != null){
-				this.sameExecutionEnabled = dynamicFields.get("sameExecutionCheckbox").equals("true") ? true : false;
-			} else {
-				this.sameExecutionEnabled = false;
-			}
-
 
         	return dynamicFields;
         	
