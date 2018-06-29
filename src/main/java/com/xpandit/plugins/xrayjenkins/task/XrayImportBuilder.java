@@ -156,8 +156,10 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 				|| Endpoint.TESTNG.equals(e)
 				|| Endpoint.NUNIT.equals(e)
 				|| Endpoint.ROBOT.equals(e)){
-			ParameterBean pb = new ParameterBean("sameExecutionEnabled", "same exec text box", false);
+			ParameterBean pb = new ParameterBean("sameExecutionCheckbox", "same exec text box", false);
+			pb.setConfiguration(dynamicFields.get("sameExecutionCheckbox"));
 			bean.getConfigurableFields().add(0, pb);
+
 		}
 	}
     
@@ -571,7 +573,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 					|| Endpoint.TESTNG.equals(e)
 					|| Endpoint.NUNIT.equals(e)
 					|| Endpoint.ROBOT.equals(e)){
-				ParameterBean pb = new ParameterBean("sameExecutionEnabled", "same exec text box", false);
+				ParameterBean pb = new ParameterBean("sameExecutionCheckbox", "same exec text box", false);
 				bean.getConfigurableFields().add(0, pb);
 			}
 		}
