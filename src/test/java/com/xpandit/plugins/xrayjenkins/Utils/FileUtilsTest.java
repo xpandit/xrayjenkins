@@ -100,21 +100,6 @@ public class FileUtilsTest {
         workspace.delete();
     }
 
-    private File getWorkspaceFile(){
-        return new File(workspace.getRoot().toPath().toString() + getWorkSpaceSuffix());
-    }
-
-    private String getWorkSpaceSuffix(){
-        return File.separator
-                + XRAYJENKINS
-                + File.separator
-                + WORK
-                + File.separator
-                + WORKSPACEFOLDER
-                + File.separator
-                + DUMMYPROJECT;
-    }
-
     @Test
     public void testGetFileWithSofisticatedGlobExpression(){
         try{
@@ -152,7 +137,6 @@ public class FileUtilsTest {
     }
 
     private String getRelativeDirectoryPath(){
-        /*"\\unittesting\\**\\results\\**\\*.xml";*/
         return File.separator
                 + UNITTESTING
                 + File.separator
@@ -162,6 +146,21 @@ public class FileUtilsTest {
                 + File.separator
                 + FOLDERMATCHER
                 + File.separator;
+    }
+
+    private File getWorkspaceFile(){
+        return new File(workspace.getRoot().toPath().toString() + getWorkSpaceSuffix());
+    }
+
+    private String getWorkSpaceSuffix(){
+        return File.separator
+                + XRAYJENKINS
+                + File.separator
+                + WORK
+                + File.separator
+                + WORKSPACEFOLDER
+                + File.separator
+                + DUMMYPROJECT;
     }
 
 }
