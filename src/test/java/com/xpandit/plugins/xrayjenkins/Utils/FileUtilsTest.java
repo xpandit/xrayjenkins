@@ -5,9 +5,8 @@
  * <p/>
  * This software is proprietary.
  */
-package com.xpandit.plugins.xrayjenkins.task;
+package com.xpandit.plugins.xrayjenkins.Utils;
 
-import com.xpandit.plugins.xrayjenkins.Utils.FileUtils;
 import hudson.FilePath;
 import hudson.model.*;
 import java.io.File;
@@ -19,13 +18,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import static org.mockito.Mockito.when;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @RunWith(MockitoJUnitRunner.class)
-public class XrayImportBuilderTest {
-
-    private static final Logger LOG = LoggerFactory.getLogger(XrayImportBuilderTest.class);
+public class FileUtilsTest {
 
     @Rule
     public TemporaryFolder workspace = new TemporaryFolder();
@@ -34,7 +29,6 @@ public class XrayImportBuilderTest {
     private TaskListener taskListener;
 
     private void prepareFolders() throws IOException{
-        LOG.info("starting prepareFolders");
         File fa = workspace.newFolder("xrayjenkins","work", "workspace", "dummyproject", "joaquina");
         File.createTempFile("potatoe", ".txt", fa).deleteOnExit();
         File.createTempFile("hello", ".xml", fa).deleteOnExit();
@@ -61,43 +55,18 @@ public class XrayImportBuilderTest {
         File.createTempFile("result_fa3b3_1",".xml", fa3b3).deleteOnExit(); //this is a result file
         File.createTempFile("february_05_fa3b3",".xml", fa3b3).deleteOnExit(); //this is a result file
         File.createTempFile("february_17_fa3b3",".xml", fa3b3).deleteOnExit(); //this is a result file
-        LOG.info("finishing prepareFolders");
     }
 
     @Test
     public void testGetFileWithAbsolutePath(){
         try{
-            LOG.info("starting testGetFileWithAbsolutePath...");
             when(taskListener.getLogger()).thenReturn(System.out);
             prepareFolders();
             String basePath = workspace.getRoot().toPath().toString();
-            File workspaceFile = new File(basePath + "\\xrayjenkins\\work\\workspace\\dummyproject");
-            FilePath workspace = new FilePath(workspaceFile);
-            String resultsPath = basePath + "\\xrayjenkins\\work\\workspace\\dummyproject\\joaquina\\**\\results\\**\\*.xml";
+            File workspaceFile = new File(basePath + getWorkSpaceSuffix());
+            String resultsPath = basePath + getAbsoluteDirectoryPath() + "*.xml";
 
-
-            List<FilePath> matchingFiles = FileUtils.getFilePaths(workspace, resultsPath, taskListener);
-            Assert.assertTrue(matchingFiles.size() == 70);
-
-        } catch (IOException e){
-            Assert.fail("An exception occured when performing the Test: " + e.getMessage());
-        }
-        LOG.info("will try to delete workspace");
-        workspace.delete();
-        LOG.info("deleted workspace");
-    }
-
-    @Test
-    public void testGetFileWithRelativePath(){
-        try{
-            when(taskListener.getLogger()).thenReturn(System.out);
-            prepareFolders();
-            String basePath = workspace.getRoot().toPath().toString();
-            File workspaceFile = new File(basePath + "\\xrayjenkins\\work\\workspace\\dummyproject");
-            FilePath workspace = new FilePath(workspaceFile);
-            String resultsPath = "\\joaquina\\**\\results\\**\\*.xml";
-
-            List<FilePath> matchingFiles = FileUtils.getFilePaths(workspace, resultsPath, taskListener);
+            List<FilePath> matchingFiles = FileUtils.getFilePaths(new FilePath(workspaceFile), resultsPath, taskListener);
             Assert.assertTrue(matchingFiles.size() == 7);
 
         } catch (IOException e){
@@ -107,23 +76,74 @@ public class XrayImportBuilderTest {
     }
 
     @Test
+    public void testGetFileWithRelativePath(){
+        try{
+            when(taskListener.getLogger()).thenReturn(System.out);
+            prepareFolders();
+            String basePath = workspace.getRoot().toPath().toString();
+            File workspaceFile = new File(basePath + getWorkSpaceSuffix());
+            String resultsPath = "\\joaquina\\**\\results\\**\\*.xml";
+            List<FilePath> matchingFiles = FileUtils.getFilePaths(new FilePath(workspaceFile), resultsPath, taskListener);
+            Assert.assertTrue(matchingFiles.size() == 7);
+
+        } catch (IOException e){
+            Assert.fail("An exception occured when performing the Test: " + e.getMessage());
+        }
+        workspace.delete();
+    }
+
+    private String getWorkSpaceSuffix(){
+        StringBuilder sb = new StringBuilder();
+        return sb.append(File.separator)
+                .append("xrayjenkins")
+                .append(File.separator)
+                .append("work")
+                .append(File.separator)
+                .append("workspace")
+                .append(File.separator)
+                .append("dummyproject")
+                .toString();
+    }
+
+    @Test
     public void testGetFileWithSofisticatedGlobExpression(){
         try{
             when(taskListener.getLogger()).thenReturn(System.out);
             prepareFolders();
             String basePath = workspace.getRoot().toPath().toString();
-            File workspaceFile = new File(basePath + "\\xrayjenkins\\work\\workspace\\dummyproject");
-            FilePath workspace = new FilePath(workspaceFile);
-            String resultsPath = basePath + "\\xrayjenkins\\work\\workspace\\dummyproject\\joaquina\\**\\results\\**\\feb*.xml";
+            File workspaceFile = new File(basePath + getWorkSpaceSuffix());
+            String resultsPath = basePath + getAbsoluteDirectoryPath() + "feb*.xml";
 
 
-            List<FilePath> matchingFiles = FileUtils.getFilePaths(workspace, resultsPath, taskListener);
+            List<FilePath> matchingFiles = FileUtils.getFilePaths(new FilePath(workspaceFile), resultsPath, taskListener);
             Assert.assertTrue(matchingFiles.size() == 2);
 
         } catch (IOException e){
             Assert.fail("An exception occured when performing the Test: " + e.getMessage());
         }
         workspace.delete();
+    }
+
+    private String getAbsoluteDirectoryPath(){
+        StringBuilder sb = new StringBuilder();
+        return sb.append(File.separator)
+                .append("xrayjenkins")
+                .append(File.separator)
+                .append("work")
+                .append(File.separator)
+                .append("workspace")
+                .append(File.separator)
+                .append("dummyproject")
+                .append(File.separator)
+                .append("joaquina")
+                .append(File.separator)
+                .append("**")
+                .append(File.separator)
+                .append("results")
+                .append(File.separator)
+                .append("**")
+                .append(File.separator)
+                .toString();
     }
 
 }

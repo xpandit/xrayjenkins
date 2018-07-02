@@ -11,7 +11,6 @@ import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
 import hudson.FilePath;
 import hudson.model.TaskListener;
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.PathMatcher;
 import java.util.ArrayList;
@@ -28,9 +27,8 @@ public class FileUtils {
      * @param filePath the filepath
      * @param listener the task listener
      * @return a list of matching files.
-     * @throws IOException
      */
-    public static List<FilePath> getFilePaths(FilePath workspace, String filePath, TaskListener listener) throws IOException {
+    public static List<FilePath> getFilePaths(FilePath workspace, String filePath, TaskListener listener) {
         List<FilePath> filePaths = new ArrayList<>();
         if(workspace == null){
             throw new XrayJenkinsGenericException("No workspace in this current node");
@@ -49,7 +47,7 @@ public class FileUtils {
         return filePaths;
     }
 
-    private static FilePath readFile(FilePath workspace, String filePath, TaskListener listener) throws IOException{
+    private static FilePath readFile(FilePath workspace, String filePath, TaskListener listener){
         FilePath f = new FilePath(workspace, filePath);
         listener.getLogger().println("File: " + f.getRemote());
         return f;
