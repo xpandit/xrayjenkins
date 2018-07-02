@@ -118,7 +118,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 	 * @param inputInfoSwitcher filePath or fileContent switcher
 	 */
 	@DataBoundConstructor
-	public XrayImportBuilder(String serverInstance, //todo - add the import to same execution field
+	public XrayImportBuilder(String serverInstance,
 							 String endpoint,
 							 String projectKey,
 							 String testEnvironments,
@@ -147,6 +147,9 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 
 		this.inputInfoSwitcher = dynamicFields.get("inputInfoSwitcher");
 	}
+
+	//todo - apagar isto
+	private String cenas(){return "cenas";}
 
 	private void setDynamicFields(String projectKey,
 								  String testEnvironments,
@@ -255,7 +258,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		}
 	}
 
-	private List<FilePath> getFilePaths(FilePath workspace, String filePath, TaskListener listener) throws IOException {
+	public List<FilePath> getFilePaths(FilePath workspace, String filePath, TaskListener listener) throws IOException {
     	List<FilePath> filePaths = new ArrayList<>();
 		if(workspace == null){
 			throw new XrayJenkinsGenericException("No workspace in this current node");
