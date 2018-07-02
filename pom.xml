@@ -112,47 +112,23 @@
 			<artifactId>matrix-project</artifactId>
 			<version>1.13</version>
 		</dependency>
-
-
-
-
-
-
-
-
-
-		<dependency>
-			<groupId>org.jenkins-ci.plugins.workflow</groupId>
-			<artifactId>workflow-aggregator</artifactId>
-			<version>2.5</version>
-		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.jenkins-ci.main</groupId>
-			<artifactId>jenkins-test-harness</artifactId>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.jenkins-ci.plugins.workflow/workflow-job -->
-		<dependency>
-			<groupId>org.jenkins-ci.plugins.workflow</groupId>
-			<artifactId>workflow-job</artifactId>
-			<version>2.1</version>
-
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.jenkins-ci.plugins.workflow/workflow-cps -->
-		<dependency>
-			<groupId>org.jenkins-ci.plugins.workflow</groupId>
-			<artifactId>workflow-cps</artifactId>
-			<version>2.41</version>
-		</dependency>
-		<dependency>
+		<!-- https://mvnrepository.com/artifact/org.mockito/mockito-all -->
+		<!--<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
 			<version>1.10.19</version>
+			<scope>test</scope>
+		</dependency>-->
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+			<version>1.9.5</version>
+			<!--<scope>test</scope>-->
 		</dependency>
-
 
 	</dependencies>
 

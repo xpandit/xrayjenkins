@@ -8,6 +8,7 @@
 package com.xpandit.plugins.xrayjenkins.task;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.xpandit.plugins.xrayjenkins.Utils.FileUtils;
 import com.xpandit.xray.model.ParameterBean;
 import com.xpandit.xray.model.QueryParameter;
 import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
@@ -258,25 +259,6 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		}
 	}
 
-	public List<FilePath> getFilePaths(FilePath workspace, String filePath, TaskListener listener) throws IOException {
-    	List<FilePath> filePaths = new ArrayList<>();
-		if(workspace == null){
-			throw new XrayJenkinsGenericException("No workspace in this current node");
-		}
-		if(StringUtils.isBlank(filePath)){
-			throw new XrayJenkinsGenericException("No file path was specified");
-		}
-		FilePath file = readFile(workspace,filePath.trim(),listener);
-		List<File> files = getFileList(file.getRemote());
-		if(files.isEmpty()){
-			throw new XrayJenkinsGenericException("File path is a directory or no matching file exists");
-		}
-		for(File f : files){
-			filePaths.add(new FilePath(f));
-		}
-		return filePaths;
-	}
-
 	private FilePath getFile(FilePath workspace, String filePath, TaskListener listener) throws IOException, InterruptedException{
 		if(workspace == null){
 			throw new XrayJenkinsGenericException("No workspace in this current node");
@@ -291,84 +273,6 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 			throw new XrayJenkinsGenericException("File path is a directory or the file doesn't exist");
 		}
 		return file;
-	}
-
-	private List<File> getFileList(String globExpression) {
-		List<File> files = new ArrayList<>();
-		String [] parts = globExpression.split("\\\\");
-		String glob = parts[parts.length - 1];
-		PathMatcher matcher;
-		try{
-			matcher = FileSystems.getDefault().getPathMatcher("glob:" + glob);
-		} catch (IllegalArgumentException e){
-			LOG.error("pattern is invalid", e);
-			throw e;
-		} catch (UnsupportedOperationException e){
-			LOG.error("the pattern syntax is not known", e);
-			throw e;
-		}
-		for(File file : getFileList(resolveFolders(globExpression))){
-			if (matcher.matches(file.toPath().getFileName())) {
-				files.add(file);
-			}
-		}
-		return files;
-	}
-
-	private List<File> getFileList(List<String> paths){
-		List<File> files = new ArrayList<>();
-    	for(String path : paths){
-			File folder = new File(rebuildPath(path.split("\\\\")));
-			File [] folderFiles = folder.listFiles();
-			if(folderFiles != null){
-				files.addAll(Arrays.asList(folderFiles));
-			}
-		}
-		return files;
-	}
-
-	private List<String> resolveFolders(String path) {
-		List<String> paths = new ArrayList<>();
-    	String [] parts = path.split("\\*\\*");
-    	if(parts.length == 1){
-    		paths.add(path);
-    		return paths;
-		}
-		File folder = new File(parts[0]);
-    	if(!folder.exists()){
-    		return new ArrayList<>();
-		}
-		File [] files = folder.listFiles();
-    	if(files == null){
-			return new ArrayList<>();
-		}
-    	for(File f : files){
-    		if(f.isDirectory()){
-    			String newPath = f.getPath() + mergeParts(Arrays.copyOfRange(parts, 1, parts.length));
-    			paths.addAll(resolveFolders(newPath));
-			}
-		}
-		return paths;
-	}
-
-	private String mergeParts(String [] parts){
-    	if(parts.length == 1){
-    		return parts[0];
-		}
-		StringBuilder sb = new StringBuilder();
-    	sb.append(parts[0]);
-		for(int i = 1 ; i < parts.length; i ++){
-    		sb.append("**").append(parts[i]);
-		}
-		return sb.toString();
-	}
-
-	private String rebuildPath(String [] parts){
-    	StringBuilder sb = new StringBuilder();
-    	for(int i = 0; i < parts.length - 1; i ++){
-    		sb.append(parts[i]).append("\\");
-		}
-		return sb.toString();
 	}
 
 	private FilePath readFile(FilePath workspace, String filePath, TaskListener listener) throws IOException{
@@ -418,7 +322,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 			UploadResult result;
 			ObjectMapper mapper = new ObjectMapper();
 			String key = null;
-			for(FilePath fp : getFilePaths(workspace,resolved,listener)){
+			for(FilePath fp : FileUtils.getFilePaths(workspace,resolved,listener)){
 				result = uploadResults(workspace, listener,client, fp, env, key);
 				if(key == null && this.importToSameExecution){
 					Map<String, Map> map = mapper.readValue(result.getMessage(), Map.class);

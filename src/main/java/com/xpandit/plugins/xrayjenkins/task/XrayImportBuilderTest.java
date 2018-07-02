@@ -7,6 +7,7 @@
  */
 package com.xpandit.plugins.xrayjenkins.task;
 
+import com.xpandit.plugins.xrayjenkins.Utils.FileUtils;
 import hudson.FilePath;
 import hudson.model.*;
 import java.io.File;
@@ -30,9 +31,10 @@ public class XrayImportBuilderTest {
     public TemporaryFolder workspace = new TemporaryFolder();
 
     @Mock
-    TaskListener taskListener;
+    private TaskListener taskListener;
 
     private void prepareFolders() throws IOException{
+        LOG.info("starting prepareFolders");
         File fa = workspace.newFolder("xrayjenkins","work", "workspace", "dummyproject", "joaquina");
         File.createTempFile("potatoe", ".txt", fa).deleteOnExit();
         File.createTempFile("hello", ".xml", fa).deleteOnExit();
@@ -59,37 +61,30 @@ public class XrayImportBuilderTest {
         File.createTempFile("result_fa3b3_1",".xml", fa3b3).deleteOnExit(); //this is a result file
         File.createTempFile("february_05_fa3b3",".xml", fa3b3).deleteOnExit(); //this is a result file
         File.createTempFile("february_17_fa3b3",".xml", fa3b3).deleteOnExit(); //this is a result file
+        LOG.info("finishing prepareFolders");
     }
 
     @Test
     public void testGetFileWithAbsolutePath(){
         try{
+            LOG.info("starting testGetFileWithAbsolutePath...");
             when(taskListener.getLogger()).thenReturn(System.out);
             prepareFolders();
             String basePath = workspace.getRoot().toPath().toString();
             File workspaceFile = new File(basePath + "\\xrayjenkins\\work\\workspace\\dummyproject");
             FilePath workspace = new FilePath(workspaceFile);
             String resultsPath = basePath + "\\xrayjenkins\\work\\workspace\\dummyproject\\joaquina\\**\\results\\**\\*.xml";
-            XrayImportBuilder builder = new XrayImportBuilder(null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null);
 
-            List<FilePath> matchingFiles = builder.getFilePaths(workspace, resultsPath, taskListener);
-            Assert.assertTrue(matchingFiles.size() == 7);
+
+            List<FilePath> matchingFiles = FileUtils.getFilePaths(workspace, resultsPath, taskListener);
+            Assert.assertTrue(matchingFiles.size() == 70);
 
         } catch (IOException e){
             Assert.fail("An exception occured when performing the Test: " + e.getMessage());
         }
+        LOG.info("will try to delete workspace");
         workspace.delete();
+        LOG.info("deleted workspace");
     }
 
     @Test
@@ -101,20 +96,8 @@ public class XrayImportBuilderTest {
             File workspaceFile = new File(basePath + "\\xrayjenkins\\work\\workspace\\dummyproject");
             FilePath workspace = new FilePath(workspaceFile);
             String resultsPath = "\\joaquina\\**\\results\\**\\*.xml";
-            XrayImportBuilder builder = new XrayImportBuilder(null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null);
 
-            List<FilePath> matchingFiles = builder.getFilePaths(workspace, resultsPath, taskListener);
+            List<FilePath> matchingFiles = FileUtils.getFilePaths(workspace, resultsPath, taskListener);
             Assert.assertTrue(matchingFiles.size() == 7);
 
         } catch (IOException e){
@@ -132,20 +115,9 @@ public class XrayImportBuilderTest {
             File workspaceFile = new File(basePath + "\\xrayjenkins\\work\\workspace\\dummyproject");
             FilePath workspace = new FilePath(workspaceFile);
             String resultsPath = basePath + "\\xrayjenkins\\work\\workspace\\dummyproject\\joaquina\\**\\results\\**\\feb*.xml";
-            XrayImportBuilder builder = new XrayImportBuilder(null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null);
 
-            List<FilePath> matchingFiles = builder.getFilePaths(workspace, resultsPath, taskListener);
+
+            List<FilePath> matchingFiles = FileUtils.getFilePaths(workspace, resultsPath, taskListener);
             Assert.assertTrue(matchingFiles.size() == 2);
 
         } catch (IOException e){
