@@ -91,7 +91,7 @@ public class FileUtilsTest {
                 when(taskListener.getLogger()).thenReturn(logger);
             }
             prepareFolders();
-            String resultsPath = "\\unittesting\\**\\results\\**\\*.xml";
+            String resultsPath = getRelativeDirectoryPath() + "*.xml";
             List<FilePath> matchingFiles = FileUtils.getFilePaths(new FilePath(getWorkspaceFile()), resultsPath, taskListener);
             Assert.assertTrue(matchingFiles.size() == 7);
         } catch (IOException e){
@@ -141,6 +141,19 @@ public class FileUtilsTest {
                 + File.separator
                 + DUMMYPROJECT
                 + File.separator
+                + UNITTESTING
+                + File.separator
+                + FOLDERMATCHER
+                + File.separator
+                + RESULTS
+                + File.separator
+                + FOLDERMATCHER
+                + File.separator;
+    }
+
+    private String getRelativeDirectoryPath(){
+        /*"\\unittesting\\**\\results\\**\\*.xml";*/
+        return File.separator
                 + UNITTESTING
                 + File.separator
                 + FOLDERMATCHER

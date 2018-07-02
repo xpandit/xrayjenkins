@@ -20,6 +20,9 @@ import org.apache.commons.lang3.StringUtils;
 
 public class FileUtils {
 
+    private FileUtils(){
+    }
+
     /**
      * Utility method that support the usage of glob expression within a filepath.
      * Also supports folder matching using "**"

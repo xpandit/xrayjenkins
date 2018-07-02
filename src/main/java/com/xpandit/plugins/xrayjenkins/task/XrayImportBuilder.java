@@ -78,12 +78,17 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
     private String formatSuffix; //value of format select
     private String serverInstance;//Configuration ID of the JIRA instance
     private String inputInfoSwitcher;//value of the input type switcher
+
+	private static final String SAME_EXECUTION_CHECKBOX = "sameExecutionCheckbox";
+	private static final String INFO_INPUT_SWITCHER = "inputInfoSwitcher";
+	private static final String SERVER_INSTANCE = "serverInstance";
+	private static final String ERROR_LOG = "Error while performing import tasks";
     
     public XrayImportBuilder(String serverInstance , Endpoint endpoint, Map<String, String> dynamicFields) {
     	this.endpoint = endpoint;
     	this.dynamicFields = dynamicFields;
-		if(dynamicFields.get("sameExecutionCheckbox") != null){
-			this.importToSameExecution = dynamicFields.get("sameExecutionCheckbox").equals("true") ? true : false;
+		if(dynamicFields.get(SAME_EXECUTION_CHECKBOX) != null){
+			this.importToSameExecution = dynamicFields.get(SAME_EXECUTION_CHECKBOX).equals("true") ? true : false;
 		} else {
 			this.importToSameExecution = false;
 		}
@@ -91,7 +96,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 
     	this.formatSuffix = endpoint.getSuffix();
     	this.serverInstance = serverInstance;
-    	this.inputInfoSwitcher = dynamicFields.get("inputInfoSwitcher");
+    	this.inputInfoSwitcher = dynamicFields.get(INFO_INPUT_SWITCHER);
 	}
 
 	/**
@@ -141,11 +146,8 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 				importInfo,
 				inputInfoSwitcher);
 
-		this.inputInfoSwitcher = dynamicFields.get("inputInfoSwitcher");
+		this.inputInfoSwitcher = dynamicFields.get(INFO_INPUT_SWITCHER);
 	}
-
-	//todo - apagar isto
-	private String cenas(){return "cenas";}
 
 	private void setDynamicFields(String projectKey,
 								  String testEnvironments,
@@ -184,7 +186,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
     		dynamicFields.put("importInfo", importInfo);
 		}
 		if(!StringUtils.isBlank(inputInfoSwitcher)){
-    		dynamicFields.put("inputInfoSwitcher", inputInfoSwitcher);
+    		dynamicFields.put(INFO_INPUT_SWITCHER, inputInfoSwitcher);
 		}
 	}
 
@@ -247,8 +249,8 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 				|| Endpoint.TESTNG.equals(e)
 				|| Endpoint.NUNIT.equals(e)
 				|| Endpoint.ROBOT.equals(e)){
-			ParameterBean pb = new ParameterBean("sameExecutionCheckbox", "same exec text box", false);
-			pb.setConfiguration(dynamicFields.get("sameExecutionCheckbox"));
+			ParameterBean pb = new ParameterBean(SAME_EXECUTION_CHECKBOX, "same exec text box", false);
+			pb.setConfiguration(dynamicFields.get(SAME_EXECUTION_CHECKBOX));
 			bean.getConfigurableFields().add(0, pb);
 
 		}
@@ -359,7 +361,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 			}
 			if(StringUtils.isNotBlank(importInfo)){
 				String resolved = this.expand(env,importInfo);
-				String inputInfoSwitcher = dynamicFields.get("inputInfoSwitcher");
+				String inputInfoSwitcher = dynamicFields.get(INFO_INPUT_SWITCHER);
 
 				Content info;
 				if(inputInfoSwitcher.equals("filePath")){
@@ -379,13 +381,13 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 			return result;
 
 		}catch(XrayClientCoreGenericException e){
-			LOG.error("Error while performing import tasks", e);
+			LOG.error(ERROR_LOG, e);
 			throw new AbortException(e.getMessage());
 		}catch(XrayJenkinsGenericException e){
-			LOG.error("Error while performing import tasks", e);
+			LOG.error(ERROR_LOG, e);
 			throw new AbortException(e.getMessage());
 		}catch (IOException e) {
-			LOG.error("Error while performing import tasks", e);
+			LOG.error(ERROR_LOG, e);
 			listener.error(e.getMessage());
 			throw new IOException(e);
 		}finally{
@@ -479,15 +481,15 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		public XrayImportBuilder newInstance(StaplerRequest req, JSONObject formData) throws Descriptor.FormException{
         	validateFormData(formData);
 			Endpoint endpoint = Endpoint.lookupBySuffix(formData.getString("formatSuffix"));
-            return new XrayImportBuilder(formData.getString("serverInstance"),
+            return new XrayImportBuilder(formData.getString(SERVER_INSTANCE),
                     endpoint,
                     getDynamicFields(formData.getJSONObject("dynamicFields")));
 			
         }
 
         private void validateFormData(JSONObject formData) throws Descriptor.FormException{
-			if(StringUtils.isBlank(formData.getString("serverInstance"))){
-				throw new Descriptor.FormException("Xray Results Import Task error, you must provide a valid JIRA Instance","serverInstance");
+			if(StringUtils.isBlank(formData.getString(SERVER_INSTANCE))){
+				throw new Descriptor.FormException("Xray Results Import Task error, you must provide a valid JIRA Instance",SERVER_INSTANCE);
 			}
 		}
 
@@ -545,7 +547,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
             Map<String,FormatBean> formats = new HashMap<String,FormatBean>();
             for(Endpoint e : Endpoint.values()){
             	FormatBean bean = e.toBean();
-            	addImportToSameExecField(e, bean);//todo - enfiar aí o campo da checkbox para os respectivos endpoints
+            	addImportToSameExecField(e, bean);
             	formats.put(e.getSuffix(),bean);
             }
             return gson.toJson(formats);	
@@ -556,7 +558,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 					|| Endpoint.TESTNG.equals(e)
 					|| Endpoint.NUNIT.equals(e)
 					|| Endpoint.ROBOT.equals(e)){
-				ParameterBean pb = new ParameterBean("sameExecutionCheckbox", "same exec text box", false);
+				ParameterBean pb = new ParameterBean(SAME_EXECUTION_CHECKBOX, "same exec text box", false);
 				bean.getConfigurableFields().add(0, pb);
 			}
 		}
