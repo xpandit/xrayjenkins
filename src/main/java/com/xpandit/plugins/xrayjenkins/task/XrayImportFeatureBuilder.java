@@ -11,7 +11,9 @@ import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
 import com.xpandit.plugins.xrayjenkins.Utils.FormUtils;
 import com.xpandit.plugins.xrayjenkins.model.ServerConfiguration;
 import com.xpandit.plugins.xrayjenkins.model.XrayInstance;
+import com.xpandit.xray.model.UploadResult;
 import com.xpandit.xray.service.impl.XrayTestImporterImpl;
+import hudson.AbortException;
 import hudson.Extension;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
@@ -23,6 +25,7 @@ import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -83,42 +86,46 @@ public class XrayImportFeatureBuilder extends Builder {
                            Launcher launcher,
                            BuildListener listener) throws InterruptedException, IOException {
         XrayInstance xrayInstance = ConfigurationUtils.getConfiguration(this.serverInstance);
-        XrayTestImporterImpl client = new XrayTestImporterImpl(xrayInstance.getServerAddress(),xrayInstance.getUsername(),xrayInstance.getPassword());
-        File folderPath = new File(this.folderPath);
-        File [] folderFiles = folderPath.listFiles();
-        for(File f : folderFiles){
-            client.importFeatures(this.projectKey, f);
+        if(xrayInstance == null){
+            listener.getLogger().println("The server instance is null");
+            throw new AbortException();
         }
+        File folderPath = new File(this.folderPath);
+        if(!folderPath.isDirectory()){
+            listener.getLogger().println("The location is not a directory");
+            throw new AbortException();
+        }
+        XrayTestImporterImpl client = new XrayTestImporterImpl(xrayInstance.getServerAddress(),
+                                                                xrayInstance.getUsername(),
+                                                                xrayInstance.getPassword());
+        processFolderImport(client, listener, folderPath);
         return true;
     }
 
-    /*//TODO - delete this
-    private FilePath getFile(FilePath workspace, String filePath, TaskListener listener) throws IOException, InterruptedException{
-        if(workspace == null){
-            throw new XrayJenkinsGenericException("No workspace in this current node");
+    public void processFolderImport(XrayTestImporterImpl client, BuildListener listener, File folderPath){
+        File [] folderFiles = folderPath.listFiles();
+        for(File f : folderFiles){
+            if(f.isDirectory()){
+                processFolderImport(client, listener, f);
+            } else{ //TODO - must i check f.exists()?
+                UploadResult result = client.importFeatures(this.projectKey, f);
+                listener.getLogger().println(result.getMessage());
+            }
         }
-
-        if(StringUtils.isBlank(filePath)){
-            throw new XrayJenkinsGenericException("No file path was specified");
-        }
-
-        FilePath file = readFile(workspace,filePath.trim(),listener);
-
-        if(file.isDirectory() || !file.exists()){
-            throw new XrayJenkinsGenericException("File path is a directory or the file doesn't exist");
-        }
-        return file;
     }
-    //TODO - delete this
-    private FilePath readFile(FilePath workspace, String filePath, TaskListener listener) throws IOException{
-        FilePath f = new FilePath(workspace, filePath);
-        listener.getLogger().println("File: "+f.getRemote());
-        return f;
-    }*/
+
+    //TODO - check if timezones are not screwing this algorithm
+    private boolean isApplicableAsModifiedFile(File f){
+        if(this.lastModified == 0){
+            return true;
+        }
+        Long diffInMillis = new Date().getTime() - f.lastModified();
+        Long diffInHour = ((diffInMillis / 100) / 60) / 60;
+        return diffInHour <= lastModified ? true : false;
+    }
 
     @Extension
     public static class Descriptor extends BuildStepDescriptor<Builder> {
-
 
         @Override
         public String getDisplayName() {
