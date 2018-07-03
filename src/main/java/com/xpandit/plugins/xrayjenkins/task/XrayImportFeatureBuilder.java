@@ -107,7 +107,7 @@ public class XrayImportFeatureBuilder extends Builder {
         for(File f : folderFiles){
             if(f.isDirectory()){
                 processFolderImport(client, listener, f);
-            } else{ //TODO - must i check f.exists()?
+            } else{
                 UploadResult result = client.importFeatures(this.projectKey, f);
                 listener.getLogger().println(result.getMessage());
             }
@@ -141,8 +141,6 @@ public class XrayImportFeatureBuilder extends Builder {
             return ServerConfiguration.get().getServerInstances();
         }
 
-
-        //todo - the client will still be able to click save so we'll need to check for null or valid values when perform
         public ListBoxModel doFillServerInstanceItems(){
             return FormUtils.getServerInstanceItems();
         }
