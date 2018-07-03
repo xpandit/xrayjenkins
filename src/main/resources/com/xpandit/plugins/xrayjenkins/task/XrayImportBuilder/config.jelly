@@ -15,6 +15,12 @@
   <j:file xmlns:j="jelly:core" var="addInputEntry" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='XML'>
  		<f:entry title='{{label}}' field='{{key}}'>${addInput}</f:entry>   
   </j:file>
+
+  <j:file xmlns:j="jelly:core" var="addSameExecutionCheckboxEntry" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='HTML'>
+	  <f:entry title="Import to Same Test Execution  Executions" description="When this option is checked, if you are importing multiple Execution Report files using a glob expression, the results will be imported to the same Test Execution">
+		  <f:checkbox name="sameExecutionCheckbox" id="same-execution-checkbox" checked="${instance.isImportToSameExecution()}"/>
+	  </f:entry>
+  </j:file>
  
   <j:file xmlns:j="jelly:core" var="addTextarea" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='XML'>
   	 	<f:textarea field='{{key}}' value="{{configuration}}" style="width:100%"/>
@@ -147,6 +153,8 @@
 				
 				Handlebars.registerPartial("addTextareaEntry",'${addTextareaEntry}');
 				Handlebars.registerPartial("addTextarea", '${addTextarea}');
+
+				Handlebars.registerPartial("addSameExecutionCheckboxEntry",'${addSameExecutionCheckboxEntry}');
 				
 				Handlebars.registerPartial("addSwitchableField", '${addSwitchableField}');
 				
@@ -164,9 +172,9 @@
 				else
 				    addXrayFields_${descriptor.defaultBuildID()}(formatSuffix); //making sure that the select gets the last configuration value
 
-		     	} 
+		     	}
 			});
-    	
+
 	 });
    			
    			
@@ -177,18 +185,18 @@
   <f:entry title="${%JIRA Instance}" field="serverInstance">
    		<f:select/>
    </f:entry>
-      
+
    <f:entry title="${%Format}" field="formatSuffix">
    		<f:select id="selectFormat_${descriptor.defaultBuildID()}"/>
 
-   		<f:section name="dynamicFields">	
-   			<f:entry title="Parameters">	
-   				<p id="configurableFields_${descriptor.defaultBuildID()}" style="border-left:solid;border-color:#00a3ac;width:50vw"></p>		
+   		<f:section name="dynamicFields">
+   			<f:entry title="Parameters">
+   				<p id="configurableFields_${descriptor.defaultBuildID()}" style="border-left:solid;border-color:#00a3ac;width:50vw"></p>
    			</f:entry>
    		</f:section>
- 	
+
    </f:entry>
-   
+
    <f:entry>
    	 <a href="http://confluence.xpand-addons.com/display/XRAY/Import+Execution+Results+-+REST">Click here for more details</a>
    </f:entry>
