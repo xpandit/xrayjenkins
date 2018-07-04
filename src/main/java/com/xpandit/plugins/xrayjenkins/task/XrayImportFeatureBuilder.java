@@ -32,6 +32,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import jenkins.tasks.SimpleBuildStep;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 
@@ -95,6 +96,14 @@ public class XrayImportFeatureBuilder extends Builder implements SimpleBuildStep
             listener.getLogger().println("The server instance is null");
             throw new AbortException();
         }
+        if (StringUtils.isBlank(this.projectKey)) {
+            listener.getLogger().println("You must provide the project key");
+            throw new AbortException();
+        }
+        if(StringUtils.isBlank(this.folderPath)){
+            listener.getLogger().println("You must provide the directory path");
+            throw new AbortException();
+        }
         File folder = new File(this.folderPath);
         if(!folder.isDirectory()){
             listener.getLogger().println("The location is not a directory");
@@ -133,7 +142,7 @@ public class XrayImportFeatureBuilder extends Builder implements SimpleBuildStep
         }
         int lastModifiedIntValue = getLastModifiedIntValue();
         Long diffInMillis = new Date().getTime() - f.lastModified();
-        Long diffInHour = ((diffInMillis / 100) / 60) / 60;
+        Long diffInHour = diffInMillis /  DateUtils.MILLIS_PER_HOUR;
         return diffInHour <= lastModifiedIntValue;
     }
 
@@ -155,7 +164,7 @@ public class XrayImportFeatureBuilder extends Builder implements SimpleBuildStep
         @Override
         @Nonnull
         public String getDisplayName() {
-            return "Xray: Import Features Builder";
+            return "Xray: Cucumber Features Import Task";
         }
 
         @Override
