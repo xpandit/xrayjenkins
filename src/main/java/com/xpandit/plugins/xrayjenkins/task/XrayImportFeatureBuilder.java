@@ -34,6 +34,7 @@ import jenkins.tasks.SimpleBuildStep;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 
 public class XrayImportFeatureBuilder extends Builder implements SimpleBuildStep{
@@ -73,7 +74,7 @@ public class XrayImportFeatureBuilder extends Builder implements SimpleBuildStep
     public String getLastModified() {
         return lastModified;
     }
-
+    @DataBoundSetter
     public void setLastModified(String lastModified) {
         this.lastModified = lastModified;
     }
