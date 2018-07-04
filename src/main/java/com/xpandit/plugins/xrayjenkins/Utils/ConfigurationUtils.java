@@ -18,17 +18,6 @@ public class ConfigurationUtils {
     private static final Logger LOG = LoggerFactory.getLogger(ConfigurationUtils.class);
 
     /**
-     * Utility method to check if any xray jira server configuration exists
-     * @return <code>true</code> if any server configuration is available, <code>false</code> otherwise
-     */
-    public static boolean anyAvailableConfiguration(){
-        ServerConfiguration configuration = ServerConfiguration.get();
-        return configuration != null
-                && configuration.getServerInstances() != null
-                && configuration.getServerInstances().size() > 0;
-    }
-
-    /**
      * Utility method to get an XrayInstance
      * @param serverConfigurationId the server configuration ID
      * @return <code>XrayInstance</code> if found, <code>null</code> otherwise
@@ -47,4 +36,16 @@ public class ConfigurationUtils {
         }
         return config;
     }
+
+    /**
+     * Utility method to check if any xray jira server configuration exists
+     * @return <code>true</code> if any server configuration is available, <code>false</code> otherwise
+     */
+    public static boolean anyAvailableConfiguration(){
+        ServerConfiguration configuration = ServerConfiguration.get();
+        return configuration != null
+                && configuration.getServerInstances() != null
+                && configuration.getServerInstances().size() > 0;
+    }
+
 }

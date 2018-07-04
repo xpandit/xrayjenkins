@@ -7,8 +7,9 @@
 	      <f:repeatable var="serverInstances" items="${descriptor.serverInstances}" minimum="1"> 
 	       <table>
 	       
-	       	  <f:entry field="configID" > 
+	       	  <f:entry title="${%Configuration ID}" field="configID" >
               	<f:textbox value="${serverInstances.configID}" style="display:none" />
+              	${serverInstances.configID}
               </f:entry>
 	       	  
 	       	  <f:entry title="${%Configuration alias}" field="alias"> 
