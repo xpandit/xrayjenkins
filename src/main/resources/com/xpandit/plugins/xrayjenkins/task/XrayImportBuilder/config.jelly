@@ -13,14 +13,15 @@
   </j:file>  
   
   <j:file xmlns:j="jelly:core" var="addInputEntry" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='XML'>
- 		<f:entry title='{{label}}' field='{{key}}'>${addInput}</f:entry>   
+ 		<f:entry title='{{label}}' field='{{key}}'>${addInput}</f:entry>
   </j:file>
 
   <j:file xmlns:j="jelly:core" var="addSameExecutionCheckboxEntry" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='HTML'>
-	  <f:entry title="Import to Same Test Execution  Executions" description="When this option is checked, if you are importing multiple Execution Report files using a glob expression, the results will be imported to the same Test Execution">
-		  <f:checkbox name="sameExecutionCheckbox" id="same-execution-checkbox" checked="${instance.isImportToSameExecution()}"/>
+	  <f:entry field="importToSameExecution" title="Import to Same Test Execution  Executions" description="When this option is checked, if you are importing multiple Execution Report files using a glob expression, the results will be imported to the same Test Execution">
+		  <f:checkbox name="importToSameExecution" id="same-execution-checkbox" checked="${instance.isImportToSameExecution()}"/>
 	  </f:entry>
   </j:file>
+
  
   <j:file xmlns:j="jelly:core" var="addTextarea" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='XML'>
   	 	<f:textarea field='{{key}}' value="{{configuration}}" style="width:100%"/>
@@ -104,7 +105,7 @@
 			_field.configuration = '';
 	  	
 	  	if(selectedInputType == 'filePath'){// content is a file path
-	  			var template = Handlebars.compile('${addInput}');	
+	  			var template = Handlebars.compile('${addInput}');
 				var result = template(_field);
 		  		Q(container).html(result);	
 			}
