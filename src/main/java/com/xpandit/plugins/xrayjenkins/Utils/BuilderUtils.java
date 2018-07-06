@@ -7,14 +7,10 @@
  */
 package com.xpandit.plugins.xrayjenkins.Utils;
 
-import com.xpandit.plugins.xrayjenkins.model.ServerConfiguration;
-import com.xpandit.plugins.xrayjenkins.model.XrayInstance;
 import hudson.matrix.MatrixProject;
 import hudson.maven.MavenModuleSet;
 import hudson.model.AbstractProject;
 import hudson.model.FreeStyleProject;
-import hudson.util.ListBoxModel;
-import java.util.List;
 
 public class BuilderUtils {
 

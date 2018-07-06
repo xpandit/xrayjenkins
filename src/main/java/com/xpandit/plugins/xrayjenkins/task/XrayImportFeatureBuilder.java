@@ -7,6 +7,7 @@
  */
 package com.xpandit.plugins.xrayjenkins.task;
 
+import com.xpandit.plugins.xrayjenkins.Utils.BuilderUtils;
 import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
 import com.xpandit.plugins.xrayjenkins.Utils.FormUtils;
 import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
@@ -170,7 +171,7 @@ public class XrayImportFeatureBuilder extends Builder implements SimpleBuildStep
 
         @Override
         public boolean isApplicable(Class<? extends AbstractProject> jobType) {
-            return true;
+            return BuilderUtils.isSupportedJobType(jobType);
         }
 
         public List<XrayInstance> getServerInstances(){
