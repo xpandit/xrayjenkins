@@ -11,6 +11,7 @@ import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
 import hudson.FilePath;
 import hudson.model.TaskListener;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.PathMatcher;
 import java.util.ArrayList;
@@ -22,6 +23,45 @@ public class FileUtils {
 
     private FileUtils(){
     }
+
+    /**
+     * Utility method that returns all .features files from a folder, including those contained in sub folders.
+     * This method works for master node and for slave (remote) nodes
+     * @param workspace the Jenkins project workspace
+     * @param path the folder path
+     * @param listener the TaskListener
+     * @return
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public static List<FilePath> getFeatureFilesFromWorkspace(FilePath workspace,
+                                                              String path,
+                                                              TaskListener listener) throws IOException, InterruptedException {
+        if(workspace == null){
+            throw new XrayJenkinsGenericException("workspace cannot be null");
+        }
+        if(StringUtils.isBlank(path)){
+            throw new XrayJenkinsGenericException("The folder path cannot be null nor empty");
+        }
+        if(listener == null){
+            throw new XrayJenkinsGenericException("The task listener cannot be null");
+        }
+        List<FilePath> paths = new ArrayList<>();
+        FilePath folder = readFile(workspace, path, listener);
+        if(folder.isDirectory()){
+            paths.addAll(Arrays.asList(folder.list("*.feature","", false)));
+            List<FilePath> children = folder.list();
+            for(FilePath child : children){
+                if(child.isDirectory()){
+                    paths.addAll(getFeatureFilesFromWorkspace(workspace, child.toString(), listener));
+                }
+            }
+        } else{
+            throw new XrayJenkinsGenericException("The path is not a folder");
+        }
+        return paths;
+    }
+
 
     /**
      * Utility method that support the usage of glob expression within a filepath.
@@ -50,7 +90,7 @@ public class FileUtils {
         return filePaths;
     }
 
-    private static FilePath readFile(FilePath workspace, String filePath, TaskListener listener){
+    public static FilePath readFile(FilePath workspace, String filePath, TaskListener listener){
         FilePath f = new FilePath(workspace, filePath);
         listener.getLogger().println("File: " + f.getRemote());
         return f;

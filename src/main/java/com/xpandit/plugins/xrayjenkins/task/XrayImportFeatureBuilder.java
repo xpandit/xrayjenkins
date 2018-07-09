@@ -9,10 +9,12 @@ package com.xpandit.plugins.xrayjenkins.task;
 
 import com.xpandit.plugins.xrayjenkins.Utils.BuilderUtils;
 import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
+import com.xpandit.plugins.xrayjenkins.Utils.FileUtils;
 import com.xpandit.plugins.xrayjenkins.Utils.FormUtils;
 import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
 import com.xpandit.plugins.xrayjenkins.model.ServerConfiguration;
 import com.xpandit.plugins.xrayjenkins.model.XrayInstance;
+import com.xpandit.xray.model.FileStream;
 import com.xpandit.xray.model.UploadResult;
 import com.xpandit.xray.service.impl.XrayTestImporterImpl;
 import hudson.AbortException;
@@ -26,7 +28,6 @@ import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
-import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -34,6 +35,7 @@ import javax.annotation.Nonnull;
 import jenkins.tasks.SimpleBuildStep;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.http.entity.ContentType;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
@@ -92,7 +94,7 @@ public class XrayImportFeatureBuilder extends Builder implements SimpleBuildStep
     public void perform(@Nonnull Run<?, ?> run,
                         @Nonnull FilePath workspace,
                         @Nonnull Launcher launcher,
-                        @Nonnull TaskListener listener) throws IOException {
+                        @Nonnull TaskListener listener) throws IOException, InterruptedException {
         XrayInstance xrayInstance = ConfigurationUtils.getConfiguration(this.serverInstance);
         if(xrayInstance == null){
             listener.getLogger().println("The server instance is null");
@@ -106,38 +108,35 @@ public class XrayImportFeatureBuilder extends Builder implements SimpleBuildStep
             listener.getLogger().println("You must provide the directory path");
             throw new AbortException();
         }
-        File folder = new File(this.folderPath);
-        if(!folder.isDirectory()){
-            listener.getLogger().println("The location is not a directory");
-            throw new AbortException();
-        }
         XrayTestImporterImpl client = new XrayTestImporterImpl(xrayInstance.getServerAddress(),
                 xrayInstance.getUsername(),
                 xrayInstance.getPassword());
-        processFolderImport(client, listener, folder);
+        processImport(workspace, client, listener);
+
     }
 
-    private void processFolderImport(XrayTestImporterImpl client,
-                                    TaskListener listener,
-                                    File folderPath) throws AbortException {
-        File [] folderFiles = folderPath.listFiles();
-        if(folderFiles == null){
-            listener.getLogger().println("Abstract pathname does not denote a directory");
-            throw new AbortException();
+    private void processImport(FilePath workspace,
+                          XrayTestImporterImpl client,
+                          TaskListener listener) throws IOException, InterruptedException {
+        List<FilePath> paths;
+        try{
+            paths = FileUtils.getFeatureFilesFromWorkspace(workspace, this.folderPath, listener);
+        } catch (IOException | InterruptedException e){
+            listener.getLogger().println("An error occurred while getting the feature files");
+            throw e;
         }
-        for(File f : folderFiles){
-            if(f.isDirectory()){
-                processFolderImport(client, listener, f);
-            } else{
-                if(isApplicableAsModifiedFile(f) && f.isFile()){
-                    UploadResult result = client.importFeatures(this.projectKey, f);
-                    listener.getLogger().println(result.getMessage());
-                }
+        for(FilePath fp : paths){
+            if(isApplicableAsModifiedFile(fp)){
+                FileStream f = new com.xpandit.xray.model.FileStream(fp.getName(),
+                        fp.read(),
+                        ContentType.APPLICATION_JSON);
+                UploadResult up = client.importFeatures(this.projectKey, f);
+                listener.getLogger().println(up.getMessage());
             }
         }
     }
 
-    private boolean isApplicableAsModifiedFile(File f){
+    private boolean isApplicableAsModifiedFile(FilePath f) throws InterruptedException, IOException{
         if(StringUtils.isBlank(lastModified)){
             //the modified field is not used so we return true
             return true;
