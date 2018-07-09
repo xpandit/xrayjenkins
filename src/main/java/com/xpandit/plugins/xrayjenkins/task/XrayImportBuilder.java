@@ -291,7 +291,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 						@Nonnull FilePath workspace,
 						@Nonnull Launcher launcher,
 						@Nonnull TaskListener listener)
-			throws AbortException, InterruptedException, IOException {
+			throws InterruptedException, IOException {
 		validate(dynamicFields);
 
 		listener.getLogger().println("Starting import task...");
@@ -319,7 +319,8 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 			UploadResult result;
 			ObjectMapper mapper = new ObjectMapper();
 			String key = null;
-			for(FilePath fp : FileUtils.getFilePaths(workspace,resolved,listener)){
+
+			for(FilePath fp : FileUtils.getFiles(workspace, resolved)){
 				result = uploadResults(workspace, listener,client, fp, env, key);
 				if(key == null && this.importToSameExecution){
 					Map<String, Map> map = mapper.readValue(result.getMessage(), Map.class);
