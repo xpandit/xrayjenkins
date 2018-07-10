@@ -73,7 +73,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 
     private Endpoint endpoint;
     private Map<String,String> dynamicFields;
-    private boolean importToSameExecution;
+    private boolean importToSameExecution = true;
 
     private String formatSuffix; //value of format select
     private String serverInstance;//Configuration ID of the JIRA instance

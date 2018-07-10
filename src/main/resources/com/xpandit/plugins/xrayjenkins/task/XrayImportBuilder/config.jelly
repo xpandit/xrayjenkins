@@ -18,7 +18,7 @@
 
   <j:file xmlns:j="jelly:core" var="addSameExecutionCheckboxEntry" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='HTML'>
 	  <f:entry title="Import to Same Test Execution" description="When this option is check, if you are importing multiple execution report files using a glob expression, the results will be imported to the same Test Execution">
-		  <f:checkbox name="sameExecutionCheckbox" id="same-execution-checkbox" checked="${instance.isImportToSameExecution()}"/>
+		  <f:checkbox name="sameExecutionCheckbox" id="same-execution-checkbox" checked="${instance.isImportToSameExecution() != null ? instance.isImportToSameExecution() : true}"/>
 	  </f:entry>
   </j:file>
  
