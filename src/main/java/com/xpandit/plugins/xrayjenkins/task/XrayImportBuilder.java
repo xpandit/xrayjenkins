@@ -235,11 +235,10 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         for(Endpoint e : Endpoint.values()){
         	FormatBean bean = e.toBean();
         	formats.put(e.getSuffix(),bean);
-        	
         	if(e.name().equals(endpoint.name())){
 				bean.setFieldsConfiguration(dynamicFields);
-				addImportToSameExecField(e, bean);
 			}
+			addImportToSameExecField(e, bean);
         }
         return gson.toJson(formats);	
     }
