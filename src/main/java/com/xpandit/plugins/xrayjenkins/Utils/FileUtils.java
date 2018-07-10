@@ -35,13 +35,11 @@ public class FileUtils {
         if(StringUtils.isBlank(globExpression)){
             throw new XrayJenkinsGenericException("The file path cannot be null nor empty");
         }
-        List<FilePath> paths = new ArrayList<>();
         FilePath [] pathArray = workspace.list(globExpression, "", false);
         if(pathArray.length == 0){
             throw new XrayJenkinsGenericException("No file matching the glob expression was found.");
         }
-        paths.addAll(Arrays.asList(pathArray));
-        return paths;
+        return Arrays.asList(pathArray);
     }
 
 
