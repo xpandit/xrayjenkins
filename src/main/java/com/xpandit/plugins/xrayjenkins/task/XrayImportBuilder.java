@@ -265,7 +265,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 			throw new XrayJenkinsGenericException("No file path was specified");
 		}
 
-		FilePath file = readFile(workspace,filePath.trim(),listener);
+		FilePath file = FileUtils.readFile(workspace,filePath.trim(),listener);
 		if(file.isDirectory() || !file.exists()){
 			throw new XrayJenkinsGenericException("File path is a directory or the file doesn't exist");
 		}

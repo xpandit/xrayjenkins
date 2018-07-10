@@ -16,6 +16,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.PathMatcher;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
@@ -30,21 +31,14 @@ public class FileUtils {
      * @param workspace the Jenkins project workspace
      * @param path the folder path
      * @param listener the TaskListener
-     * @return
-     * @throws IOException
-     * @throws InterruptedException
+     * @return the list of the filepath's
      */
     public static List<FilePath> getFeatureFilesFromWorkspace(FilePath workspace,
                                                               String path,
                                                               TaskListener listener) throws IOException, InterruptedException {
-        if(workspace == null){
-            throw new XrayJenkinsGenericException("workspace cannot be null");
-        }
-        if(StringUtils.isBlank(path)){
-            throw new XrayJenkinsGenericException("The folder path cannot be null nor empty");
-        }
-        if(listener == null){
-            throw new XrayJenkinsGenericException("The task listener cannot be null");
+        String errors = getErrors(workspace, path, listener);
+        if(errors != null){
+            throw new XrayJenkinsGenericException(errors);
         }
         List<FilePath> paths = new ArrayList<>();
         FilePath folder = readFile(workspace, path, listener);
@@ -60,6 +54,22 @@ public class FileUtils {
             throw new XrayJenkinsGenericException("The path is not a folder");
         }
         return paths;
+    }
+
+    private static String getErrors(FilePath workspace,
+                           String path,
+                           TaskListener listener){
+        List<String> errors = new LinkedList<>();
+        if(workspace == null){
+            errors.add("workspace cannot be null");
+        }
+        if(StringUtils.isBlank(path)){
+            errors.add("The folder path cannot be null nor empty");
+        }
+        if(listener == null){
+            errors.add("The task listener cannot be null");
+        }
+        return errors.isEmpty() ? null : StringUtils.join(errors, "\n");
     }
 
 

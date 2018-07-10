@@ -136,13 +136,13 @@ public class XrayImportFeatureBuilder extends Builder implements SimpleBuildStep
         }
     }
 
-    private boolean isApplicableAsModifiedFile(FilePath f) throws InterruptedException, IOException{
+    private boolean isApplicableAsModifiedFile(FilePath filePath) throws InterruptedException, IOException{
         if(StringUtils.isBlank(lastModified)){
             //the modified field is not used so we return true
             return true;
         }
         int lastModifiedIntValue = getLastModifiedIntValue();
-        Long diffInMillis = new Date().getTime() - f.lastModified();
+        Long diffInMillis = new Date().getTime() - filePath.lastModified();
         Long diffInHour = diffInMillis /  DateUtils.MILLIS_PER_HOUR;
         return diffInHour <= lastModifiedIntValue;
     }
