@@ -271,12 +271,6 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		}
 		return file;
 	}
-
-	private FilePath readFile(FilePath workspace, String filePath, TaskListener listener) throws IOException{
-		   FilePath f = new FilePath(workspace, filePath);
-		   listener.getLogger().println("File: "+f.getRemote());
-		   return f;
-	}
 	
 	private String expand(EnvVars environment, String variable){
 		if(StringUtils.isNotBlank(variable)){
