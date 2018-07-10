@@ -152,7 +152,17 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		this.formatSuffix = Endpoint.lookupByName(endpoint) != null ? Endpoint.lookupByName(endpoint).getSuffix()
 				: (Endpoint.lookupBySuffix(endpoint) != null ? Endpoint.lookupBySuffix(endpoint).getSuffix() : null);
    		/*this.importToSameExecution = "true".equals(importToSameExecution);*/
-   		this.importToSameExecution = importToSameExecution;
+
+   		this.projectKey = projectKey;
+   		this.testEnvironments = testEnvironments;
+   		this.testPlanKey = testPlanKey;
+   		this.fixVersion = fixVersion;
+   		this.importFilePath = importFilePath;
+   		this.testExecKey = testExecKey;
+   		this.revision = revision;
+   		this.importInfo = importInfo;
+   		this.inputInfoSwitcher = inputInfoSwitcher;
+		this.importToSameExecution = importToSameExecution;
 
 		setDynamicFields(projectKey,
 				testEnvironments,
