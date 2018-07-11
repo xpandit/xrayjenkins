@@ -72,7 +72,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 	private static Gson gson = new GsonBuilder().create();
 
 	private static final String SAME_EXECUTION_CHECKBOX = "importToSameExecution";
-	private static final String INFO_INPUT_SWITCHER = "inputInfoSwitcher";
+	private static final String INPUT_INFO_SWITCHER = "inputInfoSwitcher";
 	private static final String SERVER_INSTANCE = "serverInstance";
 	private static final String ERROR_LOG = "Error while performing import tasks";
 	private static final String TEST_ENVIRONMENTS = "testEnvironments";
@@ -175,7 +175,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
     		dynamicFields.put(IMPORT_INFO, importInfo);
 		}
 		if(!StringUtils.isBlank(inputInfoSwitcher)){
-    		dynamicFields.put(INFO_INPUT_SWITCHER, inputInfoSwitcher);
+    		dynamicFields.put(INPUT_INFO_SWITCHER, inputInfoSwitcher);
 		}
 		return dynamicFields;
 	}
@@ -195,10 +195,6 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
     public void setFormatSuffix(String formatSuffix){
     	this.formatSuffix = formatSuffix;
     }
-
-	public static String getInfoInputSwitcher() {
-		return INFO_INPUT_SWITCHER;
-	}
 
 	public String getEndpoint() {
 		return endpoint;
@@ -554,7 +550,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 					fields.get(TEST_EXEC_KEY),
 					fields.get(REVISION_FIELD),
 					fields.get(IMPORT_INFO),
-					fields.get(INFO_INPUT_SWITCHER),
+					fields.get(INPUT_INFO_SWITCHER),
 					fields.get(SAME_EXECUTION_CHECKBOX));
         }
 
