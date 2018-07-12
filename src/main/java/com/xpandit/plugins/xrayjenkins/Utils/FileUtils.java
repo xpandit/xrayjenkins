@@ -9,9 +9,11 @@ package com.xpandit.plugins.xrayjenkins.Utils;
 
 import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
 import hudson.FilePath;
+import hudson.model.TaskListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
@@ -19,6 +21,54 @@ public class FileUtils {
 
     private FileUtils(){
     }
+
+    /**
+     * Utility method that returns all .features files from a folder, including those contained in sub folders.
+     * This method works for master node and for slave (remote) nodes
+     * @param workspace the Jenkins project workspace
+     * @param path the folder path
+     * @param listener the TaskListener
+     * @return the list of the filepath's
+     */
+    public static List<FilePath> getFeatureFilesFromWorkspace(FilePath workspace,
+                                                              String path,
+                                                              TaskListener listener) throws IOException, InterruptedException {
+        String errors = getErrors(workspace, path, listener);
+        if(errors != null){
+            throw new XrayJenkinsGenericException(errors);
+        }
+        List<FilePath> paths = new ArrayList<>();
+        FilePath folder = readFile(workspace, path, listener);
+        if(folder.isDirectory()){
+            paths.addAll(Arrays.asList(folder.list("*.feature","", false)));
+            List<FilePath> children = folder.list();
+            for(FilePath child : children){
+                if(child.isDirectory()){
+                    paths.addAll(getFeatureFilesFromWorkspace(workspace, child.toString(), listener));
+                }
+            }
+        } else{
+            throw new XrayJenkinsGenericException("The path is not a folder");
+        }
+        return paths;
+    }
+
+    private static String getErrors(FilePath workspace,
+                           String path,
+                           TaskListener listener){
+        List<String> errors = new LinkedList<>();
+        if(workspace == null){
+            errors.add("workspace cannot be null");
+        }
+        if(StringUtils.isBlank(path)){
+            errors.add("The folder path cannot be null nor empty");
+        }
+        if(listener == null){
+            errors.add("The task listener cannot be null");
+        }
+        return errors.isEmpty() ? null : StringUtils.join(errors, "\n");
+    }
+
 
     /**
      * Returns a list of files that matches the glob expression relatively to the workspace.
@@ -40,6 +90,19 @@ public class FileUtils {
             throw new XrayJenkinsGenericException("No file matching the glob expression was found.");
         }
         return Arrays.asList(pathArray);
+    }
+
+    /**
+     * Given the Jenkins project workspace FilePath and the file path, will resolve the FilePath of the file
+     * @param workspace the Jenkins workspace
+     * @param filePath the file path of the file
+     * @param listener the task listener
+     * @return the <code>FilePath</code>
+     */
+    public static FilePath readFile(FilePath workspace, String filePath, TaskListener listener){
+        FilePath f = new FilePath(workspace, filePath);
+        listener.getLogger().println("File: " + f.getRemote());
+        return f;
     }
 
 
