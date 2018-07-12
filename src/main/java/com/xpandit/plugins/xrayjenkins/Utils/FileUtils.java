@@ -10,11 +10,10 @@ package com.xpandit.plugins.xrayjenkins.Utils;
 import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
 import hudson.FilePath;
 import hudson.model.TaskListener;
-import java.io.File;
-import java.nio.file.FileSystems;
-import java.nio.file.PathMatcher;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
@@ -24,114 +23,87 @@ public class FileUtils {
     }
 
     /**
-     * Utility method that support the usage of glob expression within a filepath.
-     * Also supports folder matching using "**"
-     * @param workspace the jenkins workspace
-     * @param filePath the filepath
-     * @param listener the task listener
-     * @return a list of matching files.
+     * Utility method that returns all .features files from a folder, including those contained in sub folders.
+     * This method works for master node and for slave (remote) nodes
+     * @param workspace the Jenkins project workspace
+     * @param path the folder path
+     * @param listener the TaskListener
+     * @return the list of the filepath's
      */
-    public static List<FilePath> getFilePaths(FilePath workspace, String filePath, TaskListener listener) {
-        List<FilePath> filePaths = new ArrayList<>();
-        if(workspace == null){
-            throw new XrayJenkinsGenericException("No workspace in this current node");
+    public static List<FilePath> getFeatureFilesFromWorkspace(FilePath workspace,
+                                                              String path,
+                                                              TaskListener listener) throws IOException, InterruptedException {
+        String errors = getErrors(workspace, path, listener);
+        if(errors != null){
+            throw new XrayJenkinsGenericException(errors);
         }
-        if(StringUtils.isBlank(filePath)){
-            throw new XrayJenkinsGenericException("No file path was specified");
+        List<FilePath> paths = new ArrayList<>();
+        FilePath folder = readFile(workspace, path, listener);
+        if(folder.isDirectory()){
+            paths.addAll(Arrays.asList(folder.list("*.feature","", false)));
+            List<FilePath> children = folder.list();
+            for(FilePath child : children){
+                if(child.isDirectory()){
+                    paths.addAll(getFeatureFilesFromWorkspace(workspace, child.toString(), listener));
+                }
+            }
+        } else{
+            throw new XrayJenkinsGenericException("The path is not a folder");
         }
-        FilePath file = readFile(workspace,filePath.trim(),listener);
-        List<File> files = getFileList(file.getRemote(), listener);
-        if(files.isEmpty()){
-            throw new XrayJenkinsGenericException("File path is a directory or no matching file exists");
-        }
-        for(File f : files){
-            filePaths.add(new FilePath(f));
-        }
-        return filePaths;
+        return paths;
     }
 
-    private static FilePath readFile(FilePath workspace, String filePath, TaskListener listener){
+    private static String getErrors(FilePath workspace,
+                           String path,
+                           TaskListener listener){
+        List<String> errors = new LinkedList<>();
+        if(workspace == null){
+            errors.add("workspace cannot be null");
+        }
+        if(StringUtils.isBlank(path)){
+            errors.add("The folder path cannot be null nor empty");
+        }
+        if(listener == null){
+            errors.add("The task listener cannot be null");
+        }
+        return errors.isEmpty() ? null : StringUtils.join(errors, "\n");
+    }
+
+
+    /**
+     * Returns a list of files that matches the glob expression relatively to the workspace.
+     * The glob expression is relative, any attempt to match an absolute path will not work.
+     * @param workspace the workspace
+     * @param globExpression the glob expression. Must be relative to the workspace
+     */
+    public static List<FilePath> getFiles(FilePath workspace,
+                                          String globExpression)
+            throws IOException, InterruptedException {
+        if(workspace == null){
+            throw new XrayJenkinsGenericException("workspace cannot be null");
+        }
+        if(StringUtils.isBlank(globExpression)){
+            throw new XrayJenkinsGenericException("The file path cannot be null nor empty");
+        }
+        FilePath [] pathArray = workspace.list(globExpression, "", false);
+        if(pathArray.length == 0){
+            throw new XrayJenkinsGenericException("No file matching the glob expression was found.");
+        }
+        return Arrays.asList(pathArray);
+    }
+
+    /**
+     * Given the Jenkins project workspace FilePath and the file path, will resolve the FilePath of the file
+     * @param workspace the Jenkins workspace
+     * @param filePath the file path of the file
+     * @param listener the task listener
+     * @return the <code>FilePath</code>
+     */
+    public static FilePath readFile(FilePath workspace, String filePath, TaskListener listener){
         FilePath f = new FilePath(workspace, filePath);
         listener.getLogger().println("File: " + f.getRemote());
         return f;
     }
 
-    private static List<File> getFileList(String globExpression, TaskListener listener) {
-        List<File> files = new ArrayList<>();
-        String [] parts = globExpression.split("\\\\");
-        String glob = parts[parts.length - 1];
-        PathMatcher matcher;
-        try{
-            matcher = FileSystems.getDefault().getPathMatcher("glob:" + glob);
-        } catch (IllegalArgumentException e){
-            listener.getLogger().println("pattern is invalid");
-            throw e;
-        } catch (UnsupportedOperationException e){
-            listener.getLogger().println("the pattern syntax is not known");
-            throw e;
-        }
-        for(File file : getFileList(resolveFolders(globExpression))){
-            if (matcher.matches(file.toPath().getFileName())) {
-                files.add(file);
-            }
-        }
-        return files;
-    }
-
-    private static List<File> getFileList(List<String> paths){
-        List<File> files = new ArrayList<>();
-        for(String path : paths){
-            File folder = new File(rebuildPath(path.split("\\\\")));
-            File [] folderFiles = folder.listFiles();
-            if(folderFiles != null){
-                files.addAll(Arrays.asList(folderFiles));
-            }
-        }
-        return files;
-    }
-
-    private static String rebuildPath(String [] parts){
-        StringBuilder sb = new StringBuilder();
-        for(int i = 0; i < parts.length - 1; i ++){
-            sb.append(parts[i]).append("\\");
-        }
-        return sb.toString();
-    }
-
-    private static List<String> resolveFolders(String path) {
-        List<String> paths = new ArrayList<>();
-        String [] parts = path.split("\\*\\*");
-        if(parts.length == 1){
-            paths.add(path);
-            return paths;
-        }
-        File folder = new File(parts[0]);
-        if(!folder.exists()){
-            return new ArrayList<>();
-        }
-        File [] files = folder.listFiles();
-        if(files == null){
-            return new ArrayList<>();
-        }
-        for(File f : files){
-            if(f.isDirectory()){
-                String newPath = f.getPath() + mergeParts(Arrays.copyOfRange(parts, 1, parts.length));
-                paths.addAll(resolveFolders(newPath));
-            }
-        }
-        return paths;
-    }
-
-    private static String mergeParts(String [] parts){
-        if(parts.length == 1){
-            return parts[0];
-        }
-        StringBuilder sb = new StringBuilder();
-        sb.append(parts[0]);
-        for(int i = 1 ; i < parts.length; i ++){
-            sb.append("**").append(parts[i]);
-        }
-        return sb.toString();
-    }
 
 }

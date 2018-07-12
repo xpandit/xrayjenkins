@@ -69,22 +69,6 @@ public class FileUtilsTest {
     }
 
     @Test
-    public void testGetFileWithAbsolutePath(){
-        try{
-            try(PrintStream logger = new PrintStream(workspace.newFile(LOGGER_NAME))){
-                when(taskListener.getLogger()).thenReturn(logger);
-            }
-            prepareFolders();
-            String resultsPath = workspace.getRoot().toPath().toString() + getAbsoluteDirectoryPath() + "*.xml";
-            List<FilePath> matchingFiles = FileUtils.getFilePaths(new FilePath(getWorkspaceFile()), resultsPath, taskListener);
-            Assert.assertTrue(matchingFiles.size() == 7);
-        } catch (IOException e){
-            Assert.fail(EXCEPTION_MESSAGE + e.getMessage());
-        }
-        workspace.delete();
-    }
-
-    @Test
     public void testGetFileWithRelativePath(){
         try{
             try(PrintStream logger = new PrintStream(workspace.newFile(LOGGER_NAME))){
@@ -92,9 +76,9 @@ public class FileUtilsTest {
             }
             prepareFolders();
             String resultsPath = getRelativeDirectoryPath() + "*.xml";
-            List<FilePath> matchingFiles = FileUtils.getFilePaths(new FilePath(getWorkspaceFile()), resultsPath, taskListener);
-            Assert.assertTrue(matchingFiles.size() == 7);
-        } catch (IOException e){
+            List<FilePath> matchingFiles = FileUtils.getFiles(new FilePath(getWorkspaceFile()), resultsPath);
+            Assert.assertTrue(matchingFiles.size() == 8);
+        } catch (IOException | InterruptedException e){
             Assert.fail(EXCEPTION_MESSAGE + e.getMessage());
         }
         workspace.delete();
@@ -107,34 +91,16 @@ public class FileUtilsTest {
                 when(taskListener.getLogger()).thenReturn(logger);
             }
             prepareFolders();
-            String resultsPath = workspace.getRoot().toPath().toString() + getAbsoluteDirectoryPath() + "feb*.xml";
-            List<FilePath> matchingFiles = FileUtils.getFilePaths(new FilePath(getWorkspaceFile()), resultsPath, taskListener);
+            String resultsPath = getRelativeDirectoryPath() + "feb*.xml";
+            List<FilePath> matchingFiles = FileUtils.getFiles(new FilePath(getWorkspaceFile()), resultsPath);
             Assert.assertTrue(matchingFiles.size() == 2);
-        } catch (IOException e){
+        } catch (IOException | InterruptedException e){
             Assert.fail(EXCEPTION_MESSAGE + e.getMessage());
         }
         workspace.delete();
     }
 
-    private String getAbsoluteDirectoryPath(){
-        return  File.separator
-                + XRAYJENKINS
-                + File.separator
-                + WORK
-                + File.separator
-                + WORKSPACEFOLDER
-                + File.separator
-                + DUMMYPROJECT
-                + File.separator
-                + UNITTESTING
-                + File.separator
-                + FOLDERMATCHER
-                + File.separator
-                + RESULTS
-                + File.separator
-                + FOLDERMATCHER
-                + File.separator;
-    }
+
 
     private String getRelativeDirectoryPath(){
         return File.separator

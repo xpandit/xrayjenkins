@@ -17,12 +17,12 @@
   </j:file>
 
   <j:file xmlns:j="jelly:core" var="addSameExecutionCheckboxEntry" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='HTML'>
-	  <f:entry field="importToSameExecution" title="Import to Same Test Execution  Executions" description="When this option is checked, if you are importing multiple Execution Report files using a glob expression, the results will be imported to the same Test Execution">
-		  <f:checkbox name="importToSameExecution" id="same-execution-checkbox" checked="${instance.isImportToSameExecution()}"/>
+	  <f:entry field="importToSameExecution" title="Import to Same Test Execution" description="When this option is check, if you are importing multiple execution report files using a glob expression, the results will be imported to the same Test Execution">
+		  <f:checkbox name="importToSameExecution" id="same-execution-checkbox" checked="${instance.isImportToSameExecution() != null ? instance.isImportToSameExecution() : true}"/>
 	  </f:entry>
   </j:file>
 
- 
+
   <j:file xmlns:j="jelly:core" var="addTextarea" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='XML'>
   	 	<f:textarea field='{{key}}' value="{{configuration}}" style="width:100%"/>
   </j:file>  

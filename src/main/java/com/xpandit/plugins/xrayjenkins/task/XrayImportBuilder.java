@@ -295,8 +295,8 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         	formats.put(e.getSuffix(),bean);
         	if(e.name().equals(lookupForEndpoint().name())){
 				bean.setFieldsConfiguration(getDynamicFieldsMap());
-				addImportToSameExecField(e, bean);
 			}
+            addImportToSameExecField(e, bean);
         }
         return gson.toJson(formats);	
     }
@@ -333,17 +333,11 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 			throw new XrayJenkinsGenericException("No file path was specified");
 		}
 
-		FilePath file = readFile(workspace,filePath.trim(),listener);
+		FilePath file = FileUtils.readFile(workspace,filePath.trim(),listener);
 		if(file.isDirectory() || !file.exists()){
 			throw new XrayJenkinsGenericException("File path is a directory or the file doesn't exist");
 		}
 		return file;
-	}
-
-	private FilePath readFile(FilePath workspace, String filePath, TaskListener listener) throws IOException{
-		   FilePath f = new FilePath(workspace, filePath);
-		   listener.getLogger().println("File: "+f.getRemote());
-		   return f;
 	}
 	
 	private String expand(EnvVars environment, String variable){
@@ -387,7 +381,8 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 			UploadResult result;
 			ObjectMapper mapper = new ObjectMapper();
 			String key = null;
-			for(FilePath fp : FileUtils.getFilePaths(workspace,resolved,listener)){
+
+			for(FilePath fp : FileUtils.getFiles(workspace, resolved)){
 				result = uploadResults(workspace, listener,client, fp, env, key);
 				if(key == null && "true".equals(importToSameExecution)){
 					Map<String, Map> map = mapper.readValue(result.getMessage(), Map.class);
