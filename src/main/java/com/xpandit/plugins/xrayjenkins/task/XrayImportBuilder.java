@@ -73,7 +73,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 
     private Endpoint endpoint;
     private Map<String,String> dynamicFields;
-    private boolean importToSameExecution;
+    private boolean importToSameExecution = true;
 
     private String formatSuffix; //value of format select
     private String serverInstance;//Configuration ID of the JIRA instance
@@ -235,11 +235,10 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         for(Endpoint e : Endpoint.values()){
         	FormatBean bean = e.toBean();
         	formats.put(e.getSuffix(),bean);
-        	
         	if(e.name().equals(endpoint.name())){
 				bean.setFieldsConfiguration(dynamicFields);
-				addImportToSameExecField(e, bean);
 			}
+			addImportToSameExecField(e, bean);
         }
         return gson.toJson(formats);	
     }
@@ -291,7 +290,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 						@Nonnull FilePath workspace,
 						@Nonnull Launcher launcher,
 						@Nonnull TaskListener listener)
-			throws AbortException, InterruptedException, IOException {
+			throws InterruptedException, IOException {
 		validate(dynamicFields);
 
 		listener.getLogger().println("Starting import task...");
@@ -319,7 +318,8 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 			UploadResult result;
 			ObjectMapper mapper = new ObjectMapper();
 			String key = null;
-			for(FilePath fp : FileUtils.getFilePaths(workspace,resolved,listener)){
+
+			for(FilePath fp : FileUtils.getFiles(workspace, resolved)){
 				result = uploadResults(workspace, listener,client, fp, env, key);
 				if(key == null && this.importToSameExecution){
 					Map<String, Map> map = mapper.readValue(result.getMessage(), Map.class);
