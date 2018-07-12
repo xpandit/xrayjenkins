@@ -96,6 +96,13 @@ public class FileUtils {
         return Arrays.asList(pathArray);
     }
 
+    /**
+     * Given the Jenkins project workspace FilePath and the file path, will resolve the FilePath of the file
+     * @param workspace the Jenkins workspace
+     * @param filePath the file path of the file
+     * @param listener the task listener
+     * @return the <code>FilePath</code>
+     */
     public static FilePath readFile(FilePath workspace, String filePath, TaskListener listener){
         FilePath f = new FilePath(workspace, filePath);
         listener.getLogger().println("File: " + f.getRemote());
