@@ -293,7 +293,8 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         for(Endpoint e : Endpoint.values()){
         	FormatBean bean = e.toBean();
         	formats.put(e.getSuffix(),bean);
-        	if(e.name().equals(lookupForEndpoint().name())){
+        	Endpoint endpointObj = lookupForEndpoint();
+        	if(e.name().equals(endpointObj != null ? endpointObj.name() : null)){
 				bean.setFieldsConfiguration(getDynamicFieldsMap());
 			}
             addImportToSameExecField(e, bean);
