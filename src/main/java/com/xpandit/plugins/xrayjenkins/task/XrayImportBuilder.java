@@ -60,11 +60,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class description.
- *
- * @author <a href="mailto:sebastiao.maya@xpand-it.com">sebastiao.maya</a>
- * @version $Revision: 666 $
- *
+ * This class is responsible for performing the Xray: Results Import Task
  */
 public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 
@@ -133,7 +129,8 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 							 String importToSameExecution){
     	this.serverInstance = serverInstance;
     	this.endpoint = endpoint;
-        this.formatSuffix = lookupForEndpoint() != null ? lookupForEndpoint().getSuffix() : null;
+    	Endpoint e = lookupForEndpoint();
+        this.formatSuffix = e != null ? e.getSuffix() : null;
    		this.projectKey = projectKey;
    		this.testEnvironments = testEnvironments;
    		this.testPlanKey = testPlanKey;
@@ -147,37 +144,23 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 	}
 
 	private Map<String,String> getDynamicFieldsMap(){
-
 		Map<String,String> dynamicFields = new HashMap<>();
-
-    	if (!StringUtils.isBlank(projectKey)){
-    		dynamicFields.put(PROJECT_KEY,projectKey);
-		}
-		if (!StringUtils.isBlank(testEnvironments)){
-			dynamicFields.put(TEST_ENVIRONMENTS,testEnvironments);
-		}
-		if (!StringUtils.isBlank(testPlanKey)){
-			dynamicFields.put(TEST_PLAN_KEY,testPlanKey);
-		}
-		if (!StringUtils.isBlank(fixVersion)){
-			dynamicFields.put(FIX_VERSION,fixVersion);
-		}
-		if (!StringUtils.isBlank(importFilePath)){
-			dynamicFields.put(IMPORT_FILE_PATH,importFilePath);
-		}
-		if (!StringUtils.isBlank(testExecKey)){
-			dynamicFields.put(TEST_EXEC_KEY,testExecKey);
-		}
-		if (!StringUtils.isBlank(projectKey)){
-			dynamicFields.put(REVISION_FIELD,revision);
-		}
-		if(!StringUtils.isBlank(importInfo)){
-    		dynamicFields.put(IMPORT_INFO, importInfo);
-		}
-		if(!StringUtils.isBlank(inputInfoSwitcher)){
-    		dynamicFields.put(INPUT_INFO_SWITCHER, inputInfoSwitcher);
-		}
+    	putNotBlank(dynamicFields, PROJECT_KEY, projectKey);
+		putNotBlank(dynamicFields, TEST_ENVIRONMENTS, testEnvironments);
+		putNotBlank(dynamicFields,TEST_PLAN_KEY, testPlanKey);
+		putNotBlank(dynamicFields,FIX_VERSION, fixVersion);
+		putNotBlank(dynamicFields, IMPORT_FILE_PATH, importFilePath);
+		putNotBlank(dynamicFields,TEST_EXEC_KEY,testExecKey);
+		putNotBlank(dynamicFields, REVISION_FIELD, revision);
+		putNotBlank(dynamicFields,IMPORT_INFO, importInfo);
+		putNotBlank(dynamicFields, INPUT_INFO_SWITCHER,inputInfoSwitcher);
 		return dynamicFields;
+	}
+
+	private void putNotBlank(Map<String,String> dynamicFields, String key, String val){
+		if(StringUtils.isNotBlank(val)){
+			dynamicFields.put(key,val);
+		}
 	}
 
     public String getFormatSuffix(){
@@ -319,7 +302,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 				|| Endpoint.NUNIT.equals(e)
 				|| Endpoint.ROBOT.equals(e)){
 			ParameterBean pb = new ParameterBean(SAME_EXECUTION_CHECKBOX, "same exec text box", false);
-			pb.setConfiguration(this.importToSameExecution);
+			pb.setConfiguration(importToSameExecution);
 			bean.getConfigurableFields().add(0, pb);
 
 		}
@@ -364,7 +347,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         listener.getLogger().println("##########################################################");
         listener.getLogger().println("#### Importing the execution results to Xray  ####");
         listener.getLogger().println("##########################################################");
-        XrayInstance xrayInstance = ConfigurationUtils.getConfiguration(this.serverInstance);
+        XrayInstance xrayInstance = ConfigurationUtils.getConfiguration(serverInstance);
         if(xrayInstance == null){
         	throw new AbortException("The Jira server configuration of this task was not found.");
 		}
@@ -465,12 +448,12 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 
 	private Map<com.xpandit.xray.model.QueryParameter, String> prepareQueryParam(EnvVars env){
 		Map<com.xpandit.xray.model.QueryParameter,String> queryParams = new EnumMap<>(QueryParameter.class);
-		queryParams.put(com.xpandit.xray.model.QueryParameter.PROJECT_KEY, this.expand(env,this.projectKey));
-		queryParams.put(com.xpandit.xray.model.QueryParameter.TEST_EXEC_KEY, this.expand(env,this.testExecKey));
-		queryParams.put(com.xpandit.xray.model.QueryParameter.TEST_PLAN_KEY, this.expand(env,this.testPlanKey));
-		queryParams.put(com.xpandit.xray.model.QueryParameter.TEST_ENVIRONMENTS, this.expand(env,this.testEnvironments));
-		queryParams.put(com.xpandit.xray.model.QueryParameter.REVISION, this.expand(env,this.revision));
-		queryParams.put(com.xpandit.xray.model.QueryParameter.FIX_VERSION, this.expand(env,this.fixVersion));
+		queryParams.put(com.xpandit.xray.model.QueryParameter.PROJECT_KEY, expand(env,projectKey));
+		queryParams.put(com.xpandit.xray.model.QueryParameter.TEST_EXEC_KEY, expand(env,testExecKey));
+		queryParams.put(com.xpandit.xray.model.QueryParameter.TEST_PLAN_KEY, expand(env,testPlanKey));
+		queryParams.put(com.xpandit.xray.model.QueryParameter.TEST_ENVIRONMENTS, expand(env,testEnvironments));
+		queryParams.put(com.xpandit.xray.model.QueryParameter.REVISION, expand(env,revision));
+		queryParams.put(com.xpandit.xray.model.QueryParameter.FIX_VERSION, expand(env,fixVersion));
 		return queryParams;
 	}
 

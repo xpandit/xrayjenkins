@@ -44,11 +44,7 @@ import org.slf4j.LoggerFactory;
 import static com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils.getConfiguration;
 
 /**
- * Class description.
- *
- * @author <a href="mailto:sebastiao.maya@xpand-it.com">sebastiao.maya</a>
- * @version $Revision: 666 $
- *
+ * This class is responsible for performing the Xray: Cucumber Features Export Task
  */
 public class XrayExportBuilder extends Builder implements SimpleBuildStep {
 
