@@ -40,6 +40,9 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 
+/**
+ * This class is responsible for performing the Xray: Cucumber Features Import Task
+ */
 public class XrayImportFeatureBuilder extends Builder implements SimpleBuildStep{
 
     private String serverInstance;
