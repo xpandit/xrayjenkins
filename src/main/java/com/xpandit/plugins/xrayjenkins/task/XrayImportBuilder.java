@@ -28,6 +28,7 @@ import javax.annotation.Nullable;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.StaplerRequest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -84,7 +85,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
     private String formatSuffix; //value of format select
     private String serverInstance;//Configuration ID of the JIRA instance
     private String inputInfoSwitcher;//value of the input type switcher
-	private String endpoint;
+	private String endpointName;
 	private String projectKey;
 	private String testEnvironments;
 	private String testPlanKey;
@@ -96,12 +97,47 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 	private String importToSameExecution;
 
 	@Deprecated
-    /**
-     * this Field is only used for compatibility.
-     * We'll only keep it so when the user perform
-     * an up0date to 1.3.0 from previous versions, the job confgurations are not lost
-     */
+	/**
+	 * this is only kept for backward compatibility (previous from 1.3.0)
+	 */
 	private Map<String,String> dynamicFields;
+	@Deprecated
+	/**
+	 * this is only kept for backward compatibility (previous from 1.3.0)
+	 */
+	private XrayInstance xrayInstance;
+	@Deprecated
+	/**
+	 * this is only kept for backward compatibility (previous from 1.3.0)
+	 */
+    private Endpoint endpoint;
+
+	public Map<String, String> getDynamicFields() {
+		return dynamicFields;
+	}
+
+	@DataBoundSetter
+	public void setDynamicFields(Map<String, String> dynamicFields) {
+		this.dynamicFields = dynamicFields;
+	}
+
+	public XrayInstance getXrayInstance() {
+		return xrayInstance;
+	}
+
+	@DataBoundSetter
+	public void setXrayInstance(XrayInstance xrayInstance) {
+		this.xrayInstance = xrayInstance;
+	}
+
+	public Endpoint getEndpoint() {
+		return endpoint;
+	}
+
+	@DataBoundSetter
+	public void setEndpoint(Endpoint endpoint) {
+		this.endpoint = endpoint;
+	}
 
 	/**
 	 * This constructor is compatible with pipelines projects
@@ -111,7 +147,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 	 * @see <a href="https://jenkins.io/doc/developer/plugin-development/pipeline-integration/">Writing Pipeline-Compatible Plugins </a>
 	 *
 	 * @param serverInstance the server configuration id
-	 * @param endpoint the endpoint to be used
+	 * @param endpointName the endpoint to be used
 	 * @param projectKey the project key
 	 * @param testEnvironments the test environments
 	 * @param testPlanKey the test plan key
@@ -124,7 +160,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 	 */
 	@DataBoundConstructor
 	public XrayImportBuilder(String serverInstance,
-							 String endpoint,
+							 String endpointName,
 							 String projectKey,
 							 String testEnvironments,
 							 String testPlanKey,
@@ -136,7 +172,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 							 String inputInfoSwitcher,
 							 String importToSameExecution){
     	this.serverInstance = serverInstance;
-    	this.endpoint = endpoint;
+    	this.endpointName = endpointName;
     	Endpoint e = lookupForEndpoint();
         this.formatSuffix = e != null ? e.getSuffix() : null;
    		this.projectKey = projectKey;
@@ -149,25 +185,30 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
    		this.importInfo = importInfo;
    		this.inputInfoSwitcher = inputInfoSwitcher;
 		this.importToSameExecution = importToSameExecution;
+
+		/*Compatibility assigns*/
+		this.dynamicFields = getDynamicFieldsMap();
+		this.xrayInstance = ConfigurationUtils.getConfiguration(serverInstance);
+		this.endpoint = lookupForEndpoint();
 	}
 
 	private Map<String,String> getDynamicFieldsMap(){
-		Map<String,String> dynamicFields = new HashMap<>();
-    	putNotBlank(dynamicFields, PROJECT_KEY, projectKey);
-		putNotBlank(dynamicFields, TEST_ENVIRONMENTS, testEnvironments);
-		putNotBlank(dynamicFields,TEST_PLAN_KEY, testPlanKey);
-		putNotBlank(dynamicFields,FIX_VERSION, fixVersion);
-		putNotBlank(dynamicFields, IMPORT_FILE_PATH, importFilePath);
-		putNotBlank(dynamicFields,TEST_EXEC_KEY,testExecKey);
-		putNotBlank(dynamicFields, REVISION_FIELD, revision);
-		putNotBlank(dynamicFields,IMPORT_INFO, importInfo);
-		putNotBlank(dynamicFields, INPUT_INFO_SWITCHER,inputInfoSwitcher);
-		return dynamicFields;
+		Map<String,String> fields = new HashMap<>();
+    	putNotBlank(fields, PROJECT_KEY, projectKey);
+		putNotBlank(fields, TEST_ENVIRONMENTS, testEnvironments);
+		putNotBlank(fields,TEST_PLAN_KEY, testPlanKey);
+		putNotBlank(fields,FIX_VERSION, fixVersion);
+		putNotBlank(fields, IMPORT_FILE_PATH, importFilePath);
+		putNotBlank(fields,TEST_EXEC_KEY,testExecKey);
+		putNotBlank(fields, REVISION_FIELD, revision);
+		putNotBlank(fields,IMPORT_INFO, importInfo);
+		putNotBlank(fields, INPUT_INFO_SWITCHER,inputInfoSwitcher);
+		return fields;
 	}
 
-	private void putNotBlank(Map<String,String> dynamicFields, String key, String val){
+	private void putNotBlank(Map<String,String> fields, String key, String val){
 		if(StringUtils.isNotBlank(val)){
-			dynamicFields.put(key,val);
+			fields.put(key,val);
 		}
 	}
 
@@ -187,12 +228,12 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
     	this.formatSuffix = formatSuffix;
     }
 
-	public String getEndpoint() {
-		return endpoint;
+	public String getEndpointName() {
+		return endpointName;
 	}
 
-	public void setEndpoint(String endpoint) {
-		this.endpoint = endpoint;
+	public void setEndpointName(String endpointName) {
+		this.endpointName = endpointName;
 	}
 
 	public String getProjectKey() {
@@ -268,7 +309,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 	}
 
 	public String getFormatName(){
-		return Endpoint.lookupByName(endpoint).getName();
+		return Endpoint.lookupByName(endpointName).getName();
 	}
 
 	public String getInputInfoSwitcher() {
@@ -280,14 +321,6 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 	}
 
 	public String defaultFormats(){
-		LOG.info("trying to use default formats");
-		if(dynamicFields != null){
-			for(String s : dynamicFields.keySet()){
-				LOG.info("key: " + s + " value: " + dynamicFields.get(s));
-			}
-		} else {
-			LOG.info("no dynamic fileds");
-		}
         Map<String,FormatBean> formats = new HashMap<>();
         for(Endpoint e : Endpoint.values()){
         	FormatBean bean = e.toBean();
@@ -295,8 +328,8 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         	Endpoint endpointObj = lookupForEndpoint();
         	if(e.name().equals(endpointObj != null ? endpointObj.name() : null)){
         	    // compatibility check
-                Map<String, String> fieldsToUse = dynamicFields == null || dynamicFields.keySet().isEmpty() ? getDynamicFieldsMap() : dynamicFields;
-				bean.setFieldsConfiguration(fieldsToUse);
+                /*Map<String, String> fieldsToUse = dynamicFields == null || dynamicFields.keySet().isEmpty() ? getDynamicFieldsMap() : dynamicFields;*/
+				bean.setFieldsConfiguration(dynamicFields);
 			}
             addImportToSameExecField(e, bean);
         }
@@ -310,8 +343,8 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
      */
     @Nullable
     private Endpoint lookupForEndpoint(){
-		Endpoint targetedEndpoint = Endpoint.lookupByName(endpoint);
-		return targetedEndpoint != null ? targetedEndpoint : Endpoint.lookupBySuffix(endpoint);
+		Endpoint targetedEndpoint = Endpoint.lookupByName(endpointName);
+		return targetedEndpoint != null ? targetedEndpoint : Endpoint.lookupBySuffix(endpointName);
 	}
 
 	private void addImportToSameExecField(Endpoint e, FormatBean bean){
@@ -375,7 +408,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		EnvVars env = build.getEnvironment(listener);
 		String resolved = this.expand(env,this.importFilePath);
 
-		Endpoint endpointValue = Endpoint.lookupBySuffix(this.endpoint);
+		Endpoint endpointValue = Endpoint.lookupBySuffix(this.endpointName);
 		if(Endpoint.JUNIT.equals(endpointValue)
 				|| Endpoint.NUNIT.equals(endpointValue)
 				|| Endpoint.TESTNG.equals(endpointValue)
@@ -481,7 +514,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 			LOG.error("configuration id is null");
 			throw new XrayJenkinsGenericException("configuration id is null");
 		}
-		if(endpoint == null || lookupForEndpoint() == null){
+		if(endpointName == null || lookupForEndpoint() == null){
 			LOG.error("passed endpoint is null or could not be found");
 			throw new XrayJenkinsGenericException("passed endpoint is null or could not be found");
 		}
