@@ -95,6 +95,14 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 	private String importInfo;
 	private String importToSameExecution;
 
+	@Deprecated
+    /**
+     * this Field is only used for compatibility.
+     * We'll only keep it so when the user perform
+     * an up0date to 1.3.0 from previous versions, the job confgurations are not lost
+     */
+	private Map<String,String> dynamicFields;
+
 	/**
 	 * This constructor is compatible with pipelines projects
      *
@@ -272,13 +280,23 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 	}
 
 	public String defaultFormats(){
+		LOG.info("trying to use default formats");
+		if(dynamicFields != null){
+			for(String s : dynamicFields.keySet()){
+				LOG.info("key: " + s + " value: " + dynamicFields.get(s));
+			}
+		} else {
+			LOG.info("no dynamic fileds");
+		}
         Map<String,FormatBean> formats = new HashMap<>();
         for(Endpoint e : Endpoint.values()){
         	FormatBean bean = e.toBean();
         	formats.put(e.getSuffix(),bean);
         	Endpoint endpointObj = lookupForEndpoint();
         	if(e.name().equals(endpointObj != null ? endpointObj.name() : null)){
-				bean.setFieldsConfiguration(getDynamicFieldsMap());
+        	    // compatibility check
+                Map<String, String> fieldsToUse = dynamicFields == null || dynamicFields.keySet().isEmpty() ? getDynamicFieldsMap() : dynamicFields;
+				bean.setFieldsConfiguration(fieldsToUse);
 			}
             addImportToSameExecField(e, bean);
         }
