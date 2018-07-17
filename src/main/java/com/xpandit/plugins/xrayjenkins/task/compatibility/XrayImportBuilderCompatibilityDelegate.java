@@ -5,10 +5,11 @@
  * <p/>
  * This software is proprietary.
  */
-package com.xpandit.plugins.xrayjenkins.task;
+package com.xpandit.plugins.xrayjenkins.task.compatibility;
 
 import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
 import com.xpandit.plugins.xrayjenkins.model.XrayInstance;
+import com.xpandit.plugins.xrayjenkins.task.XrayImportBuilder;
 import com.xpandit.xray.model.Endpoint;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +21,7 @@ import org.apache.commons.lang3.StringUtils;
  * Delegate class that performs forward and backward compatibility processing
  * between previous versions from 1.3.0 to 1.3.0 and upper.
  */
-public class XrayImportBuilderCompatibilityDelegate {
+public class XrayImportBuilderCompatibilityDelegate implements CompatibilityDelegate {
 
     private static final String INPUT_INFO_SWITCHER = "inputInfoSwitcher";
     private static final String TEST_ENVIRONMENTS = "testEnvironments";
@@ -32,12 +33,13 @@ public class XrayImportBuilderCompatibilityDelegate {
     private static final String REVISION_FIELD = "revision";
     private static final String IMPORT_INFO = "importInfo";
 
-    XrayImportBuilder xrayImportBuilder;
+    private XrayImportBuilder xrayImportBuilder;
 
     public XrayImportBuilderCompatibilityDelegate(XrayImportBuilder xrayImportBuilder) {
         this.xrayImportBuilder = xrayImportBuilder;
     }
 
+    @Override
     public void applyCompatibility(){
         if(needForwardCompatibility()){
             applyForwardCompatibility();
@@ -46,10 +48,6 @@ public class XrayImportBuilderCompatibilityDelegate {
         }
     }
 
-    /**
-     * This method applies some compatibility processing so the pre-configured jobs are compatible
-     * between pre 1.3.0 and current versions of the plugin.
-     */
     private void applyForwardCompatibility(){
         xrayImportBuilder.setEndpointName(xrayImportBuilder.getEndpoint().getSuffix());
         xrayImportBuilder.setProjectKey(xrayImportBuilder.getDynamicFields().get(PROJECT_KEY));

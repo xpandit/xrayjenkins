@@ -9,6 +9,7 @@ package com.xpandit.plugins.xrayjenkins.task;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xpandit.plugins.xrayjenkins.Utils.FileUtils;
+import com.xpandit.plugins.xrayjenkins.task.compatibility.XrayImportBuilderCompatibilityDelegate;
 import com.xpandit.xray.model.ParameterBean;
 import com.xpandit.xray.model.QueryParameter;
 import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
