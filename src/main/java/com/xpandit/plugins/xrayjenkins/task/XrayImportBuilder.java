@@ -96,48 +96,30 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 	private String importInfo;
 	private String importToSameExecution;
 
-	@Deprecated
+
 	/**
 	 * this is only kept for backward compatibility (previous from 1.3.0)
+	 * In the future, when possible, we should consider remove it.
+	 * @deprecated since version 1.3.0, use blue print String fields instead.
 	 */
+	@Deprecated
 	private Map<String,String> dynamicFields;
-	@Deprecated
+
 	/**
 	 * this is only kept for backward compatibility (previous from 1.3.0)
+	 * In the future, when possible, we should consider remove it.
+	 * @deprecated since version 1.3.0, use blue print String fields instead.
 	 */
+	@Deprecated
 	private XrayInstance xrayInstance;
-	@Deprecated
+
 	/**
 	 * this is only kept for backward compatibility (previous from 1.3.0)
+	 * In the future, when possible, we should consider remove it.
+	 * @deprecated since1.3.0, use blue print String fields instead.
 	 */
+	@Deprecated
     private Endpoint endpoint;
-
-	public Map<String, String> getDynamicFields() {
-		return dynamicFields;
-	}
-
-	@DataBoundSetter
-	public void setDynamicFields(Map<String, String> dynamicFields) {
-		this.dynamicFields = dynamicFields;
-	}
-
-	public XrayInstance getXrayInstance() {
-		return xrayInstance;
-	}
-
-	@DataBoundSetter
-	public void setXrayInstance(XrayInstance xrayInstance) {
-		this.xrayInstance = xrayInstance;
-	}
-
-	public Endpoint getEndpoint() {
-		return endpoint;
-	}
-
-	@DataBoundSetter
-	public void setEndpoint(Endpoint endpoint) {
-		this.endpoint = endpoint;
-	}
 
 	/**
 	 * This constructor is compatible with pipelines projects
@@ -210,6 +192,33 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		if(StringUtils.isNotBlank(val)){
 			fields.put(key,val);
 		}
+	}
+
+	public Map<String, String> getDynamicFields() {
+		return dynamicFields;
+	}
+
+	@DataBoundSetter
+	public void setDynamicFields(Map<String, String> dynamicFields) {
+		this.dynamicFields = dynamicFields;
+	}
+
+	public XrayInstance getXrayInstance() {
+		return xrayInstance;
+	}
+
+	@DataBoundSetter
+	public void setXrayInstance(XrayInstance xrayInstance) {
+		this.xrayInstance = xrayInstance;
+	}
+
+	public Endpoint getEndpoint() {
+		return endpoint;
+	}
+
+	@DataBoundSetter
+	public void setEndpoint(Endpoint endpoint) {
+		this.endpoint = endpoint;
 	}
 
     public String getFormatSuffix(){
@@ -327,9 +336,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         	formats.put(e.getSuffix(),bean);
         	Endpoint endpointObj = lookupForEndpoint();
         	if(e.name().equals(endpointObj != null ? endpointObj.name() : null)){
-        	    // compatibility check
-                /*Map<String, String> fieldsToUse = dynamicFields == null || dynamicFields.keySet().isEmpty() ? getDynamicFieldsMap() : dynamicFields;*/
-				bean.setFieldsConfiguration(dynamicFields);
+				bean.setFieldsConfiguration(getDynamicFieldsMap());
 			}
             addImportToSameExecField(e, bean);
         }
@@ -342,7 +349,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
      * @return the matching <code>Endpoint</code> or <code>null</code> if not found.
      */
     @Nullable
-    private Endpoint lookupForEndpoint(){
+	private Endpoint lookupForEndpoint(){
 		Endpoint targetedEndpoint = Endpoint.lookupByName(endpointName);
 		return targetedEndpoint != null ? targetedEndpoint : Endpoint.lookupBySuffix(endpointName);
 	}
@@ -389,6 +396,10 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 						@Nonnull Launcher launcher,
 						@Nonnull TaskListener listener)
 			throws InterruptedException, IOException {
+
+    	XrayImportBuilderCompatibilityDelegate compatibilityDelegate = new XrayImportBuilderCompatibilityDelegate(this);
+    	compatibilityDelegate.applyCompatibility();
+
 		validate(getDynamicFieldsMap());
 
 		listener.getLogger().println("Starting import task...");
@@ -398,13 +409,13 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         listener.getLogger().println("##########################################################");
         listener.getLogger().println("#### Importing the execution results to Xray  ####");
         listener.getLogger().println("##########################################################");
-        XrayInstance xrayInstance = ConfigurationUtils.getConfiguration(serverInstance);
-        if(xrayInstance == null){
+        XrayInstance importInstance = ConfigurationUtils.getConfiguration(serverInstance);
+        if(importInstance == null){
         	throw new AbortException("The Jira server configuration of this task was not found.");
 		}
-		XrayImporter client = new XrayImporterImpl(xrayInstance.getServerAddress(),
-                xrayInstance.getUsername(),
-                xrayInstance.getPassword());
+		XrayImporter client = new XrayImporterImpl(importInstance.getServerAddress(),
+				importInstance.getUsername(),
+				importInstance.getPassword());
 		EnvVars env = build.getEnvironment(listener);
 		String resolved = this.expand(env,this.importFilePath);
 
