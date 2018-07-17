@@ -99,7 +99,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 
 	/**
 	 * this is only kept for backward compatibility (previous from 1.3.0)
-	 * In the future, when possible, we should consider remove it.
+	 * In the future, when there is no risk that any client is still using legacy versions, we should consider removing it.
 	 * @deprecated since version 1.3.0, use blue print String fields instead.
 	 */
 	@Deprecated
@@ -107,7 +107,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 
 	/**
 	 * this is only kept for backward compatibility (previous from 1.3.0)
-	 * In the future, when possible, we should consider remove it.
+	 * In the future, when there is no risk that any client is still using legacy versions, we should consider removing it.
 	 * @deprecated since version 1.3.0, use blue print String fields instead.
 	 */
 	@Deprecated
@@ -115,7 +115,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 
 	/**
 	 * this is only kept for backward compatibility (previous from 1.3.0)
-	 * In the future, when possible, we should consider remove it.
+	 * In the future, when there is no risk that any client is still using legacy versions, we should consider removing it.
 	 * @deprecated since1.3.0, use blue print String fields instead.
 	 */
 	@Deprecated
