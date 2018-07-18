@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
+import java.util.Collections;
 
 public class FileUtils {
 
@@ -71,13 +72,14 @@ public class FileUtils {
 
 
     /**
-     * Returns a list of files that matches the glob expression relatively to the workspace.
+     * Returns a list of files that matches the glob expression relatively to the workspace or that matches a file path.
      * The glob expression is relative, any attempt to match an absolute path will not work.
      * @param workspace the workspace
      * @param globExpression the glob expression. Must be relative to the workspace
      */
     public static List<FilePath> getFiles(FilePath workspace,
-                                          String globExpression)
+                                          String globExpression,
+                                          TaskListener listener)
             throws IOException, InterruptedException {
         if(workspace == null){
             throw new XrayJenkinsGenericException("workspace cannot be null");
@@ -87,7 +89,15 @@ public class FileUtils {
         }
         FilePath [] pathArray = workspace.list(globExpression, "", false);
         if(pathArray.length == 0){
-            throw new XrayJenkinsGenericException("No file matching the glob expression was found.");
+            //If the path was not considered a glob expression, we now need to try to get the file by it's path using readFile method
+            FilePath filePath = readFile(workspace, globExpression, listener);
+            if(!filePath.exists()){
+                throw new XrayJenkinsGenericException("No file matching the glob expression or file path was found.");
+            } else if(filePath.isDirectory()){
+                throw new XrayJenkinsGenericException("The matching path represents a directory instead of a file");
+            }
+            return Collections.singletonList(filePath);
+
         }
         return Arrays.asList(pathArray);
     }
