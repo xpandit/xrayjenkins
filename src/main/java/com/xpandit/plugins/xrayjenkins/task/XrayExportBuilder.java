@@ -47,6 +47,20 @@ import static com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils.getConfig
 
 /**
  * This class is responsible for performing the Xray: Cucumber Features Export Task
+ * development guidelines for compatibility:
+ * The class internal structure was modified in version 1.3.0 so the builder could be compatible with pipeline projects.
+ * When developing in this class, compatibility for pré-1.3.0 versions must be ensured.
+ * The following cases must always be considered:
+ * 1 - 	the job is being created in version 1.3.0 or higher and the deprecated fields must be
+ * 		populated for the case the user needs to perform a downgrade.
+ *
+ * 2 - 	the job was created on a pré-1.3.0 version, but has never been runned in 1.3.0 or higher versions.
+ * 		In this case, if the user opens the job configurations, the fields must be populated.
+ *
+ * 3 - 	the job was created on pré-1.3.0. blueprint String fields need to be populated with values on perform.
+ *
+ * Any possible scenario must also be considered.
+ * @see com.xpandit.plugins.xrayjenkins.task.compatibility.XrayExportBuilderCompatibilityDelegate
  */
 public class XrayExportBuilder extends Builder implements SimpleBuildStep {
 

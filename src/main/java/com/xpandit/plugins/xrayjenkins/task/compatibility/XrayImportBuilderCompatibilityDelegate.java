@@ -16,7 +16,6 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 
-
 /**
  * Delegate class that performs forward and backward compatibility processing
  * between previous versions from 1.3.0 to 1.3.0 and upper.

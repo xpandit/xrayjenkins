@@ -63,6 +63,21 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class is responsible for performing the Xray: Results Import Task
+ * development guidelines for compatibility:
+ * The class internal structure was modified in version 1.3.0 so the builder could be compatible with pipeline projects.
+ * When developing in this class, compatibility for pré-1.3.0 versions must be ensured.
+ * The following cases must always be considered:
+ * 1 - 	the job is being created in version 1.3.0 or higher and the deprecated fields must be
+ * 		populated for the case the user needs to perform a downgrade.
+ *
+ * 2 - 	the job was created on a pré-1.3.0 version, but has never been runned in 1.3.0 or higher versions.
+ * 		In this case, if the user opens the job configurations, the fields must be populated.
+ *
+ * 3 - 	the job was created on pré-1.3.0. blueprint String fields need to be populated with values on perform.
+ *
+ * Any possible scenario must also be considered.
+ *
+ * @see com.xpandit.plugins.xrayjenkins.task.compatibility.XrayImportBuilderCompatibilityDelegate
  */
 public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 
@@ -169,7 +184,9 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
    		this.inputInfoSwitcher = inputInfoSwitcher;
 		this.importToSameExecution = importToSameExecution;
 
-		/*Compatibility assigns*/
+		/**
+		 * Compatibility assigns - when creating the job, the config file must be prepared to run on pré-1.3.0 versiona
+		 */
 		this.dynamicFields = getDynamicFieldsMap();
 		this.xrayInstance = ConfigurationUtils.getConfiguration(serverInstance);
 		this.endpoint = lookupForEndpoint();
@@ -331,6 +348,14 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 	}
 
 	public String defaultFormats(){
+
+		/**
+		 * Compatibility fix - the job was created on a pré-1.3.0 version, but has never been runned in post-1.3.0 version.
+		 * In this case, if the user opens the job configurations, the fields must be populated.
+		 */
+		XrayImportBuilderCompatibilityDelegate delegate = new XrayImportBuilderCompatibilityDelegate(this);
+		delegate.applyCompatibility();
+
         Map<String,FormatBean> formats = new HashMap<>();
         for(Endpoint e : Endpoint.values()){
         	FormatBean bean = e.toBean();
@@ -398,7 +423,13 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 						@Nonnull TaskListener listener)
 			throws InterruptedException, IOException {
 
-    	XrayImportBuilderCompatibilityDelegate compatibilityDelegate = new XrayImportBuilderCompatibilityDelegate(this);
+		/**
+		 * Compatibility fix:
+		 * Forward case - the job was created on pré-1.3.0. blueprint fields need to be populated with values
+		 * Backward case - due to some bugs fixed in 1.3.0, we will rassign values for deprecated fields for each build
+		 * @see <a href="https://jira.xpand-addons.com/browse/XRAYJENKINS-11">XRAYJENKINS-11</a>
+		 */
+		XrayImportBuilderCompatibilityDelegate compatibilityDelegate = new XrayImportBuilderCompatibilityDelegate(this);
     	compatibilityDelegate.applyCompatibility();
 
 		validate(getDynamicFieldsMap());
