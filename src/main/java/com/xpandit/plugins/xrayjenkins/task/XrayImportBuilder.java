@@ -366,7 +366,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 			ObjectMapper mapper = new ObjectMapper();
 			String key = null;
 
-			for(FilePath fp : FileUtils.getFiles(workspace, resolved)){
+			for(FilePath fp : FileUtils.getFiles(workspace, resolved, listener)){
 				result = uploadResults(workspace, listener,client, fp, env, key);
 				if(key == null && "true".equals(importToSameExecution)){
 					Map<String, Map> map = mapper.readValue(result.getMessage(), Map.class);
