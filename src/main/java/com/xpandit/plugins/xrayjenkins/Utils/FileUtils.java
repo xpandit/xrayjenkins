@@ -89,6 +89,7 @@ public class FileUtils {
         }
         FilePath [] pathArray = workspace.list(globExpression, "", false);
         if(pathArray.length == 0){
+            //If the path was not considered a glob expression, we now need to try to get the file by it's path using readFile method
             FilePath filePath = readFile(workspace, globExpression, listener);
             if(!filePath.exists()){
                 throw new XrayJenkinsGenericException("No file matching the glob expression or file path was found.");
