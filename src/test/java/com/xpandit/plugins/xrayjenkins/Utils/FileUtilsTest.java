@@ -69,11 +69,6 @@ public class FileUtilsTest {
     }
 
     @Test
-    public void dum(){
-        Assert.assertTrue(true);
-    }
-
-    /*@Test
     public void testGetFileWithRelativePath(){
         try{
             try(PrintStream logger = new PrintStream(workspace.newFile(LOGGER_NAME))){
@@ -81,15 +76,15 @@ public class FileUtilsTest {
             }
             prepareFolders();
             String resultsPath = getRelativeDirectoryPath() + "*.xml";
-            List<FilePath> matchingFiles = FileUtils.getFiles(new FilePath(getWorkspaceFile()), resultsPath);
+            List<FilePath> matchingFiles = FileUtils.getFiles(new FilePath(getWorkspaceFile()), resultsPath, taskListener);
             Assert.assertTrue(matchingFiles.size() == 8);
         } catch (IOException | InterruptedException e){
             Assert.fail(EXCEPTION_MESSAGE + e.getMessage());
         }
         workspace.delete();
-    }*/
+    }
 
-    /*@Test
+    @Test
     public void testGetFileWithSofisticatedGlobExpression(){
         try{
             try(PrintStream logger = new PrintStream(workspace.newFile(LOGGER_NAME))){
@@ -97,13 +92,33 @@ public class FileUtilsTest {
             }
             prepareFolders();
             String resultsPath = getRelativeDirectoryPath() + "feb*.xml";
-            List<FilePath> matchingFiles = FileUtils.getFiles(new FilePath(getWorkspaceFile()), resultsPath);
+            List<FilePath> matchingFiles = FileUtils.getFiles(new FilePath(getWorkspaceFile()), resultsPath, taskListener);
             Assert.assertTrue(matchingFiles.size() == 2);
         } catch (IOException | InterruptedException e){
             Assert.fail(EXCEPTION_MESSAGE + e.getMessage());
         }
         workspace.delete();
-    }*/
+    }
+
+    @Test
+    public void testGetFileWithFileCompleteName(){
+        try{
+            try(PrintStream logger = new PrintStream(workspace.newFile(LOGGER_NAME))){
+                when(taskListener.getLogger()).thenReturn(logger);
+                prepareFolders();
+                //we cannot guess the complete name as TemporaryFolder will add a random id to the names, so we are getting a valid file name
+                String fileName = FileUtils.getFiles(new FilePath(getWorkspaceFile()),
+                        getRelativeDirectoryPathWithNoFolderMatcher() + "february*.xml",
+                        taskListener).get(0).getName();
+                String resultsPath = getRelativeDirectoryPathWithNoFolderMatcher() + fileName;
+                List<FilePath> matchingFiles = FileUtils.getFiles(new FilePath(getWorkspaceFile()), resultsPath, taskListener);
+                Assert.assertTrue(matchingFiles.size() == 1);
+            }
+        } catch (IOException | InterruptedException e){
+            Assert.fail(EXCEPTION_MESSAGE + e.getMessage());
+        }
+
+    }
 
 
 
@@ -118,6 +133,19 @@ public class FileUtilsTest {
                 + FOLDERMATCHER
                 + File.separator;
     }
+
+    private String getRelativeDirectoryPathWithNoFolderMatcher(){
+        return File.separator
+                + UNITTESTING
+                + File.separator
+                + "a3"
+                + File.separator
+                + RESULTS
+                + File.separator
+                + "b3"
+                + File.separator;
+    }
+
 
     private File getWorkspaceFile(){
         return new File(workspace.getRoot().toPath().toString() + getWorkSpaceSuffix());
