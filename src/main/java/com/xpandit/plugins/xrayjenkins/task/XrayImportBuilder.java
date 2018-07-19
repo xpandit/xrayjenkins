@@ -426,7 +426,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		/**
 		 * Compatibility fix:
 		 * Forward case - the job was created on pré-1.3.0. blueprint fields need to be populated with values
-		 * Backward case - due to some bugs fixed in 1.3.0, we will rassign values for deprecated fields for each build
+		 * Backward case - due to some bugs fixed in 1.3.0, we will reassign values for deprecated fields for each build
 		 * @see <a href="https://jira.xpand-addons.com/browse/XRAYJENKINS-11">XRAYJENKINS-11</a>
 		 */
 		XrayImportBuilderCompatibilityDelegate compatibilityDelegate = new XrayImportBuilderCompatibilityDelegate(this);
