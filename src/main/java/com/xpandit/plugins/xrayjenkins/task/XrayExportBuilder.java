@@ -10,6 +10,7 @@ package com.xpandit.plugins.xrayjenkins.task;
 import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
 import com.xpandit.plugins.xrayjenkins.Utils.FormUtils;
 import com.xpandit.plugins.xrayjenkins.Utils.BuilderUtils;
+import com.xpandit.plugins.xrayjenkins.task.compatibility.XrayExportBuilderCompatibilityDelegate;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import com.xpandit.plugins.xrayjenkins.model.ServerConfiguration;
@@ -45,10 +47,40 @@ import static com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils.getConfig
 
 /**
  * This class is responsible for performing the Xray: Cucumber Features Export Task
+ * development guidelines for compatibility:
+ * The class internal structure was modified in version 1.3.0 so the builder could be compatible with pipeline projects.
+ * When developing in this class, compatibility for pré-1.3.0 versions must be ensured.
+ * The following cases must always be considered:
+ * 1 - 	the job is being created in version 1.3.0 or higher and the deprecated fields must be
+ * 		populated for the case the user needs to perform a downgrade.
+ *
+ * 2 - 	the job was created on a pré-1.3.0 version, but has never been runned in 1.3.0 or higher versions.
+ * 		In this case, if the user opens the job configurations, the fields must be populated.
+ *
+ * 3 - 	the job was created on pré-1.3.0. blueprint String fields need to be populated with values on perform.
+ *
+ * Any possible scenario must also be considered.
+ * @see com.xpandit.plugins.xrayjenkins.task.compatibility.XrayExportBuilderCompatibilityDelegate
  */
 public class XrayExportBuilder extends Builder implements SimpleBuildStep {
 
     private static final Logger LOG = LoggerFactory.getLogger(XrayExportBuilder.class);
+
+    /**
+     * this is only kept for backward compatibility (previous from 1.3.0)
+     * In the future, when there is no risk that any client is still using legacy versions, we should consider removing it.
+     * @deprecated since version 1.3.0, use blue print String fields instead.
+     */
+    @Deprecated
+    private XrayInstance xrayInstance;
+
+    /**
+     * this is only kept for backward compatibility (previous from 1.3.0)
+     * In the future, when there is no risk that any client is still using legacy versions, we should consider removing it.
+     * @deprecated since version 1.3.0, use blue print String fields instead.
+     */
+    @Deprecated
+    private Map<String,String> fields;
 
     private String serverInstance;//Configuration ID of the JIRA instance
     private String issues;
@@ -75,6 +107,26 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
         this.filter = filter;
         this.filePath = filePath;
         this.serverInstance = serverInstance;
+
+        //compatibility assigns
+        this.xrayInstance = ConfigurationUtils.getConfiguration(serverInstance);
+        this.fields = getFieldsMap(issues, filter, filePath);
+    }
+
+    private Map<String, String> getFieldsMap(String issues,
+                                             String filter,
+                                             String filePath){
+        Map<String, String> fields = new HashMap<>();
+        if(StringUtils.isNotBlank(issues)){
+            fields.put("issues", issues);
+        }
+        if(StringUtils.isNotBlank(filter)){
+            fields.put("filter", filter);
+        }
+        if(StringUtils.isNotBlank(filePath)){
+            fields.put("filePath", filePath);
+        }
+        return fields;
     }
 
     @Override
@@ -82,6 +134,9 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
                         FilePath workspace,
                         Launcher launcher,
                         TaskListener listener) throws AbortException, IOException {
+
+        XrayExportBuilderCompatibilityDelegate compatibilityDelegate = new XrayExportBuilderCompatibilityDelegate(this);
+        compatibilityDelegate.applyCompatibility();
         
         listener.getLogger().println("Starting export task...");
         
@@ -174,7 +229,25 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
 		this.filePath = filePath;
 	}
 
-	@Extension
+    public XrayInstance getXrayInstance() {
+        return xrayInstance;
+    }
+
+    @DataBoundSetter
+    public void setXrayInstance(XrayInstance xrayInstance) {
+        this.xrayInstance = xrayInstance;
+    }
+
+    public Map<String, String> getFields() {
+        return fields;
+    }
+
+    @DataBoundSetter
+    public void setFields(Map<String, String> fields) {
+        this.fields = fields;
+    }
+
+    @Extension
     public static class Descriptor extends BuildStepDescriptor<Builder> {
 
         public Descriptor() {
