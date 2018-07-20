@@ -10,12 +10,19 @@
   <!-- Jelly + Handlebars templates spec -->
   <j:file xmlns:j="jelly:core" var="addInput" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='XML'>
   	 	<input name="_.{{key}}" type="text" class="setting-input" value="{{configuration}}"/>
-  </j:file>  
-  
-  <j:file xmlns:j="jelly:core" var="addInputEntry" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='XML'>
- 		<f:entry title='{{label}}' field='{{key}}'>${addInput}</f:entry>   
   </j:file>
- 
+
+  <j:file xmlns:j="jelly:core" var="addInputEntry" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='XML'>
+ 		<f:entry title='{{label}}' field='{{key}}'>${addInput}</f:entry>
+  </j:file>
+
+  <j:file xmlns:j="jelly:core" var="addSameExecutionCheckboxEntry" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='HTML'>
+	  <f:entry field="importToSameExecution" title="Import to Same Test Execution" description="When this option is check, if you are importing multiple execution report files using a glob expression, the results will be imported to the same Test Execution">
+		  <f:checkbox name="importToSameExecution" id="same-execution-checkbox" checked="${instance.isImportToSameExecution() != null ? instance.isImportToSameExecution() : true}"/>
+	  </f:entry>
+  </j:file>
+
+
   <j:file xmlns:j="jelly:core" var="addTextarea" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='XML'>
   	 	<f:textarea field='{{key}}' value="{{configuration}}" style="width:100%"/>
   </j:file>  
@@ -28,7 +35,7 @@
   
  <j:file xmlns:j="jelly:core" var="addSwitchableField" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='HTML'>
   		<f:entry title="{{label}}">
-		    <select name="_.inputInfoSwitcher" class="setting-input  select" id="selectInputType_${descriptor.defaultBuildID()}" onchange='switchInput_${descriptor.defaultBuildID()}("#switchContainer_${descriptor.defaultBuildID()}")'>
+		    <select name="_.inputInfoSwitcher" class="setting-input" id="selectInputType_${descriptor.defaultBuildID()}" onchange='switchInput_${descriptor.defaultBuildID()}("#switchContainer_${descriptor.defaultBuildID()}")'>
 		        <option value='filePath'>${%import-parameter.content-type-filepath}</option>
 		        <option value='fileContent'>${%import-parameter.content-type-filecontent}</option>
 		    </select>
@@ -98,7 +105,7 @@
 			_field.configuration = '';
 	  	
 	  	if(selectedInputType == 'filePath'){// content is a file path
-	  			var template = Handlebars.compile('${addInput}');	
+	  			var template = Handlebars.compile('${addInput}');
 				var result = template(_field);
 		  		Q(container).html(result);	
 			}
@@ -147,6 +154,8 @@
 				
 				Handlebars.registerPartial("addTextareaEntry",'${addTextareaEntry}');
 				Handlebars.registerPartial("addTextarea", '${addTextarea}');
+
+				Handlebars.registerPartial("addSameExecutionCheckboxEntry",'${addSameExecutionCheckboxEntry}');
 				
 				Handlebars.registerPartial("addSwitchableField", '${addSwitchableField}');
 				
@@ -164,9 +173,9 @@
 				else
 				    addXrayFields_${descriptor.defaultBuildID()}(formatSuffix); //making sure that the select gets the last configuration value
 
-		     	} 
+		     	}
 			});
-    	
+
 	 });
    			
    			
@@ -177,18 +186,18 @@
   <f:entry title="${%JIRA Instance}" field="serverInstance">
    		<f:select/>
    </f:entry>
-      
+
    <f:entry title="${%Format}" field="formatSuffix">
    		<f:select id="selectFormat_${descriptor.defaultBuildID()}"/>
 
-   		<f:section name="dynamicFields">	
-   			<f:entry title="Parameters">	
-   				<p id="configurableFields_${descriptor.defaultBuildID()}" style="border-left:solid;border-color:#00a3ac;width:50vw"></p>		
+   		<f:section name="dynamicFields">
+   			<f:entry title="Parameters">
+   				<p id="configurableFields_${descriptor.defaultBuildID()}" style="border-left:solid;border-color:#00a3ac;width:50vw"></p>
    			</f:entry>
    		</f:section>
- 	
+
    </f:entry>
-   
+
    <f:entry>
    	 <a href="http://confluence.xpand-addons.com/display/XRAY/Import+Execution+Results+-+REST">Click here for more details</a>
    </f:entry>

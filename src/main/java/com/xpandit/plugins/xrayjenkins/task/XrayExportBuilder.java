@@ -7,6 +7,10 @@
  */
 package com.xpandit.plugins.xrayjenkins.task;
 
+import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
+import com.xpandit.plugins.xrayjenkins.Utils.FormUtils;
+import com.xpandit.plugins.xrayjenkins.Utils.BuilderUtils;
+import com.xpandit.plugins.xrayjenkins.task.compatibility.XrayExportBuilderCompatibilityDelegate;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -14,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import com.xpandit.plugins.xrayjenkins.model.ServerConfiguration;
@@ -26,7 +32,6 @@ import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractProject;
-import hudson.model.FreeStyleProject;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.tasks.BuildStepDescriptor;
@@ -35,56 +40,129 @@ import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import jenkins.tasks.SimpleBuildStep;
 import net.sf.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils.getConfiguration;
 
 /**
- * Class description.
+ * This class is responsible for performing the Xray: Cucumber Features Export Task
+ * development guidelines for compatibility:
+ * The class internal structure was modified in version 1.3.0 so the builder could be compatible with pipeline projects.
+ * When developing in this class, compatibility for pré-1.3.0 versions must be ensured.
+ * The following cases must always be considered:
+ * 1 - 	the job is being created in version 1.3.0 or higher and the deprecated fields must be
+ * 		populated for the case the user needs to perform a downgrade.
  *
- * @author <a href="mailto:sebastiao.maya@xpand-it.com">sebastiao.maya</a>
- * @version $Revision: 666 $
+ * 2 - 	the job was created on a pré-1.3.0 version, but has never been runned in 1.3.0 or higher versions.
+ * 		In this case, if the user opens the job configurations, the fields must be populated.
  *
+ * 3 - 	the job was created on pré-1.3.0. blueprint String fields need to be populated with values on perform.
+ *
+ * Any possible scenario must also be considered.
+ * @see com.xpandit.plugins.xrayjenkins.task.compatibility.XrayExportBuilderCompatibilityDelegate
  */
 public class XrayExportBuilder extends Builder implements SimpleBuildStep {
 
-	private XrayInstance xrayInstance;
+    private static final Logger LOG = LoggerFactory.getLogger(XrayExportBuilder.class);
+
+    /**
+     * this is only kept for backward compatibility (previous from 1.3.0)
+     * In the future, when there is no risk that any client is still using legacy versions, we should consider removing it.
+     * @deprecated since version 1.3.0, use blue print String fields instead.
+     */
+    @Deprecated
+    private XrayInstance xrayInstance;
+
+    /**
+     * this is only kept for backward compatibility (previous from 1.3.0)
+     * In the future, when there is no risk that any client is still using legacy versions, we should consider removing it.
+     * @deprecated since version 1.3.0, use blue print String fields instead.
+     */
+    @Deprecated
     private Map<String,String> fields;
-    
+
     private String serverInstance;//Configuration ID of the JIRA instance
     private String issues;
     private String filter;
     private String filePath;
 
-    public XrayExportBuilder(XrayInstance xrayInstance,  Map<String, String> fields) {
-    	this.xrayInstance = xrayInstance;
-    	this.fields = fields;
-    	
-    	this.issues = fields.get("issues");
-    	this.filter = fields.get("filter");
-    	this.filePath = fields.get("filePath");
-    	this.serverInstance = xrayInstance.getConfigID();
-	}
-   
+    /**
+     * Constructor used in pipelines projects
+     *
+     * "Anyway code run from Pipeline should take any configuration values as literal strings
+     * and make no attempt to perform variable substitution"
+     * @see <a href="https://jenkins.io/doc/developer/plugin-development/pipeline-integration/">Writing Pipeline-Compatible Plugins </a>
+     * @param serverInstance the server configuration id
+     * @param issues the issues to export
+     * @param filter the saved filter id
+     * @param filePath the file path to export
+     */
+    @DataBoundConstructor
+	public XrayExportBuilder(String serverInstance,
+                             String issues,
+                             String filter,
+                             String filePath){
+        this.issues = issues;
+        this.filter = filter;
+        this.filePath = filePath;
+        this.serverInstance = serverInstance;
+
+        //compatibility assigns
+        this.xrayInstance = ConfigurationUtils.getConfiguration(serverInstance);
+        this.fields = getFieldsMap(issues, filter, filePath);
+    }
+
+    private Map<String, String> getFieldsMap(String issues,
+                                             String filter,
+                                             String filePath){
+        Map<String, String> fields = new HashMap<>();
+        if(StringUtils.isNotBlank(issues)){
+            fields.put("issues", issues);
+        }
+        if(StringUtils.isNotBlank(filter)){
+            fields.put("filter", filter);
+        }
+        if(StringUtils.isNotBlank(filePath)){
+            fields.put("filePath", filePath);
+        }
+        return fields;
+    }
+
     @Override
-    public void perform(Run<?,?> build, FilePath workspace, Launcher launcher, TaskListener listener) throws AbortException, IOException {
+    public void perform(Run<?,?> build,
+                        FilePath workspace,
+                        Launcher launcher,
+                        TaskListener listener) throws AbortException, IOException {
+
+        XrayExportBuilderCompatibilityDelegate compatibilityDelegate = new XrayExportBuilderCompatibilityDelegate(this);
+        compatibilityDelegate.applyCompatibility();
         
         listener.getLogger().println("Starting export task...");
         
         listener.getLogger().println("##########################################################");
-        listener.getLogger().println("####   Xray for JIRA is exporting the feature files  ####");
+        listener.getLogger().println("####   Xray is exporting the feature files  ####");
         listener.getLogger().println("##########################################################");
-        
-        XrayExporter client = new XrayExporterImpl(xrayInstance.getServerAddress(),xrayInstance.getUsername(),xrayInstance.getPassword());
+        XrayInstance serverInstance = getConfiguration(this.serverInstance);
+        if(serverInstance == null){
+            listener.getLogger().println("XrayInstance is null. please check the passed configuration ID");
+            throw new AbortException("The Jira server configuration of this task was not found.");
+        }
+        XrayExporter client = new XrayExporterImpl(serverInstance.getServerAddress(),
+                serverInstance.getUsername(),
+                serverInstance.getPassword());
         
         try{
 
-            if (StringUtils.isNotBlank(issues)) 
+            if (StringUtils.isNotBlank(issues)) {
                 listener.getLogger().println("Issues: "+issues);
-
-            if (StringUtils.isNotBlank(filter)) 
-                listener.getLogger().println("Filter: "+filter);
-
-            if (StringUtils.isNotBlank(filePath)) 
-                listener.getLogger().println("Will save the feature files in: "+filePath);
-           
+            }
+            if (StringUtils.isNotBlank(filter)) {
+                listener.getLogger().println("Filter: " + filter);
+            }
+            if (StringUtils.isNotBlank(filePath)) {
+                listener.getLogger().println("Will save the feature files in: " + filePath);
+            }
             InputStream file = client.downloadFeatures(issues,filter,"true");
             this.unzipFeatures(listener, workspace, filePath, file);
             listener.getLogger().println("Sucessfully exported the Cucumber features");
@@ -151,16 +229,25 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
 		this.filePath = filePath;
 	}
 
+    public XrayInstance getXrayInstance() {
+        return xrayInstance;
+    }
 
-	public Map<String,String> getFields() {
-		return fields;
-	}
+    @DataBoundSetter
+    public void setXrayInstance(XrayInstance xrayInstance) {
+        this.xrayInstance = xrayInstance;
+    }
 
-	public void setFields(Map<String,String> fields) {
-		this.fields = fields;
-	}
+    public Map<String, String> getFields() {
+        return fields;
+    }
 
-	@Extension
+    @DataBoundSetter
+    public void setFields(Map<String, String> fields) {
+        this.fields = fields;
+    }
+
+    @Extension
     public static class Descriptor extends BuildStepDescriptor<Builder> {
 
         public Descriptor() {
@@ -177,37 +264,26 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
         }
         
         @Override
-		public XrayExportBuilder newInstance(StaplerRequest req, JSONObject formData){
-			
+		public XrayExportBuilder newInstance(StaplerRequest req, JSONObject formData) throws Descriptor.FormException{
+			validateFormData(formData);
         	Map<String,String> fields = getFields(formData.getJSONObject("fields"));
-			XrayInstance server = getConfiguration(formData.getString("serverInstance"));
-			
-			return new XrayExportBuilder(server,fields);
+            return new XrayExportBuilder(formData.getString("serverInstance"),
+                    fields.get("issues"),
+                    fields.get("filter"),
+                    fields.get("filePath"));
 			
         }
-        
+
+        private void validateFormData(JSONObject formData) throws Descriptor.FormException{
+            if(StringUtils.isBlank(formData.getString("serverInstance"))){
+                throw new Descriptor.FormException("Xray Cucumber Features Export Task error, you must provide a valid JIRA Instance","serverInstance");
+            }
+        }
+
         
         public ListBoxModel doFillServerInstanceItems() {
-        	
-            ListBoxModel items = new ListBoxModel();
-            List<XrayInstance> serverInstances =  getServerInstances();
-            for(XrayInstance sc : serverInstances)
-            	items.add(sc.getAlias(),sc.getConfigID());
-            
-            return items;
+        	return FormUtils.getServerInstanceItems();
         }
-        
-        private XrayInstance getConfiguration(String configID) {
-        	XrayInstance config =  null;
-        	List<XrayInstance> serverInstances =  getServerInstances();
-        	for(XrayInstance sc : serverInstances){
-        		if(sc.getConfigID().equals(configID)){
-        			config = sc;break;
-        		}
-        	}
-        	return config;
-		}
-        
 
         private Map<String, String> getFields(JSONObject configuredFields) {
         	Map<String,String> fields = new HashMap<String,String>();
@@ -227,7 +303,8 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
 		
 		@Override
         public boolean isApplicable(Class<? extends AbstractProject> jobType) {
-            return FreeStyleProject.class.isAssignableFrom(jobType);
+            LOG.info("applying XrayExportBuilder to following jobType class: {}", jobType.getSimpleName());
+            return BuilderUtils.isSupportedJobType(jobType);
         }
 
         @Override
@@ -268,7 +345,11 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
                 return FormValidation.ok();
             }
         }
-        
+
+        public FormValidation doCheckServerInstance(){
+            return ConfigurationUtils.anyAvailableConfiguration() ? FormValidation.ok() : FormValidation.error("No configured Server Instances found");
+        }
+
         
         public List<XrayInstance> getServerInstances() {
 			return ServerConfiguration.get().getServerInstances();
