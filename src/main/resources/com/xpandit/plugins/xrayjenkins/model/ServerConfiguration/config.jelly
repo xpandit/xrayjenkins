@@ -1,9 +1,72 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
-  
+
+<script>
+	(function(Q){
+		Q(document).ready(function() {
+		    console.log('VOU ADICIONAR EVENT LISTENERS');
+			var observerXrayConfig = new MutationObserver(function (mutations) { return checkForInput() });
+
+			function checkForInput(){
+				var instances = Q("input[name='_.serverAddress'");
+				console.log('Encontrei... ', instances.length);
+
+				if(instances.length != 0){
+				    console.log('ENCONTREI!!!');
+
+				    for(var i = 0; i != instances.length; i++){
+				        Q(instances[i]).change(function(){ liveCheckForChanges() });
+				        var serverAddress = Q(instances[i]).val();
+
+				        if(serverAddress.includes('xray.cloud.xpand-it.com')){
+							console.log('Encontrei um instancia Cloud');
+							var usernameInput = Q(instances[i]).parent().parent().parent().find("tr td input[name='_.username']");
+							Q(usernameInput).parent().siblings("td.setting-name").html("Client Id");
+							var passwordInput = Q(instances[i]).parent().parent().parent().find("tr td input[name='_.password']");
+							Q(passwordInput).parent().siblings("td.setting-name").html("Client Secret");
+						}
+					}
+
+				    observerXrayConfig.disconnect();
+				}
+			};
+
+			function liveCheckForChanges(){
+				var instances = Q("input[name='_.serverAddress'");
+				console.log('Encontrei... ', instances.length);
+
+				if(instances.length != 0){
+					console.log('ENCONTREI!!!');
+
+					for(var i = 0; i != instances.length; i++){
+						Q(instances[i]).keyup(function(){ checkForInput() });
+						var serverAddress = Q(instances[i]).val();
+						var usernameInput = Q(instances[i]).parent().parent().parent().find("tr td input[name='_.username']");
+						var passwordInput = Q(instances[i]).parent().parent().parent().find("tr td input[name='_.password']");
+
+						if(serverAddress.includes('xray.cloud.xpand-it.com')){
+							console.log('Encontrei um instancia Cloud');
+							Q(usernameInput).parent().siblings("td.setting-name").html("Client Id");
+							Q(passwordInput).parent().siblings("td.setting-name").html("Client Secret");
+						} else {
+							Q(usernameInput).parent().siblings("td.setting-name").html("Username");
+							Q(passwordInput).parent().siblings("td.setting-name").html("Password");
+						}
+					}
+				}
+			}
+
+			observerXrayConfig.observe(document.querySelector('body'), {
+				attributes: true,
+				childList: true,
+				subtree: true
+			});
+		});
+	})(jQuery);
+</script>
  
 <f:section title="${%Xray for JIRA configuration}" name="xrayinstance">
-     <f:entry title="${%JIRA servers}"> 
+     <f:entry title="${%JIRA server}">
 	      <f:repeatable var="serverInstances" items="${descriptor.serverInstances}" minimum="1"> 
 	       <table>
 	       
@@ -39,7 +102,7 @@
                
            </table> 
 	      </f:repeatable> 
-     </f:entry> 
+     </f:entry>
  </f:section>
 
 </j:jelly>

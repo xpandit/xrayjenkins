@@ -16,6 +16,7 @@ import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
 import com.xpandit.xray.service.impl.XrayClientImpl;
+import com.xpandit.xray.service.impl.XrayCloudClientImpl;
 
 import hudson.Extension;
 import hudson.util.FormValidation;
@@ -55,7 +56,14 @@ public class ServerConfiguration extends GlobalConfiguration {
 	public FormValidation doTestConnection(@QueryParameter("serverAddress") final String serverAddress,
             @QueryParameter("username") final String username, @QueryParameter("password") final String password) throws IOException, ServletException {
 
-        Boolean isConnectionOk = (new XrayClientImpl(serverAddress,username,password)).testConnection();
+	    //TODO Diferenciate when it's server or cloud
+        Boolean isConnectionOk = false;
+
+        if(serverAddress.contains("xray.cloud.xpand-it.com")){
+            isConnectionOk = (new XrayCloudClientImpl(serverAddress,username,password)).testConnection();
+        } else {
+            isConnectionOk = (new XrayClientImpl(serverAddress,username,password)).testConnection();
+        }
         
         if(isConnectionOk){
             return FormValidation.ok("Connection: Success!");

@@ -41,6 +41,7 @@ import com.xpandit.xray.model.Endpoint;
 import com.xpandit.xray.model.FormatBean;
 import com.xpandit.xray.service.XrayImporter;
 import com.xpandit.xray.service.impl.XrayImporterImpl;
+import com.xpandit.xray.service.impl.XrayImporterCloudImpl;
 
 import hudson.AbortException;
 import hudson.EnvVars;
@@ -439,23 +440,39 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		listener.getLogger().println("Import Cucumber features Task started...");
 
         listener.getLogger().println("##########################################################");
-        listener.getLogger().println("#### Importing the execution results to Xray  ####");
+        listener.getLogger().println("####     Importing the execution results to Xray      ####");
         listener.getLogger().println("##########################################################");
         XrayInstance importInstance = ConfigurationUtils.getConfiguration(serverInstance);
         if(importInstance == null){
         	throw new AbortException("The Jira server configuration of this task was not found.");
 		}
-		XrayImporter client = new XrayImporterImpl(importInstance.getServerAddress(),
+
+		//TODO Diferenciate when it's server or cloud
+
+		/*XrayImporter client = new XrayImporterImpl(importInstance.getServerAddress(),
+				importInstance.getUsername(),
+				importInstance.getPassword());*/
+
+		XrayImporter client = new XrayImporterCloudImpl(importInstance.getServerAddress(),
 				importInstance.getUsername(),
 				importInstance.getPassword());
+
 		EnvVars env = build.getEnvironment(listener);
 		String resolved = this.expand(env,this.importFilePath);
 
 		Endpoint endpointValue = Endpoint.lookupBySuffix(this.endpointName);
+
+
+		listener.getLogger().println(endpointValue);
+
 		if(Endpoint.JUNIT.equals(endpointValue)
 				|| Endpoint.NUNIT.equals(endpointValue)
 				|| Endpoint.TESTNG.equals(endpointValue)
-				|| Endpoint.ROBOT.equals(endpointValue)){
+				|| Endpoint.ROBOT.equals(endpointValue)
+				|| Endpoint.XUNIT.equals(endpointValue)){
+
+			listener.getLogger().println("SIIIIIIIIIIIIIIII");
+
 			UploadResult result;
 			ObjectMapper mapper = new ObjectMapper();
 			String key = null;
