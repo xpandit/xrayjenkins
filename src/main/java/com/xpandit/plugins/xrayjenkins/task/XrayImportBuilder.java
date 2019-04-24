@@ -447,13 +447,14 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         	throw new AbortException("The Jira server configuration of this task was not found.");
 		}
 
-		//TODO Diferenciate when it's server or cloud
+		XrayImporter client;
 
-		/*XrayImporter client = new XrayImporterImpl(importInstance.getServerAddress(),
-				importInstance.getUsername(),
-				importInstance.getPassword());*/
-
-		XrayImporter client = new XrayImporterCloudImpl(importInstance.getServerAddress(),
+        if(importInstance.getServerAddress().contains("xray.cloud.xpand-it.com"))
+			client = new XrayImporterCloudImpl(importInstance.getServerAddress(),
+					importInstance.getUsername(),
+					importInstance.getPassword());
+        else
+        	client = new XrayImporterImpl(importInstance.getServerAddress(),
 				importInstance.getUsername(),
 				importInstance.getPassword());
 

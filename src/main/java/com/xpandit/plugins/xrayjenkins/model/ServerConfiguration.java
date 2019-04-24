@@ -56,22 +56,16 @@ public class ServerConfiguration extends GlobalConfiguration {
 	public FormValidation doTestConnection(@QueryParameter("serverAddress") final String serverAddress,
             @QueryParameter("username") final String username, @QueryParameter("password") final String password) throws IOException, ServletException {
 
-	    //TODO Diferenciate when it's server or cloud
-        Boolean isConnectionOk = false;
+        Boolean isConnectionOk;
 
-        if(serverAddress.contains("xray.cloud.xpand-it.com")){
+        if(serverAddress.contains("xray.cloud.xpand-it.com"))
             isConnectionOk = (new XrayCloudClientImpl(serverAddress,username,password)).testConnection();
-        } else {
+        else
             isConnectionOk = (new XrayClientImpl(serverAddress,username,password)).testConnection();
-        }
-        
-        if(isConnectionOk){
-            return FormValidation.ok("Connection: Success!");
-        }
-        else{
-            return FormValidation.error("Could not establish connection");
-        }
-  }
-	
 
+        if(isConnectionOk)
+            return FormValidation.ok("Connection: Success!");
+        else
+            return FormValidation.error("Could not establish connection");
+  }
 }
