@@ -1,59 +1,5 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
-
-<script>
-	(function(Q){
-		Q(document).ready(function() {
-			var observerXrayConfig = new MutationObserver(function (mutations) { return checkForInput() });
-
-			function checkForInput(){
-				var instances = Q("input[name='_.serverAddress'");
-
-				if(instances.length != 0){
-				    for(var i = 0; i != instances.length; i++){
-				        Q(instances[i]).change(function(){ return liveCheckForChanges() });
-				        var serverAddress = Q(instances[i]).val();
-
-				        if(serverAddress.includes('xray.cloud.xpand-it.com')){
-							var usernameInput = Q(instances[i]).parent().parent().parent().find("tr td input[name='_.username']");
-							var passwordInput = Q(instances[i]).parent().parent().parent().find("tr td input[name='_.password']");
-							Q(usernameInput).parent().siblings("td.setting-name").html("Client Id");
-							Q(passwordInput).parent().siblings("td.setting-name").html("Client Secret");
-						}
-					}
-				    observerXrayConfig.disconnect();
-				}
-			};
-
-			function liveCheckForChanges(){
-				var instances = Q("input[name='_.serverAddress'");
-
-				if(instances.length != 0){
-					for(var i = 0; i != instances.length; i++){
-						var serverAddress = Q(instances[i]).val();
-						var usernameInput = Q(instances[i]).parent().parent().parent().find("tr td input[name='_.username']");
-						var passwordInput = Q(instances[i]).parent().parent().parent().find("tr td input[name='_.password']");
-
-						if(serverAddress.includes('xray.cloud.xpand-it.com')){
-							Q(usernameInput).parent().siblings("td.setting-name").html("Client Id");
-							Q(passwordInput).parent().siblings("td.setting-name").html("Client Secret");
-						} else {
-							Q(usernameInput).parent().siblings("td.setting-name").html("Username");
-							Q(passwordInput).parent().siblings("td.setting-name").html("Password");
-						}
-					}
-				}
-			}
-
-			observerXrayConfig.observe(document.querySelector('body'), {
-				attributes: true,
-				childList: true,
-				subtree: true
-			});
-		});
-	})(jQuery);
-</script>
- 
 <f:section title="${%Xray for JIRA configuration}" name="xrayinstance">
      <f:entry title="${%JIRA server}">
 	      <f:repeatable var="serverInstances" items="${descriptor.serverInstances}" minimum="1"> 
@@ -71,17 +17,24 @@
 			  <f:entry title="${%Server address}" field="serverAddress"> 
               	<f:textbox value="${serverInstances.serverAddress}" />
               </f:entry>
+
+			   <f:entry title="Intance Type" field="type">
+				   <select name="type">
+					   <option value="server" selected="${serverInstances.type.equals('server') ? 'true' : null}">Server</option>
+					   <option value="cloud" selected="${serverInstances.type.equals('cloud') ? 'true' : null}">Cloud</option>
+				   </select>
+			   </f:entry>
              
-              <f:entry title="${%Username}" field="username"> 
+              <f:entry title="${%Username/Client Id}" field="username">
               	<f:textbox value="${serverInstances.username}" />
               </f:entry>
               
-              <f:entry title="${%Password}" field="password">
+              <f:entry title="${%Password/Client Secret}" field="password">
     			<f:password value="${serverInstances.password}" />
   			  </f:entry>
   			  
   			  <f:validateButton title="${%Test Connection}" progress="${%Testing...}"
-  				 method="testConnection" with="serverAddress,username,password" />
+  				 method="testConnection" with="serverAddress,username,password,type" />
   			  
   			  <f:entry>
                     <div align="right" class="repeatable-delete show-if-only" style="margin-left: 1em;">

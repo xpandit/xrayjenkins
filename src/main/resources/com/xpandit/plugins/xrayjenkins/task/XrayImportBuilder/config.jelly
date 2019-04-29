@@ -182,10 +182,9 @@
    	})(jQuery);
    	    		
 </script>
-
-  <f:entry title="${%JIRA Instance}" field="serverInstance">
+	<f:entry title="${%JIRA Instance}" field="serverInstance">
    		<f:select/>
-   </f:entry>
+	</f:entry>
 
    <f:entry title="${%Format}" field="formatSuffix">
    		<f:select id="selectFormat_${descriptor.defaultBuildID()}"/>
