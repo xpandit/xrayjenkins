@@ -385,7 +385,8 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		if(Endpoint.JUNIT.equals(e)
 				|| Endpoint.TESTNG.equals(e)
 				|| Endpoint.NUNIT.equals(e)
-				|| Endpoint.ROBOT.equals(e)){
+				|| Endpoint.ROBOT.equals(e)
+				|| Endpoint.XUNIT.equals(e)){
 			ParameterBean pb = new ParameterBean(SAME_EXECUTION_CHECKBOX, "same exec text box", false);
 			pb.setConfiguration(importToSameExecution);
 			bean.getConfigurableFields().add(0, pb);
@@ -449,7 +450,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 
 		XrayImporter client;
 
-        if(importInstance.getServerAddress().contains("xray.cloud.xpand-it.com"))
+        if(importInstance.getType().equals("cloud"))
 			client = new XrayImporterCloudImpl(importInstance.getServerAddress(),
 					importInstance.getUsername(),
 					importInstance.getPassword());
@@ -463,16 +464,11 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 
 		Endpoint endpointValue = Endpoint.lookupBySuffix(this.endpointName);
 
-
-		listener.getLogger().println(endpointValue);
-
 		if(Endpoint.JUNIT.equals(endpointValue)
 				|| Endpoint.NUNIT.equals(endpointValue)
 				|| Endpoint.TESTNG.equals(endpointValue)
 				|| Endpoint.ROBOT.equals(endpointValue)
 				|| Endpoint.XUNIT.equals(endpointValue)){
-
-			listener.getLogger().println("SIIIIIIIIIIIIIIII");
 
 			UploadResult result;
 			ObjectMapper mapper = new ObjectMapper();
@@ -489,7 +485,6 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 			FilePath file = getFile(workspace, resolved, listener);
 			uploadResults(workspace, listener, client, file, env, null);
 		}
-
 	}
 
     /**
@@ -523,8 +518,8 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 			if(StringUtils.isNotBlank(this.importFilePath)){
 				Content results = new com.xpandit.xray.model.FileStream(resultsFile.getName(),resultsFile.read(),
                         targetEndpoint.getResultsMediaType());
-
 				dataParams.put(com.xpandit.xray.model.DataParameter.FILEPATH, results);
+
 			}
 			if(StringUtils.isNotBlank(this.importInfo)){
 				String resolved = this.expand(env,this.importInfo);
@@ -536,6 +531,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 				}else{
 					info = new com.xpandit.xray.model.StringContent(resolved, targetEndpoint.getInfoFieldMediaType());
 				}
+
 
 				dataParams.put(com.xpandit.xray.model.DataParameter.INFO, info);
 			}
@@ -715,7 +711,8 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         	if(Endpoint.JUNIT.equals(e)
 					|| Endpoint.TESTNG.equals(e)
 					|| Endpoint.NUNIT.equals(e)
-					|| Endpoint.ROBOT.equals(e)){
+					|| Endpoint.ROBOT.equals(e)
+					|| Endpoint.XUNIT.equals(e)){
 				ParameterBean pb = new ParameterBean(SAME_EXECUTION_CHECKBOX, "same exec text box", false);
 				bean.getConfigurableFields().add(0, pb);
 			}
