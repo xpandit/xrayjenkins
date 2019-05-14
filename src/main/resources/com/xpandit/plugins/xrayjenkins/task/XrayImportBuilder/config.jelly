@@ -54,6 +54,7 @@
 
        var mainTemplate = '';
        var formats;
+
        if('${instance.defaultFormats()}' != ''){
 		 formats = [${instance.defaultFormats()}];
 		 }
@@ -130,11 +131,39 @@
 			}
 		}
 		
-	}
-		
+	  }
+
+	  filterFormats_${descriptor.defaultBuildID()} = function(){
+	      var value = Q('#selectInstance_${descriptor.defaultBuildID()}')[0].value;
+	      var instanceType = value[0];
+	      var xUnit = Q('#selectFormat_${descriptor.defaultBuildID()} option[value="/xunit"]');
+	      var xUnitMultipart = Q('#selectFormat_${descriptor.defaultBuildID()} option[value="/xunit/multipart"]');
+
+	      if(instanceType == "s"){
+			  if (Q(xUnit).length)
+			      Q(xUnit).attr("disabled", "true");
+			  if(Q(xUnitMultipart).length)
+			      Q(xUnitMultipart).attr("disabled", "true");
+	      } else if(instanceType == "c") {
+			  if (Q(xUnit).length)
+			      Q(xUnit).removeAttr("disabled");
+			  if(Q(xUnitMultipart).length)
+			      Q(xUnitMultipart).removeAttr("disabled");
+	      }
+	  }
+
+	  firstRenderFilterFormats_${descriptor.defaultBuildID()} = function(){
+			if (Q('#selectFormat_${descriptor.defaultBuildID()} option[value="/xunit"]').length){
+				filterFormats_${descriptor.defaultBuildID()}();
+				observeFormats.disconnect();
+			}
+	  }
+
+	  var observeFormats = new MutationObserver(function(mutations) {
+		  firstRenderFilterFormats_${descriptor.defaultBuildID()}();
+	  });
 		
 	  Q(document).ready(function() {
-	  	
 	  		//main template loading. It's syntax conflicts with Jelly so we need to load it assynchronously from an external source
 			Q.ajax({
 		   	 url: '${resURL}/plugin/xray-for-jira-connector/xray-import-buildstepconfig.html',
@@ -158,11 +187,18 @@
 				Handlebars.registerPartial("addSameExecutionCheckboxEntry",'${addSameExecutionCheckboxEntry}');
 				
 				Handlebars.registerPartial("addSwitchableField", '${addSwitchableField}');
-				
+
 				//register event-handler
 		    	Q('#selectFormat_${descriptor.defaultBuildID()}').on('change',function(e){
 		    		addXrayFields_${descriptor.defaultBuildID()}(e.currentTarget.options[e.currentTarget.selectedIndex].value);
 		    	});
+
+		    	//filterFormats_${descriptor.defaultBuildID()}();
+				Q('#selectInstance_${descriptor.defaultBuildID()}').on('change',function(e){
+				    console.log('A INSTANCIA MUDOU');
+					filterFormats_${descriptor.defaultBuildID()}();
+				});
+
 				
 				//get last chosen format
 				var formatSuffix = '${instance.getFormatSuffix()}';
@@ -173,6 +209,11 @@
 				else
 				    addXrayFields_${descriptor.defaultBuildID()}(formatSuffix); //making sure that the select gets the last configuration value
 
+				 observeFormats.observe(document.querySelector('body'), {
+					attributes: true,
+					childList: true,
+					subtree: true
+				  });
 		     	}
 			});
 
@@ -183,7 +224,7 @@
    	    		
 </script>
 	<f:entry title="${%JIRA Instance}" field="serverInstance">
-   		<f:select/>
+   		<f:select id="selectInstance_${descriptor.defaultBuildID()}"/>
 	</f:entry>
 
    <f:entry title="${%Format}" field="formatSuffix">

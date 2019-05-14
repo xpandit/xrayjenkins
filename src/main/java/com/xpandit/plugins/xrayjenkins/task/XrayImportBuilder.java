@@ -443,7 +443,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         listener.getLogger().println("##########################################################");
         listener.getLogger().println("####     Importing the execution results to Xray      ####");
         listener.getLogger().println("##########################################################");
-        XrayInstance importInstance = ConfigurationUtils.getConfiguration(serverInstance);
+        XrayInstance importInstance = ConfigurationUtils.getConfiguration(serverInstance.substring(2));
         if(importInstance == null){
         	throw new AbortException("The Jira server configuration of this task was not found.");
 		}
