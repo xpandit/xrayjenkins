@@ -195,10 +195,8 @@
 
 		    	//filterFormats_${descriptor.defaultBuildID()}();
 				Q('#selectInstance_${descriptor.defaultBuildID()}').on('change',function(e){
-				    console.log('A INSTANCIA MUDOU');
 					filterFormats_${descriptor.defaultBuildID()}();
 				});
-
 				
 				//get last chosen format
 				var formatSuffix = '${instance.getFormatSuffix()}';
