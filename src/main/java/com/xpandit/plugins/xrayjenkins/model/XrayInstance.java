@@ -19,25 +19,25 @@ public class XrayInstance {
 	private String configID;
 	private String alias;
 	private String serverAddress;
-	private String type;
+	private String hosting;
     private String username;
     private String password;
 
 
-    public XrayInstance(String serverAddress, String type, String username, String password) {
+    public XrayInstance(String serverAddress, String hosting, String username, String password) {
     	this.configID =  "";
     	this.alias = serverAddress;
         this.serverAddress = serverAddress;
-		this.type = type;
+		this.hosting = hosting;
         this.username = username;
         this.password = password;
     }
 
 	@DataBoundConstructor
- 	public XrayInstance(String configID, String alias,String serverAddress, String type,
+ 	public XrayInstance(String configID, String alias,String serverAddress, String hosting,
  			String username,String password){
  		
-    	this(serverAddress, type, username, password);
+    	this(serverAddress, hosting, username, password);
     	
  		this.configID = StringUtils.isBlank(configID) ? UUID.randomUUID().toString() : configID;
  		this.alias = alias;
@@ -84,8 +84,8 @@ public class XrayInstance {
 		this.password = password;
 	}
 
-	public String getType() { return type; }
+	public String getHosting() { return hosting; }
 
-	public void setType(String type) { this.type = type; }
+	public void setHosting(String hosting) { this.hosting = hosting; }
 }
 

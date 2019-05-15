@@ -450,7 +450,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 
 		XrayImporter client;
 
-        if(importInstance.getType().equals("cloud"))
+        if(importInstance.getHosting().equals("cloud"))
 			client = new XrayImporterCloudImpl(importInstance.getServerAddress(),
 					importInstance.getUsername(),
 					importInstance.getPassword());

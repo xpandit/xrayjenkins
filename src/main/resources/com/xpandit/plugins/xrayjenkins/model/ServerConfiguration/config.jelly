@@ -13,17 +13,17 @@
 	       	  <f:entry title="${%Configuration alias}" field="alias"> 
               	<f:textbox value="${serverInstances.alias}" />
               </f:entry>
+
+			  <f:entry title="Hosting" field="hosting">
+				  <select name="hosting">
+					  <option value="server" selected="${serverInstances.hosting.equals('server') ? 'true' : null}">Server/Data Center</option>
+					  <option value="cloud" selected="${serverInstances.hosting.equals('cloud') ? 'true' : null}">Cloud</option>
+				  </select>
+			  </f:entry>
             
-			  <f:entry title="${%Server address}" field="serverAddress"> 
+			  <f:entry title="${%Server address}" field="serverAddress">
               	<f:textbox value="${serverInstances.serverAddress}" />
               </f:entry>
-
-			   <f:entry title="Intance Type" field="type">
-				   <select name="type">
-					   <option value="server" selected="${serverInstances.type.equals('server') ? 'true' : null}">Server</option>
-					   <option value="cloud" selected="${serverInstances.type.equals('cloud') ? 'true' : null}">Cloud</option>
-				   </select>
-			   </f:entry>
              
               <f:entry title="${%Username/Client Id}" field="username">
               	<f:textbox value="${serverInstances.username}" />
@@ -34,7 +34,7 @@
   			  </f:entry>
   			  
   			  <f:validateButton title="${%Test Connection}" progress="${%Testing...}"
-  				 method="testConnection" with="serverAddress,username,password,type" />
+  				 method="testConnection" with="hosting, serverAddress, username, password" />
   			  
   			  <f:entry>
                     <div align="right" class="repeatable-delete show-if-only" style="margin-left: 1em;">

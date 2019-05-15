@@ -53,12 +53,12 @@ public class ServerConfiguration extends GlobalConfiguration {
 	    return GlobalConfiguration.all().get(ServerConfiguration.class);
 	}
 	
-	public FormValidation doTestConnection(@QueryParameter("serverAddress") final String serverAddress,
-            @QueryParameter("username") final String username, @QueryParameter("password") final String password, @QueryParameter("type") final String type) throws IOException, ServletException {
+	public FormValidation doTestConnection(@QueryParameter("hosting") final String hosting, @QueryParameter("serverAddress") final String serverAddress,
+            @QueryParameter("username") final String username, @QueryParameter("password") final String password) throws IOException, ServletException {
 
         Boolean isConnectionOk;
 
-        if(type.equals("cloud"))
+        if(hosting.equals("cloud"))
             isConnectionOk = (new XrayCloudClientImpl(serverAddress,username,password)).testConnection();
         else
             isConnectionOk = (new XrayClientImpl(serverAddress,username,password)).testConnection();
