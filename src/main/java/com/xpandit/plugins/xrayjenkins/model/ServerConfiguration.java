@@ -59,20 +59,8 @@ public class ServerConfiguration extends GlobalConfiguration {
                                            @QueryParameter("username") final String username,
                                            @QueryParameter("password") final String password) throws IOException, ServletException {
 
-        if(serverAddress == null){
-            return FormValidation.error("Server Address null");
-        }
-
-	    if(username == null){
-            return FormValidation.error("Username null");
-        }
-
-        if(password == null){
-            return FormValidation.error("Password null");
-        }
-
-        if(hosting == null){
-            return FormValidation.error("Hosting null");
+	    if(username == "" || password == ""){
+            return FormValidation.error("Authentication not filled!");
         }
 
         Boolean isConnectionOk;
