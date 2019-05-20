@@ -150,6 +150,8 @@
 			  if(Q(xUnitMultipart).length)
 			      Q(xUnitMultipart).removeAttr("disabled");
 	      }
+
+			Q('#selectFormat_${descriptor.defaultBuildID()}').first().val("")
 	  }
 
 	  firstRenderFilterFormats_${descriptor.defaultBuildID()} = function(){
