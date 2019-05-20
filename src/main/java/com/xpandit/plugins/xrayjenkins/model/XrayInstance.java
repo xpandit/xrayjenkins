@@ -34,9 +34,8 @@ public class XrayInstance {
     }
 
 	@DataBoundConstructor
- 	public XrayInstance(String configID, String alias,String serverAddress, String hosting,
- 			String username,String password){
- 		
+ 	public XrayInstance(String configID, String alias , String hosting, String serverAddress, String username, String password){
+
     	this(serverAddress, hosting, username, password);
     	
  		this.configID = StringUtils.isBlank(configID) ? UUID.randomUUID().toString() : configID;

@@ -27,6 +27,7 @@ import net.sf.json.JSONObject;
 public class ServerConfiguration extends GlobalConfiguration {
 	
 	private List<XrayInstance> serverInstances;
+	private static final String CLOUD_URL = "https://xray.cloud.xpand-it.com";
 	
 	public ServerConfiguration(){
 		load();
@@ -53,13 +54,31 @@ public class ServerConfiguration extends GlobalConfiguration {
 	    return GlobalConfiguration.all().get(ServerConfiguration.class);
 	}
 	
-	public FormValidation doTestConnection(@QueryParameter("hosting") final String hosting, @QueryParameter("serverAddress") final String serverAddress,
-            @QueryParameter("username") final String username, @QueryParameter("password") final String password) throws IOException, ServletException {
+	public FormValidation doTestConnection(@QueryParameter("hosting") final String hosting,
+	                                       @QueryParameter("serverAddress") final String serverAddress,
+                                           @QueryParameter("username") final String username,
+                                           @QueryParameter("password") final String password) throws IOException, ServletException {
+
+        if(serverAddress == null){
+            return FormValidation.error("Server Address null");
+        }
+
+	    if(username == null){
+            return FormValidation.error("Username null");
+        }
+
+        if(password == null){
+            return FormValidation.error("Password null");
+        }
+
+        if(hosting == null){
+            return FormValidation.error("Hosting null");
+        }
 
         Boolean isConnectionOk;
 
         if(hosting.equals("cloud"))
-            isConnectionOk = (new XrayCloudClientImpl(serverAddress,username,password)).testConnection();
+            isConnectionOk = (new XrayCloudClientImpl(CLOUD_URL,username,password)).testConnection();
         else
             isConnectionOk = (new XrayClientImpl(serverAddress,username,password)).testConnection();
 

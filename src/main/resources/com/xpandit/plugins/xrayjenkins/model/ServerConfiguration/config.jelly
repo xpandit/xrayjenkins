@@ -1,50 +1,100 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
-<f:section title="${%Xray for JIRA configuration}" name="xrayinstance">
-     <f:entry title="${%JIRA instances}">
-	      <f:repeatable var="serverInstances" items="${descriptor.serverInstances}" minimum="1"> 
-	       <table>
-	       
-	       	  <f:entry title="${%Configuration ID}" field="configID" >
-              	<f:textbox value="${serverInstances.configID}" style="display:none" />
-              	${serverInstances.configID}
-              </f:entry>
-	       	  
-	       	  <f:entry title="${%Configuration alias}" field="alias"> 
-              	<f:textbox value="${serverInstances.alias}" />
-              </f:entry>
 
-			  <f:entry title="Hosting" field="hosting">
-				  <select name="hosting">
-					  <option value="server" selected="${serverInstances.hosting.equals('server') ? 'true' : null}">Server/Data Center</option>
-					  <option value="cloud" selected="${serverInstances.hosting.equals('cloud') ? 'true' : null}">Cloud</option>
-				  </select>
-			  </f:entry>
-            
-			  <f:entry title="${%Server address}" field="serverAddress">
-              	<f:textbox value="${serverInstances.serverAddress}" />
-              </f:entry>
-             
-              <f:entry title="${%Username/Client Id}" field="username">
-              	<f:textbox value="${serverInstances.username}" />
-              </f:entry>
-              
-              <f:entry title="${%Password/Client Secret}" field="password">
-    			<f:password value="${serverInstances.password}" />
-  			  </f:entry>
-  			  
-  			  <f:validateButton title="${%Test Connection}" progress="${%Testing...}"
-  				 method="testConnection" with="hosting, serverAddress, username, password" />
-  			  
-  			  <f:entry>
-                    <div align="right" class="repeatable-delete show-if-only" style="margin-left: 1em;">
-                        <f:repeatableDeleteButton value="${%Delete instance}"/><br/>
-                    </div>
-              </f:entry>
-               
-           </table> 
-	      </f:repeatable> 
-     </f:entry>
- </f:section>
+	<script>
+		(function(Q){
+			var checkIfIntancesAreInjected = function(){
+				if(Q('div[name="serverInstances"]').length)
+					return true;
+				else return false;
+			};
 
+			var hideHostingInput = function (instanceInput) {
+				console.log('Hiding input...');
+				var hostingType = Q(instanceInput).first().find('select[name="hosting"]')[0].value;
+
+				if(hostingType == 'cloud'){
+					Q(instanceInput).first().find('input[name="_.serverAddress"]').parent().parent().attr("style", "display:none");
+				} else Q(instanceInput).first().find('input[name="_.serverAddress"]').parent().parent().removeAttr("style");
+			};
+
+			var hideHostingInputs = function(){
+				console.log('Hiding Hosting inputs...');
+				Q('div[name="serverInstances"]').each(function(){
+					hideHostingInput(this);
+				});
+			};
+
+			var observeHostings = new MutationObserver(function(mutations) {
+				console.log('Checking if hosting select already exists');
+				if(checkIfIntancesAreInjected()){
+					console.log('They exist!!!');
+					hideHostingInputs();
+
+					Q('select[name="hosting"]').on('change',function(e){
+						console.log('Checking if we need to hide hosting input');
+						var serverInstance = Q(e.currentTarget).first().parents('div[name="serverInstances"]').first();
+						hideHostingInput(serverInstance);
+					});
+
+					observeHostings.disconnect();
+				}
+			});
+
+			Q(document).ready(function() {
+				observeHostings.observe(document.querySelector('body'), {
+					attributes: true,
+					childList: true,
+					subtree: true
+				});
+			});
+		})(jQuery);
+	</script>
+
+	<f:section title="${%Xray for JIRA configuration}" name="xrayinstance">
+		<f:entry title="${%JIRA instances}">
+			<f:repeatable var="serverInstances" items="${descriptor.serverInstances}" minimum="1">
+				<table>
+
+					<f:entry title="${%Configuration ID}" field="configID" >
+						<f:textbox value="${serverInstances.configID}" style="display:none" />
+						${serverInstances.configID}
+					</f:entry>
+
+					<f:entry title="${%Configuration alias}" field="alias">
+						<f:textbox value="${serverInstances.alias}" />
+					</f:entry>
+
+					<f:entry title="Hosting" field="hosting">
+						<select name="hosting">
+							<option value="server" selected="${serverInstances.hosting.equals('server') ? 'true' : null}">Server/Data Center</option>
+							<option value="cloud" selected="${serverInstances.hosting.equals('cloud') ? 'true' : null}">Cloud</option>
+						</select>
+					</f:entry>
+
+					<f:entry title="${%Server address}" field="serverAddress">
+							<f:textbox value="${serverInstances.serverAddress}" />
+					</f:entry>
+
+					<f:entry title="${%Username/Client Id}" field="username">
+						<f:textbox value="${serverInstances.username}" />
+					</f:entry>
+
+					<f:entry title="${%Password/Client Secret}" field="password">
+						<f:password value="${serverInstances.password}" />
+					</f:entry>
+
+					<f:validateButton title="${%Test Connection}" progress="${%Testing...}"
+									  method="testConnection" with="hosting,serverAddress,username,password" />
+
+					<f:entry>
+						<div align="right" class="repeatable-delete show-if-only" style="margin-left: 1em;">
+							<f:repeatableDeleteButton value="${%Delete instance}"/><br/>
+						</div>
+					</f:entry>
+
+				</table>
+			</f:repeatable>
+		</f:entry>
+	</f:section>
 </j:jelly>

@@ -193,7 +193,6 @@
 		    		addXrayFields_${descriptor.defaultBuildID()}(e.currentTarget.options[e.currentTarget.selectedIndex].value);
 		    	});
 
-		    	//filterFormats_${descriptor.defaultBuildID()}();
 				Q('#selectInstance_${descriptor.defaultBuildID()}').on('change',function(e){
 					filterFormats_${descriptor.defaultBuildID()}();
 				});
