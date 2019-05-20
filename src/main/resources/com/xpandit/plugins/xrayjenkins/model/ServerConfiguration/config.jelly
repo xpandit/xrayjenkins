@@ -9,13 +9,27 @@
 				else return false;
 			};
 
+			var changeUsernameLabel = function (instanceInput, label) {
+				Q(instanceInput).find('input[name="_.username"]').first().parent().siblings('.setting-name').text(label);
+			};
+
+			var changePasswordLabel = function (instanceInput, label){
+				Q(instanceInput).find('input[name="_.password"]').first().parent().siblings('.setting-name').text(label);
+			};
+
 			var hideHostingInput = function (instanceInput) {
 				console.log('Hiding input...');
 				var hostingType = Q(instanceInput).first().find('select[name="hosting"]')[0].value;
 
 				if(hostingType == 'cloud'){
 					Q(instanceInput).first().find('input[name="_.serverAddress"]').parent().parent().attr("style", "display:none");
-				} else Q(instanceInput).first().find('input[name="_.serverAddress"]').parent().parent().removeAttr("style");
+					changeUsernameLabel(instanceInput, 'Client Id');
+					changePasswordLabel(instanceInput, 'Client Secret');
+				} else {
+				    Q(instanceInput).first().find('input[name="_.serverAddress"]').parent().parent().removeAttr("style");
+					changeUsernameLabel(instanceInput, 'Username');
+					changePasswordLabel(instanceInput, 'Password');
+				}
 			};
 
 			var hideHostingInputs = function(){
@@ -36,6 +50,20 @@
 						var serverInstance = Q(e.currentTarget).first().parents('div[name="serverInstances"]').first();
 						hideHostingInput(serverInstance);
 					});
+
+					/*var addInstanceButton = Q('div[name="serverInstances"]').first().parent().find('button').last();
+					console.log(addInstanceButton);
+
+					Q(addInstanceButton).click(function () {
+					    console.log('Vou dar blind à nova instancia');
+					    var lastInstanceAdded = Q('select[name="hosting"]').last();
+
+						Q(lastInstanceAdded).on('change',function(e){
+							console.log('Checking if we need to hide hosting input');
+							var serverInstance = Q(e.currentTarget).first().parents('div[name="serverInstances"]').first();
+							hideHostingInput(serverInstance);
+						});
+					});*/
 
 					observeHostings.disconnect();
 				}
@@ -76,11 +104,11 @@
 							<f:textbox value="${serverInstances.serverAddress}" />
 					</f:entry>
 
-					<f:entry title="${%Username/Client Id}" field="username">
+					<f:entry title="${%Username}" field="username">
 						<f:textbox value="${serverInstances.username}" />
 					</f:entry>
 
-					<f:entry title="${%Password/Client Secret}" field="password">
+					<f:entry title="${%Password}" field="password">
 						<f:password value="${serverInstances.password}" />
 					</f:entry>
 
