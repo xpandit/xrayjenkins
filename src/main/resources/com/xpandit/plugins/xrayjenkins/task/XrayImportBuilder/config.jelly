@@ -54,6 +54,8 @@
 
        var mainTemplate = '';
        var formats;
+       var cloudDocUrl = 'https://confluence.xpand-it.com/display/XRAYCLOUD/Import+Execution+Results+-+REST';
+       var serverDocUrl = 'https://confluence.xpand-it.com/display/XRAY/Import+Execution+Results+-+REST';
 
        if('${instance.defaultFormats()}' != ''){
 		 formats = [${instance.defaultFormats()}];
@@ -133,6 +135,10 @@
 		
 	  }
 
+	  setDocLink_${descriptor.defaultBuildID()} = function(link){
+	      Q('#xray-doc-link_${descriptor.defaultBuildID()}').first().attr('href', link);
+	  }
+
 	  filterFormats_${descriptor.defaultBuildID()} = function(){
 	      var value = Q('#selectInstance_${descriptor.defaultBuildID()}')[0].value;
 	      var instanceType = value[0];
@@ -142,13 +148,19 @@
 	      if(instanceType == "s"){
 			  if (Q(xUnit).length)
 			      Q(xUnit).attr("disabled", "true");
+
 			  if(Q(xUnitMultipart).length)
 			      Q(xUnitMultipart).attr("disabled", "true");
+
+			  setDocLink_${descriptor.defaultBuildID()}(serverDocUrl);
 	      } else if(instanceType == "c") {
 			  if (Q(xUnit).length)
 			      Q(xUnit).removeAttr("disabled");
+
 			  if(Q(xUnitMultipart).length)
 			      Q(xUnitMultipart).removeAttr("disabled");
+
+			  setDocLink_${descriptor.defaultBuildID()}(cloudDocUrl);
 	      }
 
 			Q('#selectFormat_${descriptor.defaultBuildID()}').first().val("");
@@ -239,7 +251,7 @@
    </f:entry>
 
    <f:entry>
-   	 <a href="http://confluence.xpand-addons.com/display/XRAY/Import+Execution+Results+-+REST">Click here for more details</a>
+	   <a id="xray-doc-link_${descriptor.defaultBuildID()}" target="_blank">Click here for more details</a>
    </f:entry>
 
 
