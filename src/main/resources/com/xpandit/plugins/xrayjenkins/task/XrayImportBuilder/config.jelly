@@ -152,6 +152,7 @@
 	      }
 
 			Q('#selectFormat_${descriptor.defaultBuildID()}').first().val("");
+			addXrayFields_${descriptor.defaultBuildID()}("");
 	  }
 
 	  firstRenderFilterFormats_${descriptor.defaultBuildID()} = function(){
