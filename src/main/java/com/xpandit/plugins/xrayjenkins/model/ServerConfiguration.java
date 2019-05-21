@@ -22,6 +22,7 @@ import hudson.Extension;
 import hudson.util.FormValidation;
 import jenkins.model.GlobalConfiguration;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang3.StringUtils;
 
 @Extension
 public class ServerConfiguration extends GlobalConfiguration {
@@ -59,7 +60,8 @@ public class ServerConfiguration extends GlobalConfiguration {
                                            @QueryParameter("username") final String username,
                                            @QueryParameter("password") final String password) throws IOException, ServletException {
 
-	    if(username == "" || password == ""){
+
+        if(StringUtils.isBlank(username) || StringUtils.isBlank(password)){
             return FormValidation.error("Authentication not filled!");
         }
 
