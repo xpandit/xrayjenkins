@@ -26,7 +26,7 @@ public class FormUtils {
             return items;
         }
         for(XrayInstance sc : serverInstances){
-            items.add(sc.getAlias(),sc.getHosting().charAt(0) + "-" + sc.getConfigID());
+            items.add(sc.getAlias(),sc.getHosting().value + "-" + sc.getConfigID());
         }
         return items;
     }

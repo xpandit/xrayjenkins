@@ -139,20 +139,16 @@
 	      var xUnit = Q('#selectFormat_${descriptor.defaultBuildID()} option[value="/xunit"]');
 	      var xUnitMultipart = Q('#selectFormat_${descriptor.defaultBuildID()} option[value="/xunit/multipart"]');
 
-	      if(instanceType == "s"){
-			  if (Q(xUnit).length)
-			      Q(xUnit).attr("disabled", "true");
-			  if(Q(xUnitMultipart).length)
-			      Q(xUnitMultipart).attr("disabled", "true");
-	      } else if(instanceType == "c") {
-			  if (Q(xUnit).length)
-			      Q(xUnit).removeAttr("disabled");
-			  if(Q(xUnitMultipart).length)
-			      Q(xUnitMultipart).removeAttr("disabled");
+	      if(instanceType === 'server'){
+			  Q(xUnit).attr("disabled", "true");
+			  Q(xUnitMultipart).attr("disabled", "true");
+	      } else if(instanceType === 'cloud') {
+	          Q(xUnit).removeAttr("disabled");
+			  Q(xUnitMultipart).removeAttr("disabled");
 	      }
 
-			Q('#selectFormat_${descriptor.defaultBuildID()}').first().val("");
-			addXrayFields_${descriptor.defaultBuildID()}("");
+	      Q('#selectFormat_${descriptor.defaultBuildID()}').first().val("");
+	      addXrayFields_${descriptor.defaultBuildID()}("");
 	  }
 
 	  firstRenderFilterFormats_${descriptor.defaultBuildID()} = function(){

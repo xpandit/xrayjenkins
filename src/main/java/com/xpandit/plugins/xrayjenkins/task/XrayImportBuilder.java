@@ -451,14 +451,14 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 
 		XrayImporter client;
 
-        if(importInstance.getHosting().equals("cloud"))
-			client = new XrayImporterCloudImpl(CLOUD_URL,
+        if(importInstance.getHosting().equals(XrayInstance.HostingType.CLOUD)) {
+			client = new XrayImporterCloudImpl(importInstance.getUsername(),
+					importInstance.getPassword());
+		} else {
+			client = new XrayImporterImpl(importInstance.getServerAddress(),
 					importInstance.getUsername(),
 					importInstance.getPassword());
-        else
-        	client = new XrayImporterImpl(importInstance.getServerAddress(),
-				importInstance.getUsername(),
-				importInstance.getPassword());
+		}
 
 		EnvVars env = build.getEnvironment(listener);
 		String resolved = this.expand(env,this.importFilePath);
@@ -727,6 +727,13 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 			return ConfigurationUtils.anyAvailableConfiguration() ? FormValidation.ok() : FormValidation.error("No configured Server Instances found");
 		}
 
+		public String getCloudHostingType(){
+        	return ServerConfiguration.get().getCloudHostingType();
+		}
+
+		public String getServerHostingType(){
+			return ServerConfiguration.get().getServerHostingType();
+		}
     }
 
 }
