@@ -98,7 +98,6 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 	private static final String REVISION_FIELD = "revision";
 	private static final String IMPORT_INFO = "importInfo";
 	private static final String FORMAT_SUFFIX = "formatSuffix";
-	private static final String CLOUD_URL = "https://xray.cloud.xpand-it.com";
 
     private String formatSuffix; //value of format select
     private String serverInstance;//Configuration ID of the JIRA instance

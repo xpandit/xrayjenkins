@@ -28,7 +28,6 @@ import org.apache.commons.lang3.StringUtils;
 public class ServerConfiguration extends GlobalConfiguration {
 	
 	private List<XrayInstance> serverInstances;
-	private static final String CLOUD_URL = "https://xray.cloud.xpand-it.com";
 	
 	public ServerConfiguration(){
 		load();
@@ -73,7 +72,7 @@ public class ServerConfiguration extends GlobalConfiguration {
             return FormValidation.error("Authentication not filled!");
         }
 
-        if(hosting == null || StringUtils.isBlank(hosting)){
+        if(StringUtils.isBlank(hosting)){
             return FormValidation.error("Hosting type can't be blank.");
         }
 
@@ -82,6 +81,9 @@ public class ServerConfiguration extends GlobalConfiguration {
         if(hosting.equals(XrayInstance.HostingType.CLOUD.value)) {
             isConnectionOk = (new XrayCloudClientImpl(username, password)).testConnection();
         } else if(hosting.equals(XrayInstance.HostingType.SERVER.value)) {
+            if(StringUtils.isBlank(serverAddress)) {
+                return FormValidation.error("Server address can't be empty");
+            }
             isConnectionOk = (new XrayClientImpl(serverAddress, username, password)).testConnection();
         } else {
             return FormValidation.error("Hosting type not recognized.");
