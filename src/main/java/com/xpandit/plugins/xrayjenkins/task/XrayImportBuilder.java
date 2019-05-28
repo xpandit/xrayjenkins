@@ -9,6 +9,7 @@ package com.xpandit.plugins.xrayjenkins.task;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xpandit.plugins.xrayjenkins.Utils.FileUtils;
+import com.xpandit.plugins.xrayjenkins.model.HostingType;
 import com.xpandit.plugins.xrayjenkins.task.compatibility.XrayImportBuilderCompatibilityDelegate;
 import com.xpandit.xray.model.ParameterBean;
 import com.xpandit.xray.model.QueryParameter;
@@ -450,7 +451,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 
 		XrayImporter client;
 
-        if(importInstance.getHosting().equals(XrayInstance.HostingType.CLOUD)) {
+        if(importInstance.getHosting().equals(HostingType.CLOUD)) {
 			client = new XrayImporterCloudImpl(importInstance.getUsername(),
 					importInstance.getPassword());
 		} else {
@@ -727,11 +728,11 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		}
 
 		public String getCloudHostingType(){
-        	return ServerConfiguration.get().getCloudHostingType();
+        	return HostingType.getCloudHostingType();
 		}
 
 		public String getServerHostingType(){
-			return ServerConfiguration.get().getServerHostingType();
+			return HostingType.getServerHostingType();
 		}
     }
 

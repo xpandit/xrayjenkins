@@ -138,10 +138,10 @@
 	      var xUnit = Q('#selectFormat_${descriptor.defaultBuildID()} option[value="/xunit"]');
 	      var xUnitMultipart = Q('#selectFormat_${descriptor.defaultBuildID()} option[value="/xunit/multipart"]');
 
-	      if(instanceId.startsWith('server')){
+	      if(instanceId.startsWith('${descriptor.getServerHostingType()}')){
 			  Q(xUnit).attr("disabled", "true");
 			  Q(xUnitMultipart).attr("disabled", "true");
-	      } else if(instanceId.startsWith('cloud')) {
+	      } else if(instanceId.startsWith('${descriptor.getCloudHostingType()}')) {
 	          Q(xUnit).removeAttr("disabled");
 			  Q(xUnitMultipart).removeAttr("disabled");
 	      }

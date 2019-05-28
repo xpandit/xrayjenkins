@@ -8,6 +8,8 @@
 package com.xpandit.plugins.xrayjenkins.model;
 
 import java.util.UUID;
+
+import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -23,14 +25,6 @@ public class XrayInstance {
     private String username;
     private String password;
 
-    public enum HostingType {
-		SERVER("server"), CLOUD("cloud");
-		public String value;
-
-		HostingType(String value) { this.value = value; }
-	}
-
-
     public XrayInstance(String serverAddress, String hosting, String username, String password) {
     	this.configID =  "";
     	this.alias = serverAddress;
@@ -44,7 +38,7 @@ public class XrayInstance {
 				this.hosting = HostingType.SERVER;
 				break;
 			default:
-				break;
+				throw new XrayJenkinsGenericException("Hosting type not recognized");
 		}
 
         this.username = username;

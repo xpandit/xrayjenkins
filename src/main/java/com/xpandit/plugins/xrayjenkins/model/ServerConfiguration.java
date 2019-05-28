@@ -51,11 +51,11 @@ public class ServerConfiguration extends GlobalConfiguration {
 	}
 
 	public String getCloudHostingType(){
-	    return XrayInstance.HostingType.CLOUD.value;
+	    return HostingType.getCloudHostingType();
     }
 
     public String getServerHostingType(){
-        return XrayInstance.HostingType.SERVER.value;
+        return HostingType.getServerHostingType();
     }
 	
 	public static ServerConfiguration get() {
@@ -78,9 +78,9 @@ public class ServerConfiguration extends GlobalConfiguration {
 
         boolean isConnectionOk;
 
-        if(hosting.equals(XrayInstance.HostingType.CLOUD.value)) {
+        if(hosting.equals(HostingType.CLOUD.value)) {
             isConnectionOk = (new XrayCloudClientImpl(username, password)).testConnection();
-        } else if(hosting.equals(XrayInstance.HostingType.SERVER.value)) {
+        } else if(hosting.equals(HostingType.SERVER.value)) {
             if(StringUtils.isBlank(serverAddress)) {
                 return FormValidation.error("Server address can't be empty");
             }
