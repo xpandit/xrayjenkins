@@ -204,14 +204,11 @@
 				else
 				    addXrayFields_${descriptor.defaultBuildID()}(formatSuffix); //making sure that the select gets the last configuration value
 
-				//var cloudExclusiveEndpoints = JSON.parse('${descriptor.getExclusiveCloudEndpoints()}');
-
-				observeFormats.observe(document.querySelector('body'), {
-					attributes: true,
+				observeFormats.observe(document.getElementById('main-panel'), {
 					childList: true,
 					subtree: true
 				});
-		     	}
+		     }
 			});
 
 	 });
