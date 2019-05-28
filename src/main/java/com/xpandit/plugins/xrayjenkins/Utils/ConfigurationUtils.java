@@ -23,6 +23,13 @@ public class ConfigurationUtils {
      * @return <code>XrayInstance</code> if found, <code>null</code> otherwise
      */
     public static XrayInstance getConfiguration(String serverConfigurationId){
+        int idIndex = 1;
+        if(serverConfigurationId.startsWith(XrayInstance.HostingType.CLOUD.value)){
+            serverConfigurationId = serverConfigurationId.split(XrayInstance.HostingType.CLOUD.value + "-")[idIndex];
+        } else {
+            serverConfigurationId = serverConfigurationId.split(XrayInstance.HostingType.SERVER.value + "-")[idIndex];
+        }
+
         XrayInstance config =  null;
         List<XrayInstance> serverInstances =  ServerConfiguration.get().getServerInstances();
         for(XrayInstance sc : serverInstances){

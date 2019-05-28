@@ -134,15 +134,14 @@
 	  }
 
 	  filterFormats_${descriptor.defaultBuildID()} = function(){
-	      var value = Q('#selectInstance_${descriptor.defaultBuildID()}')[0].value;
-	      var instanceType = value[0];
+	      var instanceId = Q('#selectInstance_${descriptor.defaultBuildID()}')[0].value;
 	      var xUnit = Q('#selectFormat_${descriptor.defaultBuildID()} option[value="/xunit"]');
 	      var xUnitMultipart = Q('#selectFormat_${descriptor.defaultBuildID()} option[value="/xunit/multipart"]');
 
-	      if(instanceType === 'server'){
+	      if(instanceId.startsWith('server')){
 			  Q(xUnit).attr("disabled", "true");
 			  Q(xUnitMultipart).attr("disabled", "true");
-	      } else if(instanceType === 'cloud') {
+	      } else if(instanceId.startsWith('cloud')) {
 	          Q(xUnit).removeAttr("disabled");
 			  Q(xUnitMultipart).removeAttr("disabled");
 	      }
