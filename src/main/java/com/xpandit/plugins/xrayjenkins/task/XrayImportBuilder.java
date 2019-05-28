@@ -8,6 +8,7 @@
 package com.xpandit.plugins.xrayjenkins.task;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonArray;
 import com.xpandit.plugins.xrayjenkins.Utils.FileUtils;
 import com.xpandit.plugins.xrayjenkins.model.HostingType;
 import com.xpandit.plugins.xrayjenkins.task.compatibility.XrayImportBuilderCompatibilityDelegate;
@@ -28,6 +29,7 @@ import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.json.simple.JSONArray;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.DataBoundSetter;
@@ -733,6 +735,16 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 
 		public String getServerHostingType(){
 			return HostingType.getServerHostingType();
+		}
+
+		public JSONArray getExclusiveCloudEndpoints() {
+			String[] exclusiveCloudEndpoints = Endpoint.getExclusiveCloudEndpoints();
+			JSONArray jsonExclusiveCloudEndpoints = new JSONArray();
+			for(String sufix : exclusiveCloudEndpoints){
+				jsonExclusiveCloudEndpoints.add(sufix);
+			}
+
+			return jsonExclusiveCloudEndpoints;
 		}
     }
 

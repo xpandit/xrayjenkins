@@ -4,11 +4,7 @@
 	<script>
 		(function(Q){
 			var checkIfInstancesAreInjected = function(){
-				if(Q('div[name="serverInstances"]').length){
-					return true;
-				} else {
-				    return false;
-				}
+				return Q('div[name="serverInstances"]').length > 0;
 			};
 
 			var changeUsernameLabel = function (instanceInput, label) {
