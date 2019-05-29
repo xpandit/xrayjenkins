@@ -92,33 +92,28 @@
 				observeNewInstance.disconnect();
 			});
 
-			var observeHostings = new MutationObserver(function(mutations) {
-				if(checkIfInstancesAreInjected()){
-					hideServerAddressInputs();
+			var observeHostings = function() {
+			    hideServerAddressInputs();
 
-					Q('select[name="hosting"]').on('change',function(e){
-						var serverInstance = Q(e.currentTarget).first().parents('div[name="serverInstances"]').first();
-						hideServerAddressInput(serverInstance);
-					});
+			    Q('select[name="hosting"]').on('change',function(e){
+			        var serverInstance = Q(e.currentTarget).first().parents('div[name="serverInstances"]').first();
+			        hideServerAddressInput(serverInstance);
+			    });
 
-					var addInstanceButton = Q('div[name="serverInstances"]').first().parent().find('button').last();
+			    var addInstanceButton = Q('div[name="serverInstances"]').first().parent().find('button').last();
 
-					Q(addInstanceButton).click(function () {
-						observeNewInstance.observe(document.querySelector('div[name="serverInstances"]').parentNode, {
-							childList: true,
-							subtree: true
-						});
-					});
+			    Q(addInstanceButton).click(function () {
+			        observeNewInstance.observe(document.querySelector('div[name="serverInstances"]').parentNode, {
+			            childList: true,
+						subtree: true
+			        });
+			    });
 
-					observeHostings.disconnect();
-				}
-			});
+			    observeHostings.disconnect();
+			};
 
-			Q(document).ready(function() {
-				observeHostings.observe(document.getElementById('main-panel'), {
-					childList: true,
-					subtree: true
-				});
+			Q(window).load(function() {
+				observeHostings();
 			});
 		})(jQuery);
 	</script>
