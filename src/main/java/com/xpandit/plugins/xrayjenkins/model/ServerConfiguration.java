@@ -28,7 +28,6 @@ import org.apache.commons.lang3.StringUtils;
 public class ServerConfiguration extends GlobalConfiguration {
 	
 	private List<XrayInstance> serverInstances;
-	private static final String CLOUD_URL = "https://xray.cloud.xpand-it.com";
 	
 	public ServerConfiguration(){
 		load();
@@ -50,6 +49,14 @@ public class ServerConfiguration extends GlobalConfiguration {
     public List<XrayInstance> getServerInstances(){
 		return this.serverInstances;
 	}
+
+	public String getCloudHostingType(){
+	    return HostingType.getCloudHostingType();
+    }
+
+    public String getServerHostingType(){
+        return HostingType.getServerHostingType();
+    }
 	
 	public static ServerConfiguration get() {
 	    return GlobalConfiguration.all().get(ServerConfiguration.class);
@@ -65,16 +72,27 @@ public class ServerConfiguration extends GlobalConfiguration {
             return FormValidation.error("Authentication not filled!");
         }
 
-        Boolean isConnectionOk;
+        if(StringUtils.isBlank(hosting)){
+            return FormValidation.error("Hosting type can't be blank.");
+        }
 
-        if(hosting.equals("cloud"))
-            isConnectionOk = (new XrayCloudClientImpl(CLOUD_URL,username,password)).testConnection();
-        else
-            isConnectionOk = (new XrayClientImpl(serverAddress,username,password)).testConnection();
+        boolean isConnectionOk;
 
-        if(isConnectionOk)
+        if(hosting.equals(HostingType.CLOUD.getName())) {
+            isConnectionOk = (new XrayCloudClientImpl(username, password)).testConnection();
+        } else if(hosting.equals(HostingType.SERVER.getName())) {
+            if(StringUtils.isBlank(serverAddress)) {
+                return FormValidation.error("Server address can't be empty");
+            }
+            isConnectionOk = (new XrayClientImpl(serverAddress, username, password)).testConnection();
+        } else {
+            return FormValidation.error("Hosting type not recognized.");
+        }
+
+        if(isConnectionOk) {
             return FormValidation.ok("Connection: Success!");
-        else
-            return FormValidation.error("Could not establish connection");
-  }
+        } else {
+            return FormValidation.error("Could not establish connection.");
+        }
+    }
 }

@@ -8,7 +8,9 @@
 package com.xpandit.plugins.xrayjenkins.task;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonArray;
 import com.xpandit.plugins.xrayjenkins.Utils.FileUtils;
+import com.xpandit.plugins.xrayjenkins.model.HostingType;
 import com.xpandit.plugins.xrayjenkins.task.compatibility.XrayImportBuilderCompatibilityDelegate;
 import com.xpandit.xray.model.ParameterBean;
 import com.xpandit.xray.model.QueryParameter;
@@ -27,6 +29,7 @@ import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.json.simple.JSONArray;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.DataBoundSetter;
@@ -98,7 +101,6 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 	private static final String REVISION_FIELD = "revision";
 	private static final String IMPORT_INFO = "importInfo";
 	private static final String FORMAT_SUFFIX = "formatSuffix";
-	private static final String CLOUD_URL = "https://xray.cloud.xpand-it.com";
 
     private String formatSuffix; //value of format select
     private String serverInstance;//Configuration ID of the JIRA instance
@@ -444,21 +446,21 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         listener.getLogger().println("##########################################################");
         listener.getLogger().println("####     Importing the execution results to Xray      ####");
         listener.getLogger().println("##########################################################");
-        XrayInstance importInstance = ConfigurationUtils.getConfiguration(serverInstance.substring(2));
+        XrayInstance importInstance = ConfigurationUtils.getConfiguration(serverInstance);
         if(importInstance == null){
         	throw new AbortException("The Jira server configuration of this task was not found.");
 		}
 
 		XrayImporter client;
 
-        if(importInstance.getHosting().equals("cloud"))
-			client = new XrayImporterCloudImpl(CLOUD_URL,
+        if(importInstance.getHosting() == HostingType.CLOUD) {
+			client = new XrayImporterCloudImpl(importInstance.getUsername(),
+					importInstance.getPassword());
+		} else {
+			client = new XrayImporterImpl(importInstance.getServerAddress(),
 					importInstance.getUsername(),
 					importInstance.getPassword());
-        else
-        	client = new XrayImporterImpl(importInstance.getServerAddress(),
-				importInstance.getUsername(),
-				importInstance.getPassword());
+		}
 
 		EnvVars env = build.getEnvironment(listener);
 		String resolved = this.expand(env,this.importFilePath);
@@ -727,6 +729,23 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 			return ConfigurationUtils.anyAvailableConfiguration() ? FormValidation.ok() : FormValidation.error("No configured Server Instances found");
 		}
 
+		public String getCloudHostingType(){
+        	return HostingType.getCloudHostingType();
+		}
+
+		public String getServerHostingType(){
+			return HostingType.getServerHostingType();
+		}
+
+		public JSONArray getExclusiveCloudEndpoints() {
+			String[] exclusiveCloudEndpoints = Endpoint.getExclusiveCloudEndpoints();
+			JSONArray jsonExclusiveCloudEndpoints = new JSONArray();
+			for(String sufix : exclusiveCloudEndpoints){
+				jsonExclusiveCloudEndpoints.add(sufix);
+			}
+
+			return jsonExclusiveCloudEndpoints;
+		}
     }
 
 }

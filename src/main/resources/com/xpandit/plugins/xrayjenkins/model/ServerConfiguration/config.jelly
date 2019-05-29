@@ -1,86 +1,5 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
-
-	<script>
-		(function(Q){
-			var checkIfInstancesAreInjected = function(){
-				if(Q('div[name="serverInstances"]').length)
-					return true;
-				else return false;
-			};
-
-			var changeUsernameLabel = function (instanceInput, label) {
-				Q(instanceInput).find('input[name="_.username"]').first().parent().siblings('.setting-name').text(label);
-			};
-
-			var changePasswordLabel = function (instanceInput, label){
-				Q(instanceInput).find('input[name="_.password"]').first().parent().siblings('.setting-name').text(label);
-			};
-
-			var hideServerAddressInput = function (instanceInput) {
-				var hostingType = Q(instanceInput).first().find('select[name="hosting"]')[0].value;
-
-				if(hostingType == 'cloud'){
-					Q(instanceInput).first().find('input[name="_.serverAddress"]').parent().parent().attr("style", "display:none");
-					changeUsernameLabel(instanceInput, 'Client Id');
-					changePasswordLabel(instanceInput, 'Client Secret');
-				} else {
-				    Q(instanceInput).first().find('input[name="_.serverAddress"]').parent().parent().removeAttr("style");
-					changeUsernameLabel(instanceInput, 'Username');
-					changePasswordLabel(instanceInput, 'Password');
-				}
-			};
-
-			var hideServerAddressInputs = function(){
-				Q('div[name="serverInstances"]').each(function(){
-					hideServerAddressInput(this);
-				});
-			};
-
-			var observeNewInstance = new MutationObserver(function (mutations) {
-				var lastInstanceAdded = Q('select[name="hosting"]').last();
-
-				Q(lastInstanceAdded).on('change',function(e){
-					var serverInstance = Q(e.currentTarget).first().parents('div[name="serverInstances"]').first();
-					hideServerAddressInput(serverInstance);
-				});
-
-				observeNewInstance.disconnect();
-			});
-
-			var observeHostings = new MutationObserver(function(mutations) {
-				if(checkIfInstancesAreInjected()){
-					hideServerAddressInputs();
-
-					Q('select[name="hosting"]').on('change',function(e){
-						var serverInstance = Q(e.currentTarget).first().parents('div[name="serverInstances"]').first();
-						hideServerAddressInput(serverInstance);
-					});
-
-					var addInstanceButton = Q('div[name="serverInstances"]').first().parent().find('button').last();
-
-					Q(addInstanceButton).click(function () {
-						observeNewInstance.observe(document.querySelector('body'), {
-							attributes: true,
-							childList: true,
-							subtree: true
-						});
-					});
-
-					observeHostings.disconnect();
-				}
-			});
-
-			Q(document).ready(function() {
-				observeHostings.observe(document.querySelector('body'), {
-					attributes: true,
-					childList: true,
-					subtree: true
-				});
-			});
-		})(jQuery);
-	</script>
-
 	<f:section title="${%Xray for JIRA configuration}" name="xrayinstance">
 		<f:entry title="${%JIRA instances}">
 			<f:repeatable var="serverInstances" items="${descriptor.serverInstances}" minimum="1">
@@ -97,8 +16,8 @@
 
 					<f:entry title="Hosting" field="hosting">
 						<select name="hosting">
-							<option value="server" selected="${serverInstances.hosting.equals('server') ? 'true' : null}">Server/Data Center</option>
-							<option value="cloud" selected="${serverInstances.hosting.equals('cloud') ? 'true' : null}">Cloud</option>
+							<option value="server" selected="${serverInstances.hosting.getName().equals(descriptor.serverHostingType) ? 'true' : null}">Server/Data Center</option>
+							<option value="cloud" selected="${serverInstances.hosting.getName().equals(descriptor.cloudHostingType) ? 'true' : null}">Cloud</option>
 						</select>
 					</f:entry>
 
@@ -127,4 +46,75 @@
 			</f:repeatable>
 		</f:entry>
 	</f:section>
+
+	<script>
+		(function(Q){
+			var checkIfInstancesAreInjected = function(){
+				return Q('div[name="serverInstances"]').length > 0;
+			};
+
+			var changeUsernameLabel = function (instanceInput, label) {
+				Q(instanceInput).find('input[name="_.username"]').first().parent().siblings('.setting-name').text(label);
+			};
+
+			var changePasswordLabel = function (instanceInput, label){
+				Q(instanceInput).find('input[name="_.password"]').first().parent().siblings('.setting-name').text(label);
+			};
+
+			var hideServerAddressInput = function (instanceInput) {
+				var hostingType = Q(instanceInput).first().find('select[name="hosting"]')[0].value;
+
+				if(hostingType === '${descriptor.cloudHostingType}'){
+					Q(instanceInput).first().find('input[name="_.serverAddress"]').parent().parent().attr("style", "display:none");
+					changeUsernameLabel(instanceInput, 'Client Id');
+					changePasswordLabel(instanceInput, 'Client Secret');
+				} else if(hostingType === '${descriptor.serverHostingType}'){
+					Q(instanceInput).first().find('input[name="_.serverAddress"]').parent().parent().removeAttr("style");
+					changeUsernameLabel(instanceInput, 'Username');
+					changePasswordLabel(instanceInput, 'Password');
+				}
+			};
+
+			var hideServerAddressInputs = function(){
+				Q('div[name="serverInstances"]').each(function(){
+					hideServerAddressInput(this);
+				});
+			};
+
+			var observeNewInstance = new MutationObserver(function (mutations) {
+				var lastInstanceAdded = Q('select[name="hosting"]').last();
+
+				Q(lastInstanceAdded).on('change',function(e){
+					var serverInstance = Q(e.currentTarget).first().parents('div[name="serverInstances"]').first();
+					hideServerAddressInput(serverInstance);
+				});
+
+				observeNewInstance.disconnect();
+			});
+
+			var observeHostings = function() {
+			    hideServerAddressInputs();
+
+			    Q('select[name="hosting"]').on('change',function(e){
+			        var serverInstance = Q(e.currentTarget).first().parents('div[name="serverInstances"]').first();
+			        hideServerAddressInput(serverInstance);
+			    });
+
+			    var addInstanceButton = Q('div[name="serverInstances"]').first().parent().find('button').last();
+
+			    Q(addInstanceButton).click(function () {
+			        observeNewInstance.observe(document.querySelector('div[name="serverInstances"]').parentNode, {
+			            childList: true,
+						subtree: true
+			        });
+			    });
+
+			    observeHostings.disconnect();
+			};
+
+			Q(window).load(function() {
+				observeHostings();
+			});
+		})(jQuery);
+	</script>
 </j:jelly>

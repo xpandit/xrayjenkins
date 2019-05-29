@@ -7,6 +7,7 @@
  */
 package com.xpandit.plugins.xrayjenkins.Utils;
 
+import com.xpandit.plugins.xrayjenkins.model.HostingType;
 import com.xpandit.plugins.xrayjenkins.model.ServerConfiguration;
 import com.xpandit.plugins.xrayjenkins.model.XrayInstance;
 import java.util.List;
@@ -23,6 +24,13 @@ public class ConfigurationUtils {
      * @return <code>XrayInstance</code> if found, <code>null</code> otherwise
      */
     public static XrayInstance getConfiguration(String serverConfigurationId){
+        int idIndex = 1;
+        if(serverConfigurationId.startsWith(HostingType.CLOUD.getName())){
+            serverConfigurationId = serverConfigurationId.split(HostingType.CLOUD.getName() + "-")[idIndex];
+        } else {
+            serverConfigurationId = serverConfigurationId.split(HostingType.SERVER.getName() + "-")[idIndex];
+        }
+
         XrayInstance config =  null;
         List<XrayInstance> serverInstances =  ServerConfiguration.get().getServerInstances();
         for(XrayInstance sc : serverInstances){
