@@ -49,10 +49,6 @@
 
 	<script>
 		(function(Q){
-			var checkIfInstancesAreInjected = function(){
-				return Q('div[name="serverInstances"]').length > 0;
-			};
-
 			var changeUsernameLabel = function (instanceInput, label) {
 				Q(instanceInput).find('input[name="_.username"]').first().parent().siblings('.setting-name').text(label);
 			};
@@ -108,8 +104,6 @@
 						subtree: true
 			        });
 			    });
-
-			    observeHostings.disconnect();
 			};
 
 			Q(window).load(function() {

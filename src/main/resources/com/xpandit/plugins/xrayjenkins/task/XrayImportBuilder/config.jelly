@@ -147,8 +147,10 @@
 
 	          if(instanceId.startsWith('${descriptor.getServerHostingType()}')){
 	              Q(endpointOption).attr("disabled", "true");
+				  setDocLink_${descriptor.defaultBuildID()}('${descriptor.getServerDocUrl()}');
 			  } else if (instanceId.startsWith('${descriptor.getCloudHostingType()}')){
 				  Q(endpointOption).removeAttr("disabled");
+				  setDocLink_${descriptor.defaultBuildID()}('${descriptor.getCloudDocUrl()}');
 			  }
 	      }
 
