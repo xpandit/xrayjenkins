@@ -25,10 +25,10 @@ public class ConfigurationUtils {
      */
     public static XrayInstance getConfiguration(String serverConfigurationId){
         int idIndex = 1;
-        if(serverConfigurationId.startsWith(HostingType.CLOUD.value)){
-            serverConfigurationId = serverConfigurationId.split(HostingType.CLOUD.value + "-")[idIndex];
+        if(serverConfigurationId.startsWith(HostingType.CLOUD.getName())){
+            serverConfigurationId = serverConfigurationId.split(HostingType.CLOUD.getName() + "-")[idIndex];
         } else {
-            serverConfigurationId = serverConfigurationId.split(HostingType.SERVER.value + "-")[idIndex];
+            serverConfigurationId = serverConfigurationId.split(HostingType.SERVER.getName() + "-")[idIndex];
         }
 
         XrayInstance config =  null;

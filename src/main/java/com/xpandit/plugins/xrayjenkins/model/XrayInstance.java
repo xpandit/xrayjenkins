@@ -30,15 +30,10 @@ public class XrayInstance {
     	this.alias = serverAddress;
         this.serverAddress = serverAddress;
 
-        switch (hosting){
-			case "cloud":
-				this.hosting = HostingType.CLOUD;
-				break;
-			case "server":
-				this.hosting = HostingType.SERVER;
-				break;
-			default:
-				throw new XrayJenkinsGenericException("Hosting type not recognized");
+		this.hosting = HostingType.findByName(hosting);
+
+		if (this.hosting == null) {
+			throw new XrayJenkinsGenericException("Hosting type not recognized");
 		}
 
         this.username = username;
