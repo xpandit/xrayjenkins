@@ -136,7 +136,7 @@
 	  }
 
 	  setDocLink_${descriptor.defaultBuildID()} = function(link){
-	      Q('#xray-doc-link_${descriptor.defaultBuildID()}').first().attr('href', link);
+	      Q('#xray-doc-link_${descriptor.defaultBuildID()}').attr('href', link);
 	  }
 
 	  filterFormats_${descriptor.defaultBuildID()} = function(){
