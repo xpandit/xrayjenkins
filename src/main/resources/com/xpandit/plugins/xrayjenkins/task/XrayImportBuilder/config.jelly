@@ -54,8 +54,6 @@
 
        var mainTemplate = '';
        var formats;
-       var cloudDocUrl = 'https://confluence.xpand-it.com/display/XRAYCLOUD/Import+Execution+Results+-+REST';
-       var serverDocUrl = 'https://confluence.xpand-it.com/display/XRAY/Import+Execution+Results+-+REST';
 
        if('${instance.defaultFormats()}' != ''){
 		 formats = [${instance.defaultFormats()}];
