@@ -7,6 +7,7 @@
  */
 package com.xpandit.plugins.xrayjenkins.Utils;
 
+import com.xpandit.plugins.xrayjenkins.model.HostingType;
 import com.xpandit.plugins.xrayjenkins.model.ServerConfiguration;
 import com.xpandit.plugins.xrayjenkins.model.XrayInstance;
 import hudson.util.ListBoxModel;
@@ -26,7 +27,11 @@ public class FormUtils {
             return items;
         }
         for(XrayInstance sc : serverInstances){
-            items.add(sc.getAlias(),sc.getHosting().getName() + "-" + sc.getConfigID());
+            if (sc.getHosting() == null){
+                items.add(sc.getAlias(), HostingType.getServerHostingType() + "-" + sc.getConfigID());
+            } else {
+                items.add(sc.getAlias(),sc.getHosting().getName() + "-" + sc.getConfigID());
+            }
         }
         return items;
     }
