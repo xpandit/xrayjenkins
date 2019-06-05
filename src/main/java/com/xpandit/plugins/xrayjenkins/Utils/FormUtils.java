@@ -27,11 +27,7 @@ public class FormUtils {
             return items;
         }
         for(XrayInstance sc : serverInstances){
-            if (sc.getHosting() == null){
-                items.add(sc.getAlias(), HostingType.getServerHostingType() + "-" + sc.getConfigID());
-            } else {
-                items.add(sc.getAlias(),sc.getHosting().getName() + "-" + sc.getConfigID());
-            }
+            items.add(sc.getAlias(),sc.getHosting().getName() + "-" + sc.getConfigID());
         }
         return items;
     }

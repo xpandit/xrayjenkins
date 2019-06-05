@@ -31,6 +31,7 @@ public class ServerConfiguration extends GlobalConfiguration {
 	
 	public ServerConfiguration(){
 		load();
+        checkForCompatibility();
 	}
 	
 	@Override
@@ -93,6 +94,14 @@ public class ServerConfiguration extends GlobalConfiguration {
             return FormValidation.ok("Connection: Success!");
         } else {
             return FormValidation.error("Could not establish connection.");
+        }
+    }
+
+    private void checkForCompatibility(){
+        for(XrayInstance instance : serverInstances){
+            if(instance.getHosting() == null){
+                instance.setHosting(HostingType.SERVER);
+            }
         }
     }
 }
