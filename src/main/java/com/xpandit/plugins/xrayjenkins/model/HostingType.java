@@ -20,6 +20,11 @@ public enum HostingType {
         return HostingType.SERVER.getName();
     }
 
+    /**
+     * Method that finds a hosting type by it's name/value
+     * @param name of the Hosting type ex:"server"
+     * @return HostingType ex: SERVER or null if does no exist
+     */
     public static HostingType findByName(String name) {
         for (HostingType type : HostingType.values()) {
             if (StringUtils.equals(type.getName(), name)) {
