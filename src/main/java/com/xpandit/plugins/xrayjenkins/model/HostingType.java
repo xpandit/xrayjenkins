@@ -12,11 +12,11 @@ public enum HostingType {
         return name;
     }
 
-    public static String getCloudHostingType(){
+    public static String getCloudHostingTypeName(){
         return HostingType.CLOUD.getName();
     }
 
-    public static String getServerHostingType(){
+    public static String getServerHostingTypeName(){
         return HostingType.SERVER.getName();
     }
 
@@ -32,5 +32,9 @@ public enum HostingType {
             }
         }
         return null;
+    }
+
+    public static HostingType getDefaultType() {
+        return HostingType.SERVER;
     }
 }

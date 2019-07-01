@@ -139,9 +139,9 @@
 	      for(var index in cloudExclusiveEndpoints){
 	          var endpointOption = Q('#selectFormat_${descriptor.defaultBuildID()} option[value="'+ cloudExclusiveEndpoints[index] +'"]');
 
-	          if(instanceId.startsWith('${descriptor.getServerHostingType()}')){
+	          if(instanceId.startsWith('${descriptor.getServerHostingTypeName()}')){
 	              Q(endpointOption).attr("disabled", "true");
-			  } else if (instanceId.startsWith('${descriptor.getCloudHostingType()}')){
+			  } else if (instanceId.startsWith('${descriptor.getCloudHostingTypeName()}')){
 				  Q(endpointOption).removeAttr("disabled");
 			  }
 	      }

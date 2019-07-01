@@ -27,9 +27,9 @@ public class ConfigurationUtils {
      */
     public static XrayInstance getConfiguration(String serverConfigurationId){
         if(serverConfigurationId.startsWith(HostingType.CLOUD.getName())){
-            serverConfigurationId = StringUtils.removeStart(serverConfigurationId, HostingType.CLOUD.getName() + "-");
+            serverConfigurationId = StringUtils.removeStart(serverConfigurationId, HostingType.getCloudHostingTypeName() + "-");
         } else {
-            serverConfigurationId = StringUtils.removeStart(serverConfigurationId, HostingType.SERVER.getName() + "-");
+            serverConfigurationId = StringUtils.removeStart(serverConfigurationId, HostingType.getServerHostingTypeName() + "-");
         }
 
         XrayInstance config =  null;
