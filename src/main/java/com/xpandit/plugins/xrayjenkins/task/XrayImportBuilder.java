@@ -483,7 +483,13 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 				result = uploadResults(workspace, listener,client, fp, env, key);
 				if(key == null && "true".equals(importToSameExecution)){
 					Map<String, Map> map = mapper.readValue(result.getMessage(), Map.class);
-					key = (String) map.get("testExecIssue").get("key");
+					Map<String, String> testExecIssue =  map.get("testExecIssue");
+
+					if(testExecIssue == null){
+						throw new XrayJenkinsGenericException("No Test Execution Key returned");
+					} else {
+						key = (String) testExecIssue.get("key");
+					}
 				}
 			}
 		} else{
