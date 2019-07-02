@@ -157,7 +157,7 @@
 			}
 	  }
 
-	  var observeFormats = new MutationObserver(function(mutations) {
+	  var observeFormats = new MutationObserver(function() {
 		  firstRenderFilterFormats_${descriptor.defaultBuildID()}();
 	  });
 
@@ -204,6 +204,8 @@
 				else
 				    addXrayFields_${descriptor.defaultBuildID()}(formatSuffix); //making sure that the select gets the last configuration value
 
+				// When the document is ready, the formats are still being loaded and not available for change.
+				// We need to use a mutation observer to wait that for formats in the Dom.
 				observeFormats.observe(document.getElementById('main-panel'), {
 					childList: true,
 					subtree: true

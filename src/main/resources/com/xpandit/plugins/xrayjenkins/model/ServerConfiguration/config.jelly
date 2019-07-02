@@ -99,6 +99,9 @@
 			    var addInstanceButton = Q('div[name="serverInstances"]').first().parent().find('button').last();
 
 			    Q(addInstanceButton).click(function () {
+			        // When adding this event, it will stay on top of the click events stack for this button.
+					// Once clicked, this event will trigger first and the new server instance will not be there.
+					// So there is a need to use a mutation observer in order to wait that a new server instance it's created and added to the Dom.
 			        observeNewInstance.observe(document.querySelector('div[name="serverInstances"]').parentNode, {
 			            childList: true,
 						subtree: true
