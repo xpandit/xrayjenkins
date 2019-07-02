@@ -140,6 +140,11 @@
 	  filterFormats_${descriptor.defaultBuildID()} = function(){
 	      var instanceId = Q('#selectInstance_${descriptor.defaultBuildID()}')[0].value;
 	      var cloudExclusiveEndpoints = JSON.parse('${descriptor.getExclusiveCloudEndpoints()}');
+
+	      if(instanceId.startsWith('${descriptor.getCloudHostingTypeName()}')) {
+			  setDocLink_${descriptor.defaultBuildID()}('${descriptor.getCloudDocUrl()}');
+		  }
+
 	      for(var index in cloudExclusiveEndpoints){
 	          var endpointOption = Q('#selectFormat_${descriptor.defaultBuildID()} option[value="'+ cloudExclusiveEndpoints[index] +'"]');
 
@@ -147,7 +152,6 @@
 	              Q(endpointOption).attr("disabled", "true");
 			  } else if (instanceId.startsWith('${descriptor.getCloudHostingTypeName()}')){
 				  Q(endpointOption).removeAttr("disabled");
-				  setDocLink_${descriptor.defaultBuildID()}('${descriptor.getCloudDocUrl()}');
 			  }
 	      }
 
