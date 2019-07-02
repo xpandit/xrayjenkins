@@ -28,11 +28,12 @@ public class FormUtils {
             return items;
         }
         for(XrayInstance sc : serverInstances){
-            try {
-                HostingType serverHostingType = sc.getHosting();
-                items.add(sc.getAlias(),serverHostingType.getTypeName() + "-" + sc.getConfigID());
-            } catch (NullPointerException e) {
-                throw new XrayJenkinsGenericException("Null hosting type found.");
+            HostingType instanceHostingType = sc.getHosting();
+
+            if(instanceHostingType == null) {
+                throw new XrayJenkinsGenericException("Null hosting type found");
+            } else {
+                items.add(sc.getAlias(),instanceHostingType.getTypeName() + "-" + sc.getConfigID());
             }
         }
         return items;
