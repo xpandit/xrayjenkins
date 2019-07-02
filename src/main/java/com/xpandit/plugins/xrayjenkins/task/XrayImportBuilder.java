@@ -101,6 +101,8 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 	private static final String REVISION_FIELD = "revision";
 	private static final String IMPORT_INFO = "importInfo";
 	private static final String FORMAT_SUFFIX = "formatSuffix";
+	private static final String CLOUD_DOC_URL = "https://confluence.xpand-it.com/display/XRAYCLOUD/Import+Execution+Results+-+REST";
+	private static final String SERVER_DOC_URL = "https://confluence.xpand-it.com/display/XRAY/Import+Execution+Results+-+REST";
 
     private String formatSuffix; //value of format select
     private String serverInstance;//Configuration ID of the JIRA instance
@@ -753,6 +755,14 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 			}
 
 			return jsonExclusiveCloudEndpoints;
+		}
+
+		public String getCloudDocUrl(){
+        	return CLOUD_DOC_URL;
+		}
+
+		public String getServerDocUrl(){
+        	return SERVER_DOC_URL;
 		}
     }
 
