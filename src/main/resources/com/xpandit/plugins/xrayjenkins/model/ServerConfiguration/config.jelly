@@ -16,8 +16,8 @@
 
 					<f:entry title="Hosting" field="hosting">
 						<select name="hosting">
-							<option value="server" selected="${serverInstances.hosting.getName().equals(descriptor.serverHostingType) ? 'true' : null}">Server/Data Center</option>
-							<option value="cloud" selected="${serverInstances.hosting.getName().equals(descriptor.cloudHostingType) ? 'true' : null}">Cloud</option>
+							<option value="${descriptor.serverHostingTypeName}" selected="${serverInstances.hosting.getName().equals(descriptor.serverHostingTypeName) ? 'true' : null}">Server/Data Center</option>
+							<option value="${descriptor.cloudHostingTypeName}" selected="${serverInstances.hosting.getName().equals(descriptor.cloudHostingTypeName) ? 'true' : null}">Cloud</option>
 						</select>
 					</f:entry>
 
@@ -60,11 +60,11 @@
 			var hideServerAddressInput = function (instanceInput) {
 				var hostingType = Q(instanceInput).first().find('select[name="hosting"]')[0].value;
 
-				if(hostingType === '${descriptor.cloudHostingType}'){
+				if(hostingType === '${descriptor.cloudHostingTypeName}'){
 					Q(instanceInput).first().find('input[name="_.serverAddress"]').parent().parent().attr("style", "display:none");
 					changeUsernameLabel(instanceInput, 'Client Id');
 					changePasswordLabel(instanceInput, 'Client Secret');
-				} else if(hostingType === '${descriptor.serverHostingType}'){
+				} else if(hostingType === '${descriptor.serverHostingTypeName}'){
 					Q(instanceInput).first().find('input[name="_.serverAddress"]').parent().parent().removeAttr("style");
 					changeUsernameLabel(instanceInput, 'Username');
 					changePasswordLabel(instanceInput, 'Password');

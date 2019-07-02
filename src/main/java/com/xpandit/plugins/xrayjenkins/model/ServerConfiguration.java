@@ -31,6 +31,7 @@ public class ServerConfiguration extends GlobalConfiguration {
 	
 	public ServerConfiguration(){
 		load();
+        checkForCompatibility();
 	}
 	
 	@Override
@@ -50,12 +51,12 @@ public class ServerConfiguration extends GlobalConfiguration {
 		return this.serverInstances;
 	}
 
-	public String getCloudHostingType(){
-	    return HostingType.getCloudHostingType();
+	public String getCloudHostingTypeName(){
+	    return HostingType.getCloudHostingTypeName();
     }
 
-    public String getServerHostingType(){
-        return HostingType.getServerHostingType();
+    public String getServerHostingTypeName(){
+        return HostingType.getServerHostingTypeName();
     }
 	
 	public static ServerConfiguration get() {
@@ -93,6 +94,14 @@ public class ServerConfiguration extends GlobalConfiguration {
             return FormValidation.ok("Connection: Success!");
         } else {
             return FormValidation.error("Could not establish connection.");
+        }
+    }
+
+    private void checkForCompatibility(){
+        for(XrayInstance instance : serverInstances){
+            if(instance.getHosting() == null){
+                instance.setHosting(HostingType.getDefaultType());
+            }
         }
     }
 }

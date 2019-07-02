@@ -12,14 +12,19 @@ public enum HostingType {
         return name;
     }
 
-    public static String getCloudHostingType(){
+    public static String getCloudHostingTypeName(){
         return HostingType.CLOUD.getName();
     }
 
-    public static String getServerHostingType(){
+    public static String getServerHostingTypeName(){
         return HostingType.SERVER.getName();
     }
 
+    /**
+     * Method that finds a hosting type by it's name/value
+     * @param name of the Hosting type ex:"server"
+     * @return HostingType ex: SERVER or null if does no exist
+     */
     public static HostingType findByName(String name) {
         for (HostingType type : HostingType.values()) {
             if (StringUtils.equals(type.getName(), name)) {
@@ -27,5 +32,9 @@ public enum HostingType {
             }
         }
         return null;
+    }
+
+    public static HostingType getDefaultType() {
+        return HostingType.SERVER;
     }
 }

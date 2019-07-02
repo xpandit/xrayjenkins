@@ -731,12 +731,12 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 			return ConfigurationUtils.anyAvailableConfiguration() ? FormValidation.ok() : FormValidation.error("No configured Server Instances found");
 		}
 
-		public String getCloudHostingType(){
-        	return HostingType.getCloudHostingType();
+		public String getCloudHostingTypeName(){
+        	return HostingType.getCloudHostingTypeName();
 		}
 
-		public String getServerHostingType(){
-			return HostingType.getServerHostingType();
+		public String getServerHostingTypeName(){
+			return HostingType.getServerHostingTypeName();
 		}
 
 		public JSONArray getExclusiveCloudEndpoints() {
