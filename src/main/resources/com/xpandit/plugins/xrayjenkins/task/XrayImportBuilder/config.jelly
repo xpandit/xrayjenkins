@@ -135,7 +135,7 @@
 
 	  setDocLink_${descriptor.defaultBuildID()} = function(link){
 	      Q('#xray-doc-link_${descriptor.defaultBuildID()}').attr('href', link);
-	  }
+	  };
 
 	  changeDocLink_${descriptor.defaultBuildID()} = function(){
 	      var instanceId = Q('#selectInstance_${descriptor.defaultBuildID()}')[0].value;
@@ -144,8 +144,10 @@
 	          setDocLink_${descriptor.defaultBuildID()}('${descriptor.getCloudDocUrl()}');
 	      } else if(instanceId.startsWith('${descriptor.getServerHostingTypeName()}')) {
 			  setDocLink_${descriptor.defaultBuildID()}('${descriptor.getServerDocUrl()}');
-		  }
-	  }
+		  } else {
+			console.error("Instance ID not recognized: " + instanceId);
+		}
+	  };
 
 	  filterFormats_${descriptor.defaultBuildID()} = function(){
 	      var instanceId = Q('#selectInstance_${descriptor.defaultBuildID()}')[0].value;
@@ -168,7 +170,6 @@
 	  firstRenderFilterFormats_${descriptor.defaultBuildID()} = function(){
 			if (Q('#selectFormat_${descriptor.defaultBuildID()} option[value="/xunit"]').length){
 				filterFormats_${descriptor.defaultBuildID()}();
-				changeDocLink_${descriptor.defaultBuildID()}();
 				observeFormats.disconnect();
 			}
 	  }
@@ -210,7 +211,6 @@
 				Q('#selectInstance_${descriptor.defaultBuildID()}').on('change',function(e){
 					filterFormats_${descriptor.defaultBuildID()}();
 					changeDocLink_${descriptor.defaultBuildID()}();
-
 				});
 
 				//get last chosen format
@@ -221,6 +221,9 @@
 					addXrayFields_${descriptor.defaultBuildID()}();
 				else
 				    addXrayFields_${descriptor.defaultBuildID()}(formatSuffix); //making sure that the select gets the last configuration value
+
+
+				changeDocLink_${descriptor.defaultBuildID()}();
 
 				// When the document is ready, the formats are still being loaded and not available for change.
 				// We need to use a mutation observer to wait that for formats in the Dom.
