@@ -56,7 +56,7 @@
 		<dependency>
 			<groupId>com.xpandit.xray</groupId>
 			<artifactId>client-core</artifactId>			
-    		<version>1.4.0</version>
+    		<version>2.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jenkins-ci.main</groupId>
@@ -115,15 +115,18 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
 			<version>1.9.5</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jenkins-ci.main</groupId>
 			<artifactId>jenkins-test-harness</artifactId>
+			<scope>test</scope>
 		</dependency>
 
 	</dependencies>
