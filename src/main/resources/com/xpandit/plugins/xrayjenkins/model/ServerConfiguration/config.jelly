@@ -16,8 +16,8 @@
 
 					<f:entry title="Hosting" field="hosting">
 						<select name="hosting">
-							<option value="${descriptor.serverHostingTypeName}" selected="${serverInstances.hosting.getName().equals(descriptor.serverHostingTypeName) ? 'true' : null}">Server/Data Center</option>
-							<option value="${descriptor.cloudHostingTypeName}" selected="${serverInstances.hosting.getName().equals(descriptor.cloudHostingTypeName) ? 'true' : null}">Cloud</option>
+							<option value="${descriptor.serverHostingTypeName}" selected="${serverInstances.hosting.getTypeName().equals(descriptor.serverHostingTypeName) ? 'true' : null}">Server/Data Center</option>
+							<option value="${descriptor.cloudHostingTypeName}" selected="${serverInstances.hosting.getTypeName().equals(descriptor.cloudHostingTypeName) ? 'true' : null}">Cloud</option>
 						</select>
 					</f:entry>
 

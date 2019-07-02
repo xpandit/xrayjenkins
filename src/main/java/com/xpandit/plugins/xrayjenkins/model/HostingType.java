@@ -4,20 +4,20 @@ import org.apache.commons.lang.StringUtils;
 
 public enum HostingType {
     SERVER("server"), CLOUD("cloud");
-    public final String name;
+    private final String typeName;
 
-    HostingType(String name) { this.name = name; }
+    HostingType(String typeName) { this.typeName = typeName; }
 
-    public String getName() {
-        return name;
+    public String getTypeName() {
+        return typeName;
     }
 
     public static String getCloudHostingTypeName(){
-        return HostingType.CLOUD.getName();
+        return HostingType.CLOUD.getTypeName();
     }
 
     public static String getServerHostingTypeName(){
-        return HostingType.SERVER.getName();
+        return HostingType.SERVER.getTypeName();
     }
 
     /**
@@ -27,7 +27,7 @@ public enum HostingType {
      */
     public static HostingType findByName(String name) {
         for (HostingType type : HostingType.values()) {
-            if (StringUtils.equals(type.getName(), name)) {
+            if (StringUtils.equals(type.getTypeName(), name)) {
                 return type;
             }
         }

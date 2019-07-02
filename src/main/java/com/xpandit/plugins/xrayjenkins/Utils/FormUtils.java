@@ -7,6 +7,7 @@
  */
 package com.xpandit.plugins.xrayjenkins.Utils;
 
+import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
 import com.xpandit.plugins.xrayjenkins.model.HostingType;
 import com.xpandit.plugins.xrayjenkins.model.ServerConfiguration;
 import com.xpandit.plugins.xrayjenkins.model.XrayInstance;
@@ -27,7 +28,12 @@ public class FormUtils {
             return items;
         }
         for(XrayInstance sc : serverInstances){
-            items.add(sc.getAlias(),sc.getHosting().getName() + "-" + sc.getConfigID());
+            try {
+                HostingType serverHostingType = sc.getHosting();
+                items.add(sc.getAlias(),serverHostingType.getTypeName() + "-" + sc.getConfigID());
+            } catch (NullPointerException e) {
+                throw new XrayJenkinsGenericException("Null hosting type found.");
+            }
         }
         return items;
     }

@@ -7,6 +7,7 @@
  */
 package com.xpandit.plugins.xrayjenkins.Utils;
 
+import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
 import com.xpandit.plugins.xrayjenkins.model.HostingType;
 import com.xpandit.plugins.xrayjenkins.model.ServerConfiguration;
 import com.xpandit.plugins.xrayjenkins.model.XrayInstance;
@@ -26,10 +27,12 @@ public class ConfigurationUtils {
      * @return <code>XrayInstance</code> if found, <code>null</code> otherwise
      */
     public static XrayInstance getConfiguration(String serverConfigurationId){
-        if(serverConfigurationId.startsWith(HostingType.CLOUD.getName())){
+        if(serverConfigurationId.startsWith(HostingType.CLOUD.getTypeName())){
             serverConfigurationId = StringUtils.removeStart(serverConfigurationId, HostingType.getCloudHostingTypeName() + "-");
-        } else {
+        } else if(serverConfigurationId.startsWith(HostingType.SERVER.getTypeName())) {
             serverConfigurationId = StringUtils.removeStart(serverConfigurationId, HostingType.getServerHostingTypeName() + "-");
+        } else {
+            throw new XrayJenkinsGenericException("Hosting type not recognized");
         }
 
         XrayInstance config =  null;
