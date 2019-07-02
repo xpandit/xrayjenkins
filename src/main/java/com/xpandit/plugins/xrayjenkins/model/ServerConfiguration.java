@@ -79,7 +79,9 @@ public class ServerConfiguration extends GlobalConfiguration {
 
         boolean isConnectionOk;
 
-        if(hosting.equals(HostingType.CLOUD.getTypeName())) {
+        if(StringUtils.isBlank(hosting)) {
+            return FormValidation.error("Hosting type can't be blank.");
+        } else if(hosting.equals(HostingType.CLOUD.getTypeName())) {
             isConnectionOk = (new XrayCloudClientImpl(username, password)).testConnection();
         } else if(hosting.equals(HostingType.SERVER.getTypeName())) {
             if(StringUtils.isBlank(serverAddress)) {
