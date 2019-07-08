@@ -484,13 +484,22 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 			for(FilePath fp : FileUtils.getFiles(workspace, resolved, listener)){
 				result = uploadResults(workspace, listener,client, fp, env, key);
 				if(key == null && "true".equals(importToSameExecution)){
-					Map<String, Map> map = mapper.readValue(result.getMessage(), Map.class);
-					Map<String, String> testExecIssue =  map.get("testExecIssue");
+					Map<String, String> testExecIssue;
+					HostingType instanceType = importInstance.getHosting();
 
-					if(testExecIssue == null){
-						throw new XrayJenkinsGenericException("No Test Execution Key returned");
-					} else {
+					if (instanceType == HostingType.SERVER){
+						Map<String, Map> map = mapper.readValue(result.getMessage(), Map.class);
+						testExecIssue =  map.get("testExecIssue");
 						key = (String) testExecIssue.get("key");
+					} else if (instanceType == HostingType.CLOUD) {
+						Map<String, String> map = mapper.readValue(result.getMessage(), Map.class);
+						key =  map.get("key");
+					} else {
+						throw new XrayJenkinsGenericException("Instance type not found.");
+					}
+
+					if(key == null){
+						throw new XrayJenkinsGenericException("No Test Execution Key returned");
 					}
 				}
 			}
