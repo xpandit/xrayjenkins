@@ -29,6 +29,7 @@ import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.apache.commons.collections.MapUtils;
 import org.json.simple.JSONArray;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -484,17 +485,23 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 			for(FilePath fp : FileUtils.getFiles(workspace, resolved, listener)){
 				result = uploadResults(workspace, listener,client, fp, env, key);
 				if(key == null && "true".equals(importToSameExecution)){
-					Map<String, String> testExecIssue;
 					HostingType instanceType = importInstance.getHosting();
 
-					if (instanceType == HostingType.SERVER){
-						Map<String, Map> map = mapper.readValue(result.getMessage(), Map.class);
-						testExecIssue =  map.get("testExecIssue");
-						key = (String) testExecIssue.get("key");
+					if (instanceType == HostingType.SERVER) {
+						
+						Map<String, Object> resultMap = mapper.readValue(result.getMessage(), Map.class);
+						if (MapUtils.isNotEmpty(resultMap)) {
+							Map<String, String> testExecIssue = (Map<String, String>) resultMap.get("testExecIssue");
+							if (MapUtils.isNotEmpty(testExecIssue)) {
+								key = testExecIssue.get("key");
+							}
+						}
 					} else if (instanceType == HostingType.CLOUD) {
+						
 						Map<String, String> map = mapper.readValue(result.getMessage(), Map.class);
 						key =  map.get("key");
 					} else {
+						
 						throw new XrayJenkinsGenericException("Instance type not found.");
 					}
 
