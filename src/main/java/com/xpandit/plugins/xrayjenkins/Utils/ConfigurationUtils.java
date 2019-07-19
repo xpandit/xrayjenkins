@@ -31,8 +31,6 @@ public class ConfigurationUtils {
             serverConfigurationId = StringUtils.removeStart(serverConfigurationId, HostingType.getCloudHostingTypeName() + "-");
         } else if(serverConfigurationId.startsWith(HostingType.SERVER.getTypeName())) {
             serverConfigurationId = StringUtils.removeStart(serverConfigurationId, HostingType.getServerHostingTypeName() + "-");
-        } else {
-            throw new XrayJenkinsGenericException("Hosting type not recognized");
         }
 
         XrayInstance config =  null;

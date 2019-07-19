@@ -142,29 +142,38 @@
 
 	      if(instanceId.startsWith('${descriptor.getCloudHostingTypeName()}')) {
 	          setDocLink_${descriptor.defaultBuildID()}('${descriptor.getCloudDocUrl()}');
-	      } else if(instanceId.startsWith('${descriptor.getServerHostingTypeName()}')) {
-			  setDocLink_${descriptor.defaultBuildID()}('${descriptor.getServerDocUrl()}');
-		  } else {
-			console.error("Instance ID not recognized: " + instanceId);
-		}
+	      } else{
+	         setDocLink_${descriptor.defaultBuildID()}('${descriptor.getServerDocUrl()}');
+	      }
+
 	  };
 
 	  filterFormats_${descriptor.defaultBuildID()} = function(){
 	      var instanceId = Q('#selectInstance_${descriptor.defaultBuildID()}')[0].value;
 	      var cloudExclusiveEndpoints = JSON.parse('${descriptor.getExclusiveCloudEndpoints()}');
+          var selectedInstanceIsServer = instanceId.startsWith('${descriptor.getServerHostingTypeName()}');
 
 	      for(var index in cloudExclusiveEndpoints){
+
 	          var endpointOption = Q('#selectFormat_${descriptor.defaultBuildID()} option[value="'+ cloudExclusiveEndpoints[index] +'"]');
 
-	          if(instanceId.startsWith('${descriptor.getServerHostingTypeName()}')){
+	          if(selectedInstanceIsServer){
 	              Q(endpointOption).attr("disabled", "true");
 			  } else if (instanceId.startsWith('${descriptor.getCloudHostingTypeName()}')){
 				  Q(endpointOption).removeAttr("disabled");
 			  }
 	      }
 
-	      Q('#selectFormat_${descriptor.defaultBuildID()}').first().val("");
-	      addXrayFields_${descriptor.defaultBuildID()}("");
+	       var selectedFormat = Q('#selectFormat_${descriptor.defaultBuildID()} option:selected').val();
+
+           if(selectedInstanceIsServer){
+                 if(cloudExclusiveEndpoints.hasOwnProperty(selectedFormat)){
+                        //if server was selected and current selected format is a cloudExclusive then reset to default
+                          Q('#selectFormat_${descriptor.defaultBuildID()}').first().val("");
+                          addXrayFields_${descriptor.defaultBuildID()}();
+                }
+           }
+
 	  }
 
 	  firstRenderFilterFormats_${descriptor.defaultBuildID()} = function(){
