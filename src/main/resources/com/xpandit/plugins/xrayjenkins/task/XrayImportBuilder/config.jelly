@@ -22,7 +22,6 @@
 	  </f:entry>
   </j:file>
 
-
   <j:file xmlns:j="jelly:core" var="addTextarea" omitXmlDeclaration='true' escapeText='false' trim='true' outputMode='XML'>
   	 	<f:textarea field='{{key}}' value="{{configuration}}" style="width:100%"/>
   </j:file>  
@@ -47,8 +46,7 @@
   		</f:entry> 
   </j:file>
   <!--End of templates spec -->
-  
-  
+
   <script id="_${descriptor.defaultBuildID()}">
     (function(Q){
 
@@ -168,24 +166,13 @@
 
            if(selectedInstanceIsServer){
                  if(cloudExclusiveEndpoints.hasOwnProperty(selectedFormat)){
-                        //if server was selected and current selected format is a cloudExclusive then reset to default
-                          Q('#selectFormat_${descriptor.defaultBuildID()}').first().val("");
-                          addXrayFields_${descriptor.defaultBuildID()}();
+                    //if server was selected and current selected format is a cloudExclusive then reset to default
+                    Q('#selectFormat_${descriptor.defaultBuildID()}').first().val("");
+                    addXrayFields_${descriptor.defaultBuildID()}("");
                 }
            }
 
 	  }
-
-	  firstRenderFilterFormats_${descriptor.defaultBuildID()} = function(){
-			if (Q('#selectFormat_${descriptor.defaultBuildID()} option[value="/xunit"]').length){
-				filterFormats_${descriptor.defaultBuildID()}();
-				observeFormats.disconnect();
-			}
-	  }
-
-	  var observeFormats = new MutationObserver(function() {
-		  firstRenderFilterFormats_${descriptor.defaultBuildID()}();
-	  });
 
 	  Q(document).ready(function() {
 	  		//main template loading. It's syntax conflicts with Jelly so we need to load it assynchronously from an external source
@@ -212,39 +199,39 @@
 
 				Handlebars.registerPartial("addSwitchableField", '${addSwitchableField}');
 
-				//register event-handler
-		    	Q('#selectFormat_${descriptor.defaultBuildID()}').on('change',function(e){
-		    		addXrayFields_${descriptor.defaultBuildID()}(e.currentTarget.options[e.currentTarget.selectedIndex].value);
-		    	});
-
-				Q('#selectInstance_${descriptor.defaultBuildID()}').on('change',function(e){
-					filterFormats_${descriptor.defaultBuildID()}();
-					changeDocLink_${descriptor.defaultBuildID()}();
-				});
-
 				//get last chosen format
 				var formatSuffix = '${instance.getFormatSuffix()}';
 
 				//if no format was chosen, select the first one from the formats/endpoints list
-				if(formatSuffix == '')
+				if(formatSuffix == '') {
 					addXrayFields_${descriptor.defaultBuildID()}();
-				else
+				}else {
 				    addXrayFields_${descriptor.defaultBuildID()}(formatSuffix); //making sure that the select gets the last configuration value
-
+				}
 
 				changeDocLink_${descriptor.defaultBuildID()}();
 
-				// When the document is ready, the formats are still being loaded and not available for change.
-				// We need to use a mutation observer to wait that for formats in the Dom.
-				observeFormats.observe(document.getElementById('main-panel'), {
-					childList: true,
-					subtree: true
-				});
+				//register event-handler
+				Q('#selectInstance_${descriptor.defaultBuildID()}').on('change',function(e){
+				       //whenever we select an instance we need to filter the format options and change the doc link
+                       filterFormats_${descriptor.defaultBuildID()}();
+                       changeDocLink_${descriptor.defaultBuildID()}();
+                });
+
+                Q('#selectFormat_${descriptor.defaultBuildID()}').on('change',function(e){
+                    //whenever we select a format we need to render its specific fields
+                    addXrayFields_${descriptor.defaultBuildID()}(e.currentTarget.options[e.currentTarget.selectedIndex].value);
+                });
+
+                Q('#selectFormat_${descriptor.defaultBuildID()}').on('filled', function(){
+                     //when ListBoxModel gets filled, we need to filter the format options
+                     filterFormats_${descriptor.defaultBuildID()}();
+                });
+
 		     }
 			});
 
 	 });
-
 
    	})(jQuery);
 
@@ -267,7 +254,6 @@
    <f:entry>
 	   <a id="xray-doc-link_${descriptor.defaultBuildID()}" target="_blank">Click here for more details</a>
    </f:entry>
-
 
 </j:jelly>
 
