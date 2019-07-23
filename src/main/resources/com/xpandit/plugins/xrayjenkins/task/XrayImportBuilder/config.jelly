@@ -167,7 +167,7 @@
            if(selectedInstanceIsServer){
                  if(cloudExclusiveEndpoints.hasOwnProperty(selectedFormat)){
                     //if server was selected and current selected format is a cloudExclusive then reset to default
-                    Q('#selectFormat_${descriptor.defaultBuildID()}').first().val("");
+                    Q('#selectFormat_${descriptor.defaultBuildID()}').val("");
                     addXrayFields_${descriptor.defaultBuildID()}("");
                 }
            }
@@ -203,7 +203,7 @@
 				var formatSuffix = '${instance.getFormatSuffix()}';
 
 				//if no format was chosen, select the first one from the formats/endpoints list
-				if(formatSuffix == '') {
+				if(!formatSuffix) {
 					addXrayFields_${descriptor.defaultBuildID()}();
 				}else {
 				    addXrayFields_${descriptor.defaultBuildID()}(formatSuffix); //making sure that the select gets the last configuration value
