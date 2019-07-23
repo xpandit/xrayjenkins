@@ -31,3 +31,4 @@ launchJenkins.bat
 .idea/*
 .project
 xray-for-jira-connector.iml
+.DS_Store

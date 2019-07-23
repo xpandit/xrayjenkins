@@ -1,45 +1,117 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
-  
- 
-<f:section title="${%Xray for JIRA configuration}" name="xrayinstance">
-     <f:entry title="${%JIRA servers}"> 
-	      <f:repeatable var="serverInstances" items="${descriptor.serverInstances}" minimum="1"> 
-	       <table>
-	       
-	       	  <f:entry title="${%Configuration ID}" field="configID" >
-              	<f:textbox value="${serverInstances.configID}" style="display:none" />
-              	${serverInstances.configID}
-              </f:entry>
-	       	  
-	       	  <f:entry title="${%Configuration alias}" field="alias"> 
-              	<f:textbox value="${serverInstances.alias}" />
-              </f:entry>
-            
-			  <f:entry title="${%Server address}" field="serverAddress"> 
-              	<f:textbox value="${serverInstances.serverAddress}" />
-              </f:entry>
-             
-              <f:entry title="${%Username}" field="username"> 
-              	<f:textbox value="${serverInstances.username}" />
-              </f:entry>
-              
-              <f:entry title="${%Password}" field="password">
-    			<f:password value="${serverInstances.password}" />
-  			  </f:entry>
-  			  
-  			  <f:validateButton title="${%Test Connection}" progress="${%Testing...}"
-  				 method="testConnection" with="serverAddress,username,password" />
-  			  
-  			  <f:entry>
-                    <div align="right" class="repeatable-delete show-if-only" style="margin-left: 1em;">
-                        <f:repeatableDeleteButton value="${%Delete instance}"/><br/>
-                    </div>
-              </f:entry>
-               
-           </table> 
-	      </f:repeatable> 
-     </f:entry> 
- </f:section>
+	<f:section title="${%Xray for JIRA configuration}" name="xrayinstance">
+		<f:entry title="${%JIRA instances}">
+			<f:repeatable var="serverInstances" items="${descriptor.serverInstances}" minimum="1">
+				<table>
 
+					<f:entry title="${%Configuration ID}" field="configID" >
+						<f:textbox value="${serverInstances.configID}" style="display:none" />
+						${serverInstances.configID}
+					</f:entry>
+
+					<f:entry title="${%Configuration alias}" field="alias">
+						<f:textbox value="${serverInstances.alias}" />
+					</f:entry>
+
+					<f:entry title="Hosting" field="hosting">
+						<select name="hosting">
+							<option value="${descriptor.serverHostingTypeName}" selected="${serverInstances.hosting.getTypeName().equals(descriptor.serverHostingTypeName) ? 'true' : null}">Server/Data Center</option>
+							<option value="${descriptor.cloudHostingTypeName}" selected="${serverInstances.hosting.getTypeName().equals(descriptor.cloudHostingTypeName) ? 'true' : null}">Cloud</option>
+						</select>
+					</f:entry>
+
+					<f:entry title="${%Server address}" field="serverAddress">
+							<f:textbox value="${serverInstances.serverAddress}" />
+					</f:entry>
+
+					<f:entry title="${%Username}" field="username">
+						<f:textbox value="${serverInstances.username}" />
+					</f:entry>
+
+					<f:entry title="${%Password}" field="password">
+						<f:password value="${serverInstances.password}" />
+					</f:entry>
+
+					<f:validateButton title="${%Test Connection}" progress="${%Testing...}"
+									  method="testConnection" with="hosting,serverAddress,username,password" />
+
+					<f:entry>
+						<div align="right" class="repeatable-delete show-if-only" style="margin-left: 1em;">
+							<f:repeatableDeleteButton value="${%Delete instance}"/><br/>
+						</div>
+					</f:entry>
+
+				</table>
+			</f:repeatable>
+		</f:entry>
+	</f:section>
+
+	<script>
+		(function(Q){
+			var changeUsernameLabel = function (instanceInput, label) {
+				Q(instanceInput).find('input[name="_.username"]').first().parent().siblings('.setting-name').text(label);
+			};
+
+			var changePasswordLabel = function (instanceInput, label){
+				Q(instanceInput).find('input[name="_.password"]').first().parent().siblings('.setting-name').text(label);
+			};
+
+			var hideServerAddressInput = function (instanceInput) {
+				var hostingType = Q(instanceInput).first().find('select[name="hosting"]')[0].value;
+
+				if(hostingType === '${descriptor.cloudHostingTypeName}'){
+					Q(instanceInput).first().find('input[name="_.serverAddress"]').parent().parent().attr("style", "display:none");
+					changeUsernameLabel(instanceInput, 'Client Id');
+					changePasswordLabel(instanceInput, 'Client Secret');
+				} else if(hostingType === '${descriptor.serverHostingTypeName}'){
+					Q(instanceInput).first().find('input[name="_.serverAddress"]').parent().parent().removeAttr("style");
+					changeUsernameLabel(instanceInput, 'Username');
+					changePasswordLabel(instanceInput, 'Password');
+				}
+			};
+
+			var hideServerAddressInputs = function(){
+				Q('div[name="serverInstances"]').each(function(){
+					hideServerAddressInput(this);
+				});
+			};
+
+			var observeNewInstance = new MutationObserver(function (mutations) {
+				var lastInstanceAdded = Q('select[name="hosting"]').last();
+
+				Q(lastInstanceAdded).on('change',function(e){
+					var serverInstance = Q(e.currentTarget).first().parents('div[name="serverInstances"]').first();
+					hideServerAddressInput(serverInstance);
+				});
+
+				observeNewInstance.disconnect();
+			});
+
+			var observeHostings = function() {
+			    hideServerAddressInputs();
+
+			    Q('select[name="hosting"]').on('change',function(e){
+			        var serverInstance = Q(e.currentTarget).first().parents('div[name="serverInstances"]').first();
+			        hideServerAddressInput(serverInstance);
+			    });
+
+			    var addInstanceButton = Q('div[name="serverInstances"]').first().parent().find('button').last();
+
+			    Q(addInstanceButton).click(function () {
+			        // When adding this event, it will stay on top of the click events stack for this button.
+					// Once clicked, this event will trigger first and the new server instance will not be there.
+					// So there is a need to use a mutation observer in order to wait that a new server instance it's created and added to the Dom.
+			        observeNewInstance.observe(document.querySelector('div[name="serverInstances"]').parentNode, {
+			            childList: true,
+						subtree: true
+			        });
+			    });
+			};
+
+			Q(window).load(function() {
+				observeHostings();
+			});
+		})(jQuery);
+	</script>
 </j:jelly>
