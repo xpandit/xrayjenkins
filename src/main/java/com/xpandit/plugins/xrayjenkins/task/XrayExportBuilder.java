@@ -179,7 +179,7 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
             }
             InputStream file = client.downloadFeatures(issues,filter,"true");
             this.unzipFeatures(listener, workspace, filePath, file);
-            listener.getLogger().println("Sucessfully exported the Cucumber features");
+            listener.getLogger().println("Successfully exported the Cucumber features");
         }catch (XrayClientCoreGenericException e) {
             e.printStackTrace();
             throw new AbortException(e.getMessage());
