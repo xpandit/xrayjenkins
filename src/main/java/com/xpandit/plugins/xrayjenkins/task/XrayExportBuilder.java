@@ -10,7 +10,10 @@ package com.xpandit.plugins.xrayjenkins.task;
 import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
 import com.xpandit.plugins.xrayjenkins.Utils.FormUtils;
 import com.xpandit.plugins.xrayjenkins.Utils.BuilderUtils;
+import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
+import com.xpandit.plugins.xrayjenkins.model.HostingType;
 import com.xpandit.plugins.xrayjenkins.task.compatibility.XrayExportBuilderCompatibilityDelegate;
+import com.xpandit.xray.service.impl.XrayExporterCloudImpl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -144,14 +147,25 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
         listener.getLogger().println("####   Xray is exporting the feature files  ####");
         listener.getLogger().println("##########################################################");
         XrayInstance serverInstance = getConfiguration(this.serverInstance);
+
         if(serverInstance == null){
             listener.getLogger().println("XrayInstance is null. please check the passed configuration ID");
             throw new AbortException("The Jira server configuration of this task was not found.");
         }
-        XrayExporter client = new XrayExporterImpl(serverInstance.getServerAddress(),
-                serverInstance.getUsername(),
-                serverInstance.getPassword());
-        
+
+        XrayExporter client;
+
+        if (serverInstance.getHosting() == HostingType.CLOUD) {
+            client = new XrayExporterCloudImpl(serverInstance.getUsername(),
+                    serverInstance.getPassword());
+        } else if (serverInstance.getHosting() == null || serverInstance.getHosting() == HostingType.SERVER) {
+            client = new XrayExporterImpl(serverInstance.getServerAddress(),
+                    serverInstance.getUsername(),
+                    serverInstance.getPassword());
+        } else {
+            throw new XrayJenkinsGenericException("Hosting type not recognized.");
+        }
+
         try{
 
             if (StringUtils.isNotBlank(issues)) {
@@ -165,7 +179,7 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
             }
             InputStream file = client.downloadFeatures(issues,filter,"true");
             this.unzipFeatures(listener, workspace, filePath, file);
-            listener.getLogger().println("Sucessfully exported the Cucumber features");
+            listener.getLogger().println("Successfully exported the Cucumber features");
         }catch (XrayClientCoreGenericException e) {
             e.printStackTrace();
             throw new AbortException(e.getMessage());
