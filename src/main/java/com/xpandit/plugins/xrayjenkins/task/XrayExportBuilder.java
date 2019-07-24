@@ -177,6 +177,8 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
             e.printStackTrace();
             listener.error(e.getMessage());
             throw new AbortException(e.getMessage());
+        } finally {
+            client.shutdown();
         }
     }
     
