@@ -158,7 +158,7 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
         if (serverInstance.getHosting() == HostingType.CLOUD) {
             client = new XrayExporterCloudImpl(serverInstance.getUsername(),
                     serverInstance.getPassword());
-        } else if (serverInstance.getHosting() == HostingType.SERVER) {
+        } else if (serverInstance.getHosting() == null || serverInstance.getHosting() == HostingType.SERVER) {
             client = new XrayExporterImpl(serverInstance.getServerAddress(),
                     serverInstance.getUsername(),
                     serverInstance.getPassword());
