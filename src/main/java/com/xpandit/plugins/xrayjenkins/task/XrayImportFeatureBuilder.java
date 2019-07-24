@@ -119,7 +119,7 @@ public class XrayImportFeatureBuilder extends Builder implements SimpleBuildStep
 
         if (xrayInstance.getHosting() == HostingType.CLOUD) {
             client = new XrayTestImporterCloudImpl(xrayInstance.getUsername(), xrayInstance.getPassword());
-        } else if (xrayInstance.getHosting() == HostingType.SERVER || xrayInstance.getHosting() == null) {
+        } else if (xrayInstance.getHosting() == null || xrayInstance.getHosting() == HostingType.SERVER) {
             client = new XrayTestImporterImpl(xrayInstance.getServerAddress(),
                     xrayInstance.getUsername(),
                     xrayInstance.getPassword());
