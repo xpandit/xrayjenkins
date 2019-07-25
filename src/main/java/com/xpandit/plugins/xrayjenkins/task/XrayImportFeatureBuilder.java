@@ -12,10 +12,14 @@ import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
 import com.xpandit.plugins.xrayjenkins.Utils.FileUtils;
 import com.xpandit.plugins.xrayjenkins.Utils.FormUtils;
 import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
+import com.xpandit.plugins.xrayjenkins.model.HostingType;
 import com.xpandit.plugins.xrayjenkins.model.ServerConfiguration;
 import com.xpandit.plugins.xrayjenkins.model.XrayInstance;
+import com.xpandit.xray.exception.XrayClientCoreGenericException;
 import com.xpandit.xray.model.FileStream;
 import com.xpandit.xray.model.UploadResult;
+import com.xpandit.xray.service.XrayTestImporter;
+import com.xpandit.xray.service.impl.XrayTestImporterCloudImpl;
 import com.xpandit.xray.service.impl.XrayTestImporterImpl;
 import hudson.AbortException;
 import hudson.Extension;
@@ -111,15 +115,24 @@ public class XrayImportFeatureBuilder extends Builder implements SimpleBuildStep
             listener.getLogger().println("You must provide the directory path");
             throw new AbortException();
         }
-        XrayTestImporterImpl client = new XrayTestImporterImpl(xrayInstance.getServerAddress(),
-                xrayInstance.getUsername(),
-                xrayInstance.getPassword());
+        XrayTestImporter client;
+
+        if (xrayInstance.getHosting() == HostingType.CLOUD) {
+            client = new XrayTestImporterCloudImpl(xrayInstance.getUsername(), xrayInstance.getPassword());
+        } else if (xrayInstance.getHosting() == null || xrayInstance.getHosting() == HostingType.SERVER) {
+            client = new XrayTestImporterImpl(xrayInstance.getServerAddress(),
+                    xrayInstance.getUsername(),
+                    xrayInstance.getPassword());
+        } else {
+            throw new XrayJenkinsGenericException("Hosting type not recognized.");
+        }
+
         processImport(workspace, client, listener);
 
     }
 
     private void processImport(FilePath workspace,
-                          XrayTestImporterImpl client,
+                          XrayTestImporter client,
                           TaskListener listener) throws IOException, InterruptedException {
         List<FilePath> paths;
         try{
@@ -128,15 +141,24 @@ public class XrayImportFeatureBuilder extends Builder implements SimpleBuildStep
             listener.getLogger().println("An error occurred while getting the feature files");
             throw e;
         }
-        for(FilePath fp : paths){
-            if(isApplicableAsModifiedFile(fp)){
-                FileStream f = new com.xpandit.xray.model.FileStream(fp.getName(),
-                        fp.read(),
-                        ContentType.APPLICATION_JSON);
-                UploadResult up = client.importFeatures(this.projectKey, f);
-                listener.getLogger().println(up.getMessage());
+        try{
+            for(FilePath fp : paths){
+                if(isApplicableAsModifiedFile(fp)){
+                    FileStream f = new com.xpandit.xray.model.FileStream(fp.getName(),
+                            fp.read(),
+                            ContentType.APPLICATION_JSON);
+                    UploadResult up = client.importFeatures(this.projectKey, f);
+                    listener.getLogger().println(up.getMessage());
+                }
             }
+
+        } catch(XrayClientCoreGenericException  e){
+            listener.error(e.getMessage());
+            throw new AbortException(e.getMessage());
+        } finally {
+            client.shutdown();
         }
+
     }
 
     private boolean isApplicableAsModifiedFile(FilePath filePath) throws InterruptedException, IOException{
