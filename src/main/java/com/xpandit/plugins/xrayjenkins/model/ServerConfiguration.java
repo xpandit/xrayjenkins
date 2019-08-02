@@ -8,6 +8,7 @@
 package com.xpandit.plugins.xrayjenkins.model;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -27,7 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 @Extension
 public class ServerConfiguration extends GlobalConfiguration {
 	
-	private List<XrayInstance> serverInstances;
+	private List<XrayInstance> serverInstances = new ArrayList<>();
 	
 	public ServerConfiguration(){
 		load();
