@@ -149,33 +149,38 @@
 	  filterFormats_${descriptor.defaultBuildID()} = function(){
 	      var instanceId = Q('#selectInstance_${descriptor.defaultBuildID()}')[0].value;
 	      var cloudExclusiveEndpoints = JSON.parse('${descriptor.getExclusiveCloudEndpoints()}');
+	      var serverExclusiveEndpoints = JSON.parse('${descriptor.getExclusiveServerEndpoints()}');
           var selectedInstanceIsServer = instanceId.startsWith('${descriptor.getServerHostingTypeName()}');
+		  var selectedFormat = Q('#selectFormat_${descriptor.defaultBuildID()} option:selected').val();
 
-	      for(var index in cloudExclusiveEndpoints){
-
-	          var endpointOption = Q('#selectFormat_${descriptor.defaultBuildID()} option[value="'+ cloudExclusiveEndpoints[index] +'"]');
-
-	          if(selectedInstanceIsServer){
-	              Q(endpointOption).attr("disabled", "true");
-			  } else if (instanceId.startsWith('${descriptor.getCloudHostingTypeName()}')){
-				  Q(endpointOption).removeAttr("disabled");
+          Q('#selectFormat_${descriptor.defaultBuildID()} option').prop("disabled", false);
+          if (selectedInstanceIsServer) {
+			  for (var index in cloudExclusiveEndpoints){
+				  Q('#selectFormat_${descriptor.defaultBuildID()} option[value="'+ cloudExclusiveEndpoints[index] +'"]')
+						  .prop("disabled", true);
 			  }
-	      }
+			  
+              if(cloudExclusiveEndpoints.hasOwnProperty(selectedFormat)){
+                  // if "Server" is selected and the current selected format is a cloudExclusive, then we reset to the sdefault (first) option.
+                  Q('#selectFormat_${descriptor.defaultBuildID()}').val("");
+                  addXrayFields_${descriptor.defaultBuildID()}("");
+              }
+		  } else {
+			  for (var index in serverExclusiveEndpoints){
+				  Q('#selectFormat_${descriptor.defaultBuildID()} option[value="'+ serverExclusiveEndpoints[index] +'"]')
+						  .prop("disabled", true);
+			  }
 
-	       var selectedFormat = Q('#selectFormat_${descriptor.defaultBuildID()} option:selected').val();
-
-           if(selectedInstanceIsServer){
-                 if(cloudExclusiveEndpoints.hasOwnProperty(selectedFormat)){
-                    //if server was selected and current selected format is a cloudExclusive then reset to default
-                    Q('#selectFormat_${descriptor.defaultBuildID()}').val("");
-                    addXrayFields_${descriptor.defaultBuildID()}("");
-                }
-           }
-
-	  }
+              if(serverExclusiveEndpoints.hasOwnProperty(selectedFormat)){
+                  // if "Cloud" is selected and the current selected format is a serverExclusive, then we reset to the default (first) option.
+                  Q('#selectFormat_${descriptor.defaultBuildID()}').val("");
+                  addXrayFields_${descriptor.defaultBuildID()}("");
+              }
+		  }
+	  };
 
 	  Q(document).ready(function() {
-	  		//main template loading. It's syntax conflicts with Jelly so we need to load it assynchronously from an external source
+	  		// Main template loading. It's syntax conflicts with Jelly so we need to load it asynchronously from an external source
 			Q.ajax({
 		   	 url: '${resURL}/plugin/xray-for-jira-connector/xray-import-buildstepconfig.html',
 		     cache: false,

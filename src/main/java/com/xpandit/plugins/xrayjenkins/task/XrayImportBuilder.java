@@ -772,6 +772,17 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 			return jsonExclusiveCloudEndpoints;
 		}
 
+		public JSONObject getExclusiveServerEndpoints() {
+			String[] exclusiveServerEndpoints = Endpoint.getExclusiveServerEndpoints();
+			JSONObject jsonExclusiveServerEndpoints = new JSONObject();
+
+			for(String suffix : exclusiveServerEndpoints){
+				jsonExclusiveServerEndpoints.put(suffix, suffix);
+			}
+
+			return jsonExclusiveServerEndpoints;
+		}
+
 		public String getCloudDocUrl(){
         	return CLOUD_DOC_URL;
 		}
