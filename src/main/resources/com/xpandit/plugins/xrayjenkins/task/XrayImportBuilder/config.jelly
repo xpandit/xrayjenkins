@@ -161,7 +161,7 @@
 			  }
 			  
               if(cloudExclusiveEndpoints.hasOwnProperty(selectedFormat)){
-                  //if server was selected and current selected format is a cloudExclusive then reset to default
+                  // if "Server" is selected and the current selected format is a cloudExclusive, then we reset to the sdefault (first) option.
                   Q('#selectFormat_${descriptor.defaultBuildID()}').val("");
                   addXrayFields_${descriptor.defaultBuildID()}("");
               }
@@ -172,7 +172,7 @@
 			  }
 
               if(serverExclusiveEndpoints.hasOwnProperty(selectedFormat)){
-                  //if server was selected and current selected format is a cloudExclusive then reset to default
+                  // if "Cloud" is selected and the current selected format is a serverExclusive, then we reset to the default (first) option.
                   Q('#selectFormat_${descriptor.defaultBuildID()}').val("");
                   addXrayFields_${descriptor.defaultBuildID()}("");
               }
