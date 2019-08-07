@@ -14,6 +14,7 @@ import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
 import com.xpandit.plugins.xrayjenkins.model.HostingType;
 import com.xpandit.plugins.xrayjenkins.task.compatibility.XrayExportBuilderCompatibilityDelegate;
 import com.xpandit.xray.service.impl.XrayExporterCloudImpl;
+import hudson.EnvVars;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -136,7 +137,7 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
     public void perform(Run<?,?> build,
                         FilePath workspace,
                         Launcher launcher,
-                        TaskListener listener) throws AbortException, IOException {
+                        TaskListener listener) throws AbortException, IOException, InterruptedException {
 
         XrayExportBuilderCompatibilityDelegate compatibilityDelegate = new XrayExportBuilderCompatibilityDelegate(this);
         compatibilityDelegate.applyCompatibility();
@@ -165,25 +166,31 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
         } else {
             throw new XrayJenkinsGenericException("Hosting type not recognized.");
         }
-
-        try{
-
-            if (StringUtils.isNotBlank(issues)) {
-                listener.getLogger().println("Issues: "+issues);
+        
+        try {
+            final EnvVars env = build.getEnvironment(listener);
+            final String expandedIssues = TaskUtils.expandVariable(env, issues);
+            final String expandedFilter = TaskUtils.expandVariable(env, filter);
+            final String expandedFilePath = TaskUtils.expandVariable(env, filePath);
+            
+            if (StringUtils.isNotBlank(expandedIssues)) {
+                listener.getLogger().println("Issues: " + expandedIssues);
             }
-            if (StringUtils.isNotBlank(filter)) {
-                listener.getLogger().println("Filter: " + filter);
+            if (StringUtils.isNotBlank(expandedFilter)) {
+                listener.getLogger().println("Filter: " + expandedFilter);
             }
-            if (StringUtils.isNotBlank(filePath)) {
-                listener.getLogger().println("Will save the feature files in: " + filePath);
+            if (StringUtils.isNotBlank(expandedFilePath)) {
+                listener.getLogger().println("Will save the feature files in: " + expandedFilePath);
             }
-            InputStream file = client.downloadFeatures(issues,filter,"true");
-            this.unzipFeatures(listener, workspace, filePath, file);
+            
+            InputStream file = client.downloadFeatures(expandedIssues, expandedFilter,"true");
+            this.unzipFeatures(listener, workspace, expandedFilePath, file);
+            
             listener.getLogger().println("Successfully exported the Cucumber features");
-        }catch (XrayClientCoreGenericException e) {
+        } catch (XrayClientCoreGenericException e) {
             e.printStackTrace();
             throw new AbortException(e.getMessage());
-		}catch (IOException e) {
+		} catch (IOException e) {
             e.printStackTrace();
             listener.error(e.getMessage());
             throw new IOException(e);
