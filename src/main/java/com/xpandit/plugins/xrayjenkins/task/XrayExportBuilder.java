@@ -166,25 +166,26 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
         } else {
             throw new XrayJenkinsGenericException("Hosting type not recognized.");
         }
-
-        final EnvVars env = build.getEnvironment(listener);
         
         try {
-
-            if (StringUtils.isNotBlank(issues)) {
-                issues = TaskUtils.expandVariable(env, issues);
-                listener.getLogger().println("Issues: " + issues);
+            final EnvVars env = build.getEnvironment(listener);
+            final String expandedIssues = TaskUtils.expandVariable(env, issues);
+            final String expandedFilter = TaskUtils.expandVariable(env, filter);
+            final String expandedFilePath = TaskUtils.expandVariable(env, filePath);
+            
+            if (StringUtils.isNotBlank(expandedIssues)) {
+                listener.getLogger().println("Issues: " + expandedIssues);
             }
-            if (StringUtils.isNotBlank(filter)) {
-                filter = TaskUtils.expandVariable(env, filter);
-                listener.getLogger().println("Filter: " + filter);
+            if (StringUtils.isNotBlank(expandedFilter)) {
+                listener.getLogger().println("Filter: " + expandedFilter);
             }
-            if (StringUtils.isNotBlank(filePath)) {
-                filePath = TaskUtils.expandVariable(env, filePath);
-                listener.getLogger().println("Will save the feature files in: " + filePath);
+            if (StringUtils.isNotBlank(expandedFilePath)) {
+                listener.getLogger().println("Will save the feature files in: " + expandedFilePath);
             }
-            InputStream file = client.downloadFeatures(issues,filter,"true");
-            this.unzipFeatures(listener, workspace, filePath, file);
+            
+            InputStream file = client.downloadFeatures(expandedIssues, expandedFilter,"true");
+            this.unzipFeatures(listener, workspace, expandedFilePath, file);
+            
             listener.getLogger().println("Successfully exported the Cucumber features");
         } catch (XrayClientCoreGenericException e) {
             e.printStackTrace();
