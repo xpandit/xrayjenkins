@@ -123,8 +123,7 @@ public class FileUtilsTest {
 
 
     private String getRelativeDirectoryPath(){
-        return File.separator
-                + UNITTESTING
+        return UNITTESTING
                 + File.separator
                 + FOLDERMATCHER
                 + File.separator
@@ -135,8 +134,7 @@ public class FileUtilsTest {
     }
 
     private String getRelativeDirectoryPathWithNoFolderMatcher(){
-        return File.separator
-                + UNITTESTING
+        return UNITTESTING
                 + File.separator
                 + "a3"
                 + File.separator
