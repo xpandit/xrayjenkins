@@ -8,7 +8,9 @@
 package com.xpandit.plugins.xrayjenkins.task;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonArray;
 import com.xpandit.plugins.xrayjenkins.Utils.FileUtils;
+import com.xpandit.plugins.xrayjenkins.model.HostingType;
 import com.xpandit.plugins.xrayjenkins.task.compatibility.XrayImportBuilderCompatibilityDelegate;
 import com.xpandit.xray.model.ParameterBean;
 import com.xpandit.xray.model.QueryParameter;
@@ -27,6 +29,8 @@ import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.apache.commons.collections.MapUtils;
+import org.json.simple.JSONArray;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.DataBoundSetter;
@@ -41,6 +45,7 @@ import com.xpandit.xray.model.Endpoint;
 import com.xpandit.xray.model.FormatBean;
 import com.xpandit.xray.service.XrayImporter;
 import com.xpandit.xray.service.impl.XrayImporterImpl;
+import com.xpandit.xray.service.impl.XrayImporterCloudImpl;
 
 import hudson.AbortException;
 import hudson.EnvVars;
@@ -97,6 +102,8 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 	private static final String REVISION_FIELD = "revision";
 	private static final String IMPORT_INFO = "importInfo";
 	private static final String FORMAT_SUFFIX = "formatSuffix";
+	private static final String CLOUD_DOC_URL = "https://confluence.xpand-it.com/display/XRAYCLOUD/Import+Execution+Results+-+REST";
+	private static final String SERVER_DOC_URL = "https://confluence.xpand-it.com/display/XRAY/Import+Execution+Results+-+REST";
 
     private String formatSuffix; //value of format select
     private String serverInstance;//Configuration ID of the JIRA instance
@@ -384,7 +391,8 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		if(Endpoint.JUNIT.equals(e)
 				|| Endpoint.TESTNG.equals(e)
 				|| Endpoint.NUNIT.equals(e)
-				|| Endpoint.ROBOT.equals(e)){
+				|| Endpoint.ROBOT.equals(e)
+				|| Endpoint.XUNIT.equals(e)){
 			ParameterBean pb = new ParameterBean(SAME_EXECUTION_CHECKBOX, "same exec text box", false);
 			pb.setConfiguration(importToSameExecution);
 			bean.getConfigurableFields().add(0, pb);
@@ -407,14 +415,6 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		}
 		return file;
 	}
-	
-	private String expand(EnvVars environment, String variable){
-		if(StringUtils.isNotBlank(variable)){
-			String expanded = environment.expand(variable);
-			return expanded.equals(variable) ? variable : expanded;
-		}
-		return "";
-	}
 
 	@Override
 	public void perform(@Nonnull Run<?,?> build,
@@ -436,26 +436,38 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 
 		listener.getLogger().println("Starting import task...");
 
-		listener.getLogger().println("Import Cucumber features Task started...");
-
         listener.getLogger().println("##########################################################");
-        listener.getLogger().println("#### Importing the execution results to Xray  ####");
+        listener.getLogger().println("####     Importing the execution results to Xray      ####");
         listener.getLogger().println("##########################################################");
         XrayInstance importInstance = ConfigurationUtils.getConfiguration(serverInstance);
         if(importInstance == null){
         	throw new AbortException("The Jira server configuration of this task was not found.");
 		}
-		XrayImporter client = new XrayImporterImpl(importInstance.getServerAddress(),
-				importInstance.getUsername(),
-				importInstance.getPassword());
+
+		XrayImporter client;
+
+        if(importInstance.getHosting() == HostingType.CLOUD) {
+			client = new XrayImporterCloudImpl(importInstance.getUsername(),
+					importInstance.getPassword());
+		} else if (importInstance.getHosting() == null || importInstance.getHosting() == HostingType.SERVER)  {
+			client = new XrayImporterImpl(importInstance.getServerAddress(),
+					importInstance.getUsername(),
+					importInstance.getPassword());
+		} else {
+        	throw new XrayJenkinsGenericException("Hosting type not recognized.");
+		}
+
 		EnvVars env = build.getEnvironment(listener);
-		String resolved = this.expand(env,this.importFilePath);
+		String resolved = TaskUtils.expandVariable(env,this.importFilePath);
 
 		Endpoint endpointValue = Endpoint.lookupBySuffix(this.endpointName);
+
 		if(Endpoint.JUNIT.equals(endpointValue)
 				|| Endpoint.NUNIT.equals(endpointValue)
 				|| Endpoint.TESTNG.equals(endpointValue)
-				|| Endpoint.ROBOT.equals(endpointValue)){
+				|| Endpoint.ROBOT.equals(endpointValue)
+				|| Endpoint.XUNIT.equals(endpointValue)){
+
 			UploadResult result;
 			ObjectMapper mapper = new ObjectMapper();
 			String key = null;
@@ -463,15 +475,35 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 			for(FilePath fp : FileUtils.getFiles(workspace, resolved, listener)){
 				result = uploadResults(workspace, listener,client, fp, env, key);
 				if(key == null && "true".equals(importToSameExecution)){
-					Map<String, Map> map = mapper.readValue(result.getMessage(), Map.class);
-					key = (String) map.get("testExecIssue").get("key");
+					HostingType instanceType = importInstance.getHosting();
+
+					if (instanceType == HostingType.SERVER) {
+						
+						Map<String, Object> resultMap = mapper.readValue(result.getMessage(), Map.class);
+						if (MapUtils.isNotEmpty(resultMap)) {
+							Map<String, String> testExecIssue = (Map<String, String>) resultMap.get("testExecIssue");
+							if (MapUtils.isNotEmpty(testExecIssue)) {
+								key = testExecIssue.get("key");
+							}
+						}
+					} else if (instanceType == HostingType.CLOUD) {
+						
+						Map<String, String> map = mapper.readValue(result.getMessage(), Map.class);
+						key =  map.get("key");
+					} else {
+						
+						throw new XrayJenkinsGenericException("Instance type not found.");
+					}
+
+					if(key == null){
+						throw new XrayJenkinsGenericException("No Test Execution Key returned");
+					}
 				}
 			}
 		} else{
 			FilePath file = getFile(workspace, resolved, listener);
 			uploadResults(workspace, listener, client, file, env, null);
 		}
-
 	}
 
     /**
@@ -505,11 +537,11 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 			if(StringUtils.isNotBlank(this.importFilePath)){
 				Content results = new com.xpandit.xray.model.FileStream(resultsFile.getName(),resultsFile.read(),
                         targetEndpoint.getResultsMediaType());
-
 				dataParams.put(com.xpandit.xray.model.DataParameter.FILEPATH, results);
+
 			}
 			if(StringUtils.isNotBlank(this.importInfo)){
-				String resolved = this.expand(env,this.importInfo);
+				String resolved = TaskUtils.expandVariable(env,this.importInfo);
 
 				Content info;
 				if(this.inputInfoSwitcher.equals("filePath")){
@@ -518,6 +550,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 				}else{
 					info = new com.xpandit.xray.model.StringContent(resolved, targetEndpoint.getInfoFieldMediaType());
 				}
+
 
 				dataParams.put(com.xpandit.xray.model.DataParameter.INFO, info);
 			}
@@ -542,12 +575,12 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 
 	private Map<com.xpandit.xray.model.QueryParameter, String> prepareQueryParam(EnvVars env){
 		Map<com.xpandit.xray.model.QueryParameter,String> queryParams = new EnumMap<>(QueryParameter.class);
-		queryParams.put(com.xpandit.xray.model.QueryParameter.PROJECT_KEY, expand(env,projectKey));
-		queryParams.put(com.xpandit.xray.model.QueryParameter.TEST_EXEC_KEY, expand(env,testExecKey));
-		queryParams.put(com.xpandit.xray.model.QueryParameter.TEST_PLAN_KEY, expand(env,testPlanKey));
-		queryParams.put(com.xpandit.xray.model.QueryParameter.TEST_ENVIRONMENTS, expand(env,testEnvironments));
-		queryParams.put(com.xpandit.xray.model.QueryParameter.REVISION, expand(env,revision));
-		queryParams.put(com.xpandit.xray.model.QueryParameter.FIX_VERSION, expand(env,fixVersion));
+		queryParams.put(com.xpandit.xray.model.QueryParameter.PROJECT_KEY, TaskUtils.expandVariable(env,projectKey));
+		queryParams.put(com.xpandit.xray.model.QueryParameter.TEST_EXEC_KEY, TaskUtils.expandVariable(env,testExecKey));
+		queryParams.put(com.xpandit.xray.model.QueryParameter.TEST_PLAN_KEY, TaskUtils.expandVariable(env,testPlanKey));
+		queryParams.put(com.xpandit.xray.model.QueryParameter.TEST_ENVIRONMENTS, TaskUtils.expandVariable(env,testEnvironments));
+		queryParams.put(com.xpandit.xray.model.QueryParameter.REVISION, TaskUtils.expandVariable(env,revision));
+		queryParams.put(com.xpandit.xray.model.QueryParameter.FIX_VERSION, TaskUtils.expandVariable(env,fixVersion));
 		return queryParams;
 	}
 
@@ -697,7 +730,8 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         	if(Endpoint.JUNIT.equals(e)
 					|| Endpoint.TESTNG.equals(e)
 					|| Endpoint.NUNIT.equals(e)
-					|| Endpoint.ROBOT.equals(e)){
+					|| Endpoint.ROBOT.equals(e)
+					|| Endpoint.XUNIT.equals(e)){
 				ParameterBean pb = new ParameterBean(SAME_EXECUTION_CHECKBOX, "same exec text box", false);
 				bean.getConfigurableFields().add(0, pb);
 			}
@@ -711,6 +745,43 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 			return ConfigurationUtils.anyAvailableConfiguration() ? FormValidation.ok() : FormValidation.error("No configured Server Instances found");
 		}
 
+		public String getCloudHostingTypeName(){
+        	return HostingType.getCloudHostingTypeName();
+		}
+
+		public String getServerHostingTypeName(){
+			return HostingType.getServerHostingTypeName();
+		}
+
+		public JSONObject getExclusiveCloudEndpoints() {
+			String[] exclusiveCloudEndpoints = Endpoint.getExclusiveCloudEndpoints();
+			JSONObject jsonExclusiveCloudEndpoints = new JSONObject();
+
+			for(String suffix : exclusiveCloudEndpoints){
+				jsonExclusiveCloudEndpoints.put(suffix, suffix);
+			}
+
+			return jsonExclusiveCloudEndpoints;
+		}
+
+		public JSONObject getExclusiveServerEndpoints() {
+			String[] exclusiveServerEndpoints = Endpoint.getExclusiveServerEndpoints();
+			JSONObject jsonExclusiveServerEndpoints = new JSONObject();
+
+			for(String suffix : exclusiveServerEndpoints){
+				jsonExclusiveServerEndpoints.put(suffix, suffix);
+			}
+
+			return jsonExclusiveServerEndpoints;
+		}
+
+		public String getCloudDocUrl(){
+        	return CLOUD_DOC_URL;
+		}
+
+		public String getServerDocUrl(){
+        	return SERVER_DOC_URL;
+		}
     }
 
 }
