@@ -22,7 +22,7 @@
 	</properties>
 
 	<name>Xray for Jira Jenkins Plugin</name>
-	<description>Integrates Jenkins with Xray for JIRA</description>
+	<description>Integrates Jenkins with Xray for Jira</description>
 	<url>http://confluence.xpand-addons.com/display/XRAY/Xray+for+JIRA+Jenkins+Plugin</url>
 
 	<licenses>

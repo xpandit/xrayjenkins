@@ -86,7 +86,7 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
     @Deprecated
     private Map<String,String> fields;
 
-    private String serverInstance;//Configuration ID of the JIRA instance
+    private String serverInstance;//Configuration ID of the Jira instance
     private String issues;
     private String filter;
     private String filePath;
@@ -299,7 +299,7 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
 
         private void validateFormData(JSONObject formData) throws Descriptor.FormException{
             if(StringUtils.isBlank(formData.getString("serverInstance"))){
-                throw new Descriptor.FormException("Xray Cucumber Features Export Task error, you must provide a valid JIRA Instance","serverInstance");
+                throw new Descriptor.FormException("Xray Cucumber Features Export Task error, you must provide a valid Jira Instance","serverInstance");
             }
         }
 
