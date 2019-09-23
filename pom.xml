@@ -10,46 +10,42 @@
 		<relativePath />
 	</parent>
 	
-	<groupId>com.xpandit.plugins</groupId>
 	<artifactId>xray-for-jira-connector</artifactId>
 	<version>2.0.0</version>
 	<packaging>hpi</packaging>
 
 	<properties>
-		<!-- Baseline Jenkins version you use to build the plugin. Users must have 
-			this version or newer to run. -->
 		<jenkins.version>2.60.3</jenkins.version>
-		<!-- Java Level to use. Java 7 required when using core >= 1.612 -->
 		<java.level>7</java.level>
-		<!-- Jenkins Test Harness version you use to test the plugin. -->
-		<!-- For Jenkins version >= 1.580.1 use JTH 2.x or higher. -->
 		<jenkins-test-harness.version>2.13</jenkins-test-harness.version>
-		<!-- Other properties you may want to use: ~ hpi-plugin.version: The HPI 
-			Maven Plugin version used by the plugin.. ~ stapler-plugin.version: The Stapler 
-			Maven plugin version required by the plugin. -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
-	<name>Xray for JIRA Jenkins Plugin</name>
+	<name>Xray for Jira Jenkins Plugin</name>
 	<description>Integrates Jenkins with Xray for JIRA</description>
 	<url>http://confluence.xpand-addons.com/display/XRAY/Xray+for+JIRA+Jenkins+Plugin</url>
 
-	<!-- The default licence for Jenkins OSS Plugins is MIT. Substitute for 
-		the applicable one if needed. -->
-
-	<!--  <licenses>
+	<licenses>
 		<license>
 			<name>MIT License</name>
 			<url>http://opensource.org/licenses/MIT</url>
 		</license>
-	</licenses> -->
+	</licenses>
 
-	<!-- If you want this to appear on the wiki page: <developers> <developer> 
-		<id>bhacker</id> <name>Bob Q. Hacker</name> <email>bhacker@nowhere.net</email> 
-		</developer> </developers> -->
-	<!-- Assuming you want to host on @jenkinsci: <scm> <connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection> 
+	<developers>
+		<developer>
+			<id>Support</id>
+			<name>Xray Support</name>
+			<email>app.support@xpand-it.com</email>
+		</developer>
+	</developers>
+	
+	<scm> 
+		<connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection> 
 		<developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection> 
-		<url>http://github.com/jenkinsci/${project.artifactId}-plugin</url> </scm> -->
+		<url>http://github.com/jenkinsci/${project.artifactId}-plugin</url>
+		<tag>HEAD</tag>
+	</scm>
 
 	<dependencies>
 		
@@ -155,14 +151,5 @@
 			<url>https://repo.jenkins-ci.org/public/</url>
 		</pluginRepository>
 	</pluginRepositories>
-	
-	<!--  To configure when the GIT HUB repo is available
-		<scm>
-		  <connection>scm:git:ssh://github.com/jenkinsci/MYPLUGINNAME.git</connection>
-		  <developerConnection>scm:git:ssh://git@github.com/jenkinsci/MYPLUGINNAME.git</developerConnection>
-		  <url>https://github.com/jenkinsci/MYPLUGINNAME</url>
-		</scm>
-	-->
-
 
 </project>
