@@ -1,12 +1,5 @@
 This add-on enables an easy integration between Jenkins and Xray for Jira, providing the means for successful Continuous Integration by allowing users to report automated testing results.
-Refer to the [documentation](https://apps.xpand-it.com/confluence/display/RAVEN/Xray+-+%5BCI%5D+Jenkins+plugin), for more information.
+Please refer to the [documentation](https://confluence.xpand-it.com/display/XRAY/Integration+with+Jenkins), for more information.
 
-Run the following command to launch a Jenkins instance
-
-mvn hpi:run -Djetty.port=8087
-
-Run the following command to execute Jenkins in debug mode
-
-mvnDebug hpi:run
-
+If you need any further assistance with this plugin, or with Xray for Jira, you can contact us in our [support system](http://xraysupport.xpand-it.com).
 
