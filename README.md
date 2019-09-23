@@ -3,6 +3,8 @@ Please refer to the [documentation](https://confluence.xpand-it.com/display/XRAY
 
 If you need any further assistance or want to report a bug, please contact us in our [support system](http://xraysupport.xpand-it.com).
 
+======= *Useful links* =======
+
 Xray official website: [https://www.getxray.app]()
 
 Plugin Documentation: [https://confluence.xpand-it.com/display/XRAY/Integration+with+Jenkins]()
