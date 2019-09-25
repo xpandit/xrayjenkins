@@ -9,14 +9,14 @@ import java.util.List;
 import javax.annotation.Nullable;
 import org.apache.commons.lang.StringUtils;
 
-public class CredentialBean {
+public class CredentialResolver {
     private final String credentialId;
     private final Run<?, ?> run;
     
     private String username = null;
     private Secret password = null;
     
-    CredentialBean(final String credentialId, final Run<?, ?> run) {
+    CredentialResolver(final String credentialId, final Run<?, ?> run) {
         this.credentialId = credentialId;
         this.run = run;
     }

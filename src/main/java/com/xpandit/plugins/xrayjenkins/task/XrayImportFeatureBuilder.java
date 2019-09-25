@@ -12,7 +12,6 @@ import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
 import com.xpandit.plugins.xrayjenkins.Utils.FileUtils;
 import com.xpandit.plugins.xrayjenkins.Utils.FormUtils;
 import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
-import com.xpandit.plugins.xrayjenkins.model.CredentialBean;
 import com.xpandit.plugins.xrayjenkins.model.HostingType;
 import com.xpandit.plugins.xrayjenkins.model.ServerConfiguration;
 import com.xpandit.plugins.xrayjenkins.model.XrayInstance;
@@ -117,9 +116,6 @@ public class XrayImportFeatureBuilder extends Builder implements SimpleBuildStep
             throw new AbortException();
         }
         
-
-        
-        final CredentialBean credentialBean = xrayInstance.getCredential(run);
         XrayTestImporter client;
         if (xrayInstance.getHosting() == HostingType.CLOUD) {
             client = new XrayTestImporterCloudImpl(xrayInstance.getCredential(run).getUsername(), xrayInstance.getCredential(run).getPassword());

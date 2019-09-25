@@ -11,6 +11,7 @@ import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
 import hudson.model.Run;
 import java.util.UUID;
 import javax.annotation.Nonnull;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -24,7 +25,7 @@ public class XrayInstance {
 	private String serverAddress;
 	private HostingType hosting;
     private String credentialId;
-    private CredentialBean credentialBean;
+    private CredentialResolver credentialResolver;
 
     public XrayInstance(String serverAddress, String hosting, String credentialId) {
     	this.configID =  "";
@@ -74,11 +75,9 @@ public class XrayInstance {
 	}
 
 	@Nonnull
-	public CredentialBean getCredential(final Run<?, ?> runContext) {
-    	if (credentialBean == null) {
-			credentialBean = new CredentialBean(this.credentialId, runContext);
-		}
-		return credentialBean;
+	public CredentialResolver getCredential(final Run<?, ?> runContext) {
+		this.credentialResolver = ObjectUtils.defaultIfNull(this.credentialResolver, new CredentialResolver(this.credentialId, runContext));
+		return this.credentialResolver;
 	}
 	
 	public HostingType getHosting() { return hosting; }
