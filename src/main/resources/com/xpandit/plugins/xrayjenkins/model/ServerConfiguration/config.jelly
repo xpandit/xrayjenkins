@@ -26,11 +26,11 @@
 					</f:entry>
 
 					<f:entry title="${%Credentials}" field="credentialId">
-						<c:select/>
+						<c:select expressionAllowed="false" default="${serverInstances.credentialId}"/>
 					</f:entry>
 
 					<f:validateButton title="${%Test Connection}" progress="${%Testing...}"
-									  method="testConnection" with="hosting,serverAddress,username,password" />
+									  method="testConnection" with="hosting,serverAddress,credentialId" />
 
 					<f:entry>
 						<div align="right" class="repeatable-delete show-if-only" style="margin-left: 1em;">
