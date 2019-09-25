@@ -447,12 +447,12 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		XrayImporter client;
 
         if(importInstance.getHosting() == HostingType.CLOUD) {
-			client = new XrayImporterCloudImpl(importInstance.getUsername(),
-					importInstance.getPassword());
+			client = new XrayImporterCloudImpl(importInstance.getCredential(build).getUsername(),
+					importInstance.getCredential(build).getPassword());
 		} else if (importInstance.getHosting() == null || importInstance.getHosting() == HostingType.SERVER)  {
 			client = new XrayImporterImpl(importInstance.getServerAddress(),
-					importInstance.getUsername(),
-					importInstance.getPassword());
+					importInstance.getCredential(build).getUsername(),
+					importInstance.getCredential(build).getPassword());
 		} else {
         	throw new XrayJenkinsGenericException("Hosting type not recognized.");
 		}

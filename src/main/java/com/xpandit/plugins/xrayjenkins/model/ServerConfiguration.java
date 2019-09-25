@@ -7,12 +7,25 @@
  */
 package com.xpandit.plugins.xrayjenkins.model;
 
+import com.cloudbees.plugins.credentials.CredentialsMatchers;
+import com.cloudbees.plugins.credentials.CredentialsProvider;
+import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
+import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
+import com.cloudbees.plugins.credentials.domains.DomainRequirement;
+import hudson.model.Item;
+import hudson.security.ACL;
+import hudson.util.ListBoxModel;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.Nullable;
 import javax.servlet.ServletException;
 
+import jenkins.model.Jenkins;
+import org.apache.commons.collections.CollectionUtils;
+import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
@@ -63,6 +76,42 @@ public class ServerConfiguration extends GlobalConfiguration {
 	public static ServerConfiguration get() {
 	    return GlobalConfiguration.all().get(ServerConfiguration.class);
 	}
+
+    public ListBoxModel doFillCredentialIdItems(@AncestorInPath Item item, @QueryParameter String credentialId) {
+        
+        final StandardListBoxModel result = new StandardListBoxModel();
+
+        final List<StandardUsernamePasswordCredentials> credentials = getAllCredentials(item);
+
+        for (StandardUsernamePasswordCredentials credential : credentials) {
+            result.with(credential);
+        }
+        return result.includeCurrentValue(credentialId);
+    }
+
+    public FormValidation doCheckCredentialId(
+            @AncestorInPath Item item,
+            @QueryParameter String value
+    ) {
+        if (item == null) {
+            if (!Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER)) {
+                return FormValidation.ok();
+            }
+        } else {
+            if (!item.hasPermission(Item.EXTENDED_READ)
+                    && !item.hasPermission(CredentialsProvider.USE_ITEM)) {
+                return FormValidation.ok(); // (3)
+            }
+        }
+        if (StringUtils.isBlank(value)) { // (4)
+            return FormValidation.ok(); // (4)
+        }
+        
+        if (!credentialExists(item, value)) {
+            return FormValidation.error("Cannot find currently selected credentials");
+        }
+        return FormValidation.ok();
+    }
 	
 	public FormValidation doTestConnection(@QueryParameter("hosting") final String hosting,
 	                                       @QueryParameter("serverAddress") final String serverAddress,
@@ -106,5 +155,31 @@ public class ServerConfiguration extends GlobalConfiguration {
                 instance.setHosting(HostingType.getDefaultType());
             }
         }
+    }
+
+    private List<StandardUsernamePasswordCredentials> getAllCredentials(@Nullable final Item item) {
+        final List<StandardUsernamePasswordCredentials> credentials = CredentialsProvider.lookupCredentials(
+                StandardUsernamePasswordCredentials.class,
+                item,
+                ACL.SYSTEM,
+                Collections.<DomainRequirement>emptyList());
+        
+        if (CollectionUtils.isEmpty(credentials)) {
+            return Collections.emptyList();
+        }
+        return credentials;
+    }
+
+    private boolean credentialExists(@Nullable final Item item, @Nullable final String credentialId) {
+        if (StringUtils.isNotBlank(credentialId)) {
+            final List<StandardUsernamePasswordCredentials> credentials = getAllCredentials(item);
+            for (StandardUsernamePasswordCredentials credential : credentials) {
+                if (StringUtils.equals(credential.getId(), credentialId)) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
     }
 }

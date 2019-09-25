@@ -157,12 +157,12 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
         XrayExporter client;
 
         if (serverInstance.getHosting() == HostingType.CLOUD) {
-            client = new XrayExporterCloudImpl(serverInstance.getUsername(),
-                    serverInstance.getPassword());
+            client = new XrayExporterCloudImpl(serverInstance.getCredential(build).getUsername(),
+                    serverInstance.getCredential(build).getPassword());
         } else if (serverInstance.getHosting() == null || serverInstance.getHosting() == HostingType.SERVER) {
             client = new XrayExporterImpl(serverInstance.getServerAddress(),
-                    serverInstance.getUsername(),
-                    serverInstance.getPassword());
+                    serverInstance.getCredential(build).getUsername(),
+                    serverInstance.getCredential(build).getPassword());
         } else {
             throw new XrayJenkinsGenericException("Hosting type not recognized.");
         }

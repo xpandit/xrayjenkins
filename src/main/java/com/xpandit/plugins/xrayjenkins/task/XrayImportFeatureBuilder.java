@@ -12,6 +12,7 @@ import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
 import com.xpandit.plugins.xrayjenkins.Utils.FileUtils;
 import com.xpandit.plugins.xrayjenkins.Utils.FormUtils;
 import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
+import com.xpandit.plugins.xrayjenkins.model.CredentialBean;
 import com.xpandit.plugins.xrayjenkins.model.HostingType;
 import com.xpandit.plugins.xrayjenkins.model.ServerConfiguration;
 import com.xpandit.plugins.xrayjenkins.model.XrayInstance;
@@ -115,14 +116,17 @@ public class XrayImportFeatureBuilder extends Builder implements SimpleBuildStep
             listener.getLogger().println("You must provide the directory path");
             throw new AbortException();
         }
-        XrayTestImporter client;
+        
 
+        
+        final CredentialBean credentialBean = xrayInstance.getCredential(run);
+        XrayTestImporter client;
         if (xrayInstance.getHosting() == HostingType.CLOUD) {
-            client = new XrayTestImporterCloudImpl(xrayInstance.getUsername(), xrayInstance.getPassword());
+            client = new XrayTestImporterCloudImpl(xrayInstance.getCredential(run).getUsername(), xrayInstance.getCredential(run).getPassword());
         } else if (xrayInstance.getHosting() == null || xrayInstance.getHosting() == HostingType.SERVER) {
             client = new XrayTestImporterImpl(xrayInstance.getServerAddress(),
-                    xrayInstance.getUsername(),
-                    xrayInstance.getPassword());
+                    xrayInstance.getCredential(run).getUsername(),
+                    xrayInstance.getCredential(run).getPassword());
         } else {
             throw new XrayJenkinsGenericException("Hosting type not recognized.");
         }
