@@ -102,11 +102,12 @@ public class ServerConfiguration extends GlobalConfiguration {
         } else {
             if (!item.hasPermission(Item.EXTENDED_READ)
                     && !item.hasPermission(CredentialsProvider.USE_ITEM)) {
-                return FormValidation.ok(); // (3)
+                return FormValidation.ok();
             }
         }
-        if (StringUtils.isBlank(value)) { // (4)
-            return FormValidation.ok(); // (4)
+        
+        if (StringUtils.isBlank(value)) {
+            return FormValidation.error("Authentication not filled!");
         }
         
         if (!credentialExists(item, value)) {
