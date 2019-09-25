@@ -10,32 +10,42 @@ import javax.annotation.Nullable;
 import org.apache.commons.lang.StringUtils;
 
 public class CredentialBean {
+    private final String credentialId;
+    private final Run<?, ?> run;
+    
     private String username = null;
     private Secret password = null;
     
     CredentialBean(final String credentialId, final Run<?, ?> run) {
-        if (StringUtils.isNotBlank(credentialId)) {
-            final StandardUsernamePasswordCredentials credential =
-                    CredentialsProvider.findCredentialById(credentialId, StandardUsernamePasswordCredentials.class, run, (List<DomainRequirement>) null);
-            
-            if (credential != null) {
-                this.username = credential.getUsername();
-                this.password = credential.getPassword();
-            }
-        }
+        this.credentialId = credentialId;
+        this.run = run;
     }
 
     @Nullable
     public String getUsername() {
+        resolveUsernamePassword();
         return username;
     }
 
     @Nullable
     public String getPassword() {
+        resolveUsernamePassword();
         if (password != null) {
             return password.getPlainText();
         }
         
         return null;
+    }
+    
+    private void resolveUsernamePassword() {
+        if (StringUtils.isNotBlank(this.credentialId)) {
+            final StandardUsernamePasswordCredentials credential =
+                    CredentialsProvider.findCredentialById(this.credentialId, StandardUsernamePasswordCredentials.class, run, (List<DomainRequirement>) null);
+
+            if (credential != null) {
+                this.username = credential.getUsername();
+                this.password = credential.getPassword();
+            }
+        }
     }
 }
