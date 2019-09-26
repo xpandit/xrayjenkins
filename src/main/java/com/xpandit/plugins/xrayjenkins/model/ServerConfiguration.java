@@ -12,31 +12,25 @@ import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.DomainRequirement;
+import com.xpandit.xray.service.impl.XrayClientImpl;
+import com.xpandit.xray.service.impl.XrayCloudClientImpl;
+import hudson.Extension;
 import hudson.model.Item;
 import hudson.security.ACL;
+import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import javax.annotation.Nullable;
-import javax.servlet.ServletException;
-
+import jenkins.model.GlobalConfiguration;
 import jenkins.model.Jenkins;
+import net.sf.json.JSONObject;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
-
-import com.xpandit.xray.service.impl.XrayClientImpl;
-import com.xpandit.xray.service.impl.XrayCloudClientImpl;
-
-import hudson.Extension;
-import hudson.util.FormValidation;
-import jenkins.model.GlobalConfiguration;
-import net.sf.json.JSONObject;
-import org.apache.commons.lang3.StringUtils;
 
 import static com.cloudbees.plugins.credentials.CredentialsMatchers.withId;
 
