@@ -36,7 +36,7 @@
 		<developer>
 			<id>Support</id>
 			<name>Xray Support</name>
-			<email>app.support@xpand-it.com</email>
+			<email>xray.support@xpand-it.com</email>
 		</developer>
 	</developers>
 	
@@ -48,7 +48,6 @@
 	</scm>
 
 	<dependencies>
-		
 		<dependency>
 			<groupId>com.xpandit.xray</groupId>
 			<artifactId>client-core</artifactId>			
@@ -143,8 +142,8 @@
 			<url>https://repo.jenkins-ci.org/public/</url>
 		</repository>
 		<repository>
-			<id>xpandit-repo-releases</id>
-			<url>https://apps.xpand-it.com/artifactory/releases</url>
+			<id>xpandit-repo-releases-public</id>
+			<url>http://maven.xpand-it.com/artifactory/releases</url>
 		</repository>
 	</repositories>
 	
