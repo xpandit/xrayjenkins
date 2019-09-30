@@ -5,11 +5,11 @@ If you need any further assistance or want to report a bug, please contact us in
 
 ======= *Useful links* =======
 
-Xray official website: [https://www.getxray.app]()
+Xray official website: [https://www.getxray.app](https://www.getxray.app)
 
-Plugin Documentation: [https://confluence.xpand-it.com/display/XRAY/Integration+with+Jenkins]()
+Plugin Documentation: [https://confluence.xpand-it.com/display/XRAY/Integration+with+Jenkins](https://confluence.xpand-it.com/display/XRAY/Integration+with+Jenkins)
 
-Support: [http://xraysupport.xpand-it.com]()
+Support: [http://xraysupport.xpand-it.com](http://xraysupport.xpand-it.com)
 
-Jira issue tracker: [https://jira.xpand-it.com/projects/XRAYJENKINS/issues]()
+Jira issue tracker: [https://jira.xpand-it.com/projects/XRAYJENKINS/issues](https://jira.xpand-it.com/projects/XRAYJENKINS/issues)
 
