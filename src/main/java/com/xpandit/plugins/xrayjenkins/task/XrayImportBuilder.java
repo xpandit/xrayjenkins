@@ -106,7 +106,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 	private static final String SERVER_DOC_URL = "https://confluence.xpand-it.com/display/XRAY/Import+Execution+Results+-+REST";
 
     private String formatSuffix; //value of format select
-    private String serverInstance;//Configuration ID of the JIRA instance
+    private String serverInstance;//Configuration ID of the Jira instance
     private String inputInfoSwitcher;//value of the input type switcher
 	private String endpointName;
 	private String projectKey;
@@ -662,7 +662,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 
         private void validateFormData(JSONObject formData) throws Descriptor.FormException{
 			if(StringUtils.isBlank(formData.getString(SERVER_INSTANCE))){
-				throw new Descriptor.FormException("Xray Results Import Task error, you must provide a valid JIRA Instance",SERVER_INSTANCE);
+				throw new Descriptor.FormException("Xray Results Import Task error, you must provide a valid Jira Instance",SERVER_INSTANCE);
 			}
 		}
 

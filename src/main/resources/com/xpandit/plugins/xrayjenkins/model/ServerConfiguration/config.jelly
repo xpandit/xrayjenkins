@@ -1,14 +1,15 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
-	<f:section title="${%Xray for JIRA configuration}" name="xrayinstance">
-		<f:entry title="${%JIRA instances}">
+	<f:section title="${%Xray Configuration}" name="xrayinstance">
+		<f:entry title="${%Jira instances}">
 			<f:repeatable var="serverInstances" items="${descriptor.serverInstances}" minimum="1">
 				<table>
 
-					<f:entry title="${%Configuration ID}" field="configID" >
-						<f:textbox value="${serverInstances.configID}" style="display:none" />
-						${serverInstances.configID}
-					</f:entry>
+					<j:if test="${!empty(serverInstances.configID)}">
+						<f:entry title="${%Configuration ID}" field="configID" >
+							${serverInstances.configID}
+						</f:entry>
+					</j:if>
 
 					<f:entry title="${%Configuration alias}" field="alias">
 						<f:textbox value="${serverInstances.alias}" />
@@ -21,7 +22,7 @@
 						</select>
 					</f:entry>
 
-					<f:entry title="${%Server address}" field="serverAddress">
+					<f:entry title="${%Jira URL}" field="serverAddress">
 							<f:textbox value="${serverInstances.serverAddress}" />
 					</f:entry>
 
@@ -46,7 +47,7 @@
 			</f:repeatable>
 		</f:entry>
 	</f:section>
-
+	
 	<script>
 		(function(Q){
 			var changeUsernameLabel = function (instanceInput, label) {

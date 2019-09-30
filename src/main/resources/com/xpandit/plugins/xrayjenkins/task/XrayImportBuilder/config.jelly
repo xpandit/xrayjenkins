@@ -241,7 +241,7 @@
    	})(jQuery);
 
 </script>
-	<f:entry title="${%JIRA Instance}" field="serverInstance">
+	<f:entry title="${%Jira Instance}" field="serverInstance">
    		<f:select id="selectInstance_${descriptor.defaultBuildID()}"/>
 	</f:entry>
 
