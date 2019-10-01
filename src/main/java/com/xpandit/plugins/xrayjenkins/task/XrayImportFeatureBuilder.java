@@ -11,6 +11,7 @@ import com.xpandit.plugins.xrayjenkins.Utils.BuilderUtils;
 import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
 import com.xpandit.plugins.xrayjenkins.Utils.FileUtils;
 import com.xpandit.plugins.xrayjenkins.Utils.FormUtils;
+import com.xpandit.plugins.xrayjenkins.Utils.ProxyUtil;
 import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
 import com.xpandit.plugins.xrayjenkins.model.HostingType;
 import com.xpandit.plugins.xrayjenkins.model.ServerConfiguration;
@@ -21,6 +22,7 @@ import com.xpandit.xray.model.UploadResult;
 import com.xpandit.xray.service.XrayTestImporter;
 import com.xpandit.xray.service.impl.XrayTestImporterCloudImpl;
 import com.xpandit.xray.service.impl.XrayTestImporterImpl;
+import com.xpandit.xray.service.impl.delegates.HttpRequestProvider;
 import hudson.AbortException;
 import hudson.Extension;
 import hudson.FilePath;
@@ -116,13 +118,15 @@ public class XrayImportFeatureBuilder extends Builder implements SimpleBuildStep
             throw new AbortException();
         }
         
+        final HttpRequestProvider.ProxyBean proxyBean = ProxyUtil.createProxyBean();
         XrayTestImporter client;
         if (xrayInstance.getHosting() == HostingType.CLOUD) {
-            client = new XrayTestImporterCloudImpl(xrayInstance.getCredential(run).getUsername(), xrayInstance.getCredential(run).getPassword());
+            client = new XrayTestImporterCloudImpl(xrayInstance.getCredential(run).getUsername(), xrayInstance.getCredential(run).getPassword(), proxyBean);
         } else if (xrayInstance.getHosting() == null || xrayInstance.getHosting() == HostingType.SERVER) {
             client = new XrayTestImporterImpl(xrayInstance.getServerAddress(),
                     xrayInstance.getCredential(run).getUsername(),
-                    xrayInstance.getCredential(run).getPassword());
+                    xrayInstance.getCredential(run).getPassword(),
+                    proxyBean);
         } else {
             throw new XrayJenkinsGenericException("Hosting type not recognized.");
         }
