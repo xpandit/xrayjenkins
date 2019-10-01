@@ -142,7 +142,7 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
         XrayExportBuilderCompatibilityDelegate compatibilityDelegate = new XrayExportBuilderCompatibilityDelegate(this);
         compatibilityDelegate.applyCompatibility();
         
-        listener.getLogger().println("Starting export task...");
+        listener.getLogger().println("Starting XRAY: Cucumber Features Export Task...");
         
         listener.getLogger().println("##########################################################");
         listener.getLogger().println("####   Xray is exporting the feature files  ####");
