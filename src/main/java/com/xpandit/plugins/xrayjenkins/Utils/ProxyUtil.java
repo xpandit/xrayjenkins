@@ -13,7 +13,12 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 
 public class ProxyUtil {
     private ProxyUtil() {}
-    
+
+    /**
+     * Gets the Proxy Bean based ion the jenkins configuration.
+     * 
+     * @return If there is an proxy configured, it will return the bean with this information, otherwise, it will return null.
+     */
     public static HttpRequestProvider.ProxyBean createProxyBean() {
         ProxyConfiguration proxyConfiguration = Jenkins.getInstance().proxy;
         if (proxyConfiguration != null) {
