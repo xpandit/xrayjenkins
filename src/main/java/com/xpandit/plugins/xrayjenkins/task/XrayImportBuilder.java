@@ -434,7 +434,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 
 		validate(getDynamicFieldsMap());
 
-		listener.getLogger().println("Starting XRAY: Cucumber Features Import Task...");
+		listener.getLogger().println("Starting XRAY: Results Import Task...");
 
         listener.getLogger().println("##########################################################");
 		listener.getLogger().println("####   Xray is importing the feature files  ####");
