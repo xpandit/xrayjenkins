@@ -10,10 +10,12 @@ package com.xpandit.plugins.xrayjenkins.task;
 import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
 import com.xpandit.plugins.xrayjenkins.Utils.FormUtils;
 import com.xpandit.plugins.xrayjenkins.Utils.BuilderUtils;
+import com.xpandit.plugins.xrayjenkins.Utils.ProxyUtil;
 import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
 import com.xpandit.plugins.xrayjenkins.model.HostingType;
 import com.xpandit.plugins.xrayjenkins.task.compatibility.XrayExportBuilderCompatibilityDelegate;
 import com.xpandit.xray.service.impl.XrayExporterCloudImpl;
+import com.xpandit.xray.service.impl.delegates.HttpRequestProvider;
 import hudson.EnvVars;
 import java.io.IOException;
 import java.io.InputStream;
@@ -154,15 +156,18 @@ public class XrayExportBuilder extends Builder implements SimpleBuildStep {
             throw new AbortException("The Jira server configuration of this task was not found.");
         }
 
+        final HttpRequestProvider.ProxyBean proxyBean = ProxyUtil.createProxyBean();
         XrayExporter client;
 
         if (serverInstance.getHosting() == HostingType.CLOUD) {
             client = new XrayExporterCloudImpl(serverInstance.getCredential(build).getUsername(),
-                    serverInstance.getCredential(build).getPassword());
+                    serverInstance.getCredential(build).getPassword(),
+                    proxyBean);
         } else if (serverInstance.getHosting() == null || serverInstance.getHosting() == HostingType.SERVER) {
             client = new XrayExporterImpl(serverInstance.getServerAddress(),
                     serverInstance.getCredential(build).getUsername(),
-                    serverInstance.getCredential(build).getPassword());
+                    serverInstance.getCredential(build).getPassword(),
+                    proxyBean);
         } else {
             throw new XrayJenkinsGenericException("Hosting type not recognized.");
         }

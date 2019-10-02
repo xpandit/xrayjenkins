@@ -12,8 +12,10 @@ import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.DomainRequirement;
+import com.xpandit.plugins.xrayjenkins.Utils.ProxyUtil;
 import com.xpandit.xray.service.impl.XrayClientImpl;
 import com.xpandit.xray.service.impl.XrayCloudClientImpl;
+import com.xpandit.xray.service.impl.delegates.HttpRequestProvider;
 import hudson.Extension;
 import hudson.model.Item;
 import hudson.security.ACL;
@@ -130,15 +132,16 @@ public class ServerConfiguration extends GlobalConfiguration {
         
         final String username = credential.getUsername();
         final String password = credential.getPassword().getPlainText();
+        final HttpRequestProvider.ProxyBean proxyBean = ProxyUtil.createProxyBean();
         boolean isConnectionOk;
 
         if (hosting.equals(HostingType.CLOUD.getTypeName())) {
-            isConnectionOk = (new XrayCloudClientImpl(username, password)).testConnection();
+            isConnectionOk = (new XrayCloudClientImpl(username, password, proxyBean)).testConnection();
         } else if (hosting.equals(HostingType.SERVER.getTypeName())) {
             if(StringUtils.isBlank(serverAddress)) {
                 return FormValidation.error("Server address can't be empty");
             }
-            isConnectionOk = (new XrayClientImpl(serverAddress, username, password)).testConnection();
+            isConnectionOk = (new XrayClientImpl(serverAddress, username, password, proxyBean)).testConnection();
         } else {
             return FormValidation.error("Hosting type not recognized.");
         }
