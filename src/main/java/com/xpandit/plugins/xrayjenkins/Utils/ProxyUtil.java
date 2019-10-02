@@ -15,7 +15,7 @@ public class ProxyUtil {
     private ProxyUtil() {}
 
     /**
-     * Gets the Proxy Bean based ion the jenkins configuration.
+     * Gets the Proxy Bean based on the jenkins configuration.
      * 
      * @return If there is an proxy configured, it will return the bean with this information, otherwise, it will return null.
      */
