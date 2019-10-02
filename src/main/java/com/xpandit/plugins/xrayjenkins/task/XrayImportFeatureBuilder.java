@@ -105,6 +105,13 @@ public class XrayImportFeatureBuilder extends Builder implements SimpleBuildStep
                         @Nonnull Launcher launcher,
                         @Nonnull TaskListener listener) throws IOException, InterruptedException {
         XrayInstance xrayInstance = ConfigurationUtils.getConfiguration(this.serverInstance);
+
+        listener.getLogger().println("Starting XRAY: Cucumber Features Import Task...");
+
+        listener.getLogger().println("##########################################################");
+        listener.getLogger().println("####   Xray is importing the feature files  ####");
+        listener.getLogger().println("##########################################################");
+
         if(xrayInstance == null){
             listener.getLogger().println("The server instance is null");
             throw new AbortException();
