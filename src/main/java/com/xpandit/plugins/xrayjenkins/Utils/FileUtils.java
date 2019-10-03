@@ -56,7 +56,17 @@ public class FileUtils {
         }
         return paths;
     }
-    
+
+    /**
+     * This method will return all files with the ".feature" extension within a given build workspace and a path.
+     * 
+     * @param workspace the build's workspace
+     * @param path the relative or absolute path where to search for the feature files
+     * @param listener the lostener used to write some logs
+     * @return Unmodifiable set with the full absolute path of the feature files found
+     * @throws IOException Exception thrown when file/directory reading the operation fails
+     * @throws InterruptedException Exception thrown when file/directory reading the operation fails
+     */
     public static Set<String> getFeatureFileNamesFromWorkspace(FilePath workspace,
                                                                String path,
                                                                TaskListener listener) throws IOException, InterruptedException {
