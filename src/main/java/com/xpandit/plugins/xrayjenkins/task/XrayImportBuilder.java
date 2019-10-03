@@ -531,7 +531,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		    Endpoint targetEndpoint = lookupForEndpoint();
 			Map<com.xpandit.xray.model.QueryParameter,String> queryParams = prepareQueryParam(env);
 
-			if(BuilderUtils.isTestExecKeyInvalid(this.testExecKey)
+			if(BuilderUtils.isEnvVariableUndefined(this.testExecKey)
 					&& StringUtils.isNotBlank(sameTestExecutionKey)
 					&& "true".equals(importToSameExecution)){
 				queryParams.put(com.xpandit.xray.model.QueryParameter.TEST_EXEC_KEY, sameTestExecutionKey);

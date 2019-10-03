@@ -32,11 +32,11 @@ public class BuilderUtils {
     }
 
     /**
-     * Utility method to check if the test execution key is invalid
-     * @param testExecKey the test execution key
-     * @return <code>true</code> if the test execution key matches the regex or is null/empty, <code>false</code> otherwise
+     * Utility method to check if the given parameter is an undefined environment variable
+     * @param variable the variable
+     * @return <code>true</code> if is empty or the variable has no value <code>false</code> otherwise
      */
-    public static boolean isTestExecKeyInvalid(String testExecKey) {
-        return (StringUtils.isNotEmpty(testExecKey) || testExecKey.trim().matches(BETWEEN_BRACES_REGEX));
+    public static boolean isEnvVariableUndefined(String variable) {
+        return (StringUtils.isEmpty(variable) || variable.trim().matches(BETWEEN_BRACES_REGEX));
     }
 }
