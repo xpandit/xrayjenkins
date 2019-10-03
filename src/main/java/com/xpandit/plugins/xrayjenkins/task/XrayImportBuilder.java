@@ -106,6 +106,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 	private static final String FORMAT_SUFFIX = "formatSuffix";
 	private static final String CLOUD_DOC_URL = "https://confluence.xpand-it.com/display/XRAYCLOUD/Import+Execution+Results+-+REST";
 	private static final String SERVER_DOC_URL = "https://confluence.xpand-it.com/display/XRAY/Import+Execution+Results+-+REST";
+	private static final String BETWEEN_BRACES_REGEX = "^\\$\\{.*\\}$";
 
     private String formatSuffix; //value of format select
     private String serverInstance;//Configuration ID of the JIRA instance
@@ -531,7 +532,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		    Endpoint targetEndpoint = lookupForEndpoint();
 			Map<com.xpandit.xray.model.QueryParameter,String> queryParams = prepareQueryParam(env);
 
-			if(StringUtils.isBlank(this.testExecKey)
+			if(this.testExecKey.matches(BETWEEN_BRACES_REGEX)
 					&& StringUtils.isNotBlank(sameTestExecutionKey)
 					&& "true".equals(importToSameExecution)){
 				queryParams.put(com.xpandit.xray.model.QueryParameter.TEST_EXEC_KEY, sameTestExecutionKey);
