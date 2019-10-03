@@ -5,18 +5,18 @@ import hudson.FilePath;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 
 /**
- * This class will it's a FileFilter implementation that will only "accept" files that are both:
+ * This class it's a FileFilter implementation that will only "accept" files that are both:
  * 1) In the Set of "valid" files.
- * 2) Has been modified in the last <i>"lastModified"</i> minutes. (if null, we considered all files has been modified)
- *
+ * 2) Has been modified in the last <i>"lastModified"</i> minutes. (if null, we considered all files has been modified).
  */
-public class OnlyFeatureFilesInPathFilter implements FileFilter {
+public class OnlyFeatureFilesInPathFilter implements FileFilter, Serializable {
 
     private final Set<String> validFilePaths;
     private final String lastModified;
