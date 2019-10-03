@@ -37,8 +37,6 @@ public class BuilderUtils {
      * @return <code>true</code> if the test execution key matches the regex or is null/empty, <code>false</code> otherwise
      */
     public static boolean isTestExecKeyInvalid(String testExecKey) {
-        if(StringUtils.isNotEmpty(testExecKey)) {
-            return testExecKey.trim().matches(BETWEEN_BRACES_REGEX);
-        } else return true;
+        return (StringUtils.isNotEmpty(testExecKey) || testExecKey.trim().matches(BETWEEN_BRACES_REGEX));
     }
 }
