@@ -11,8 +11,11 @@ import hudson.matrix.MatrixProject;
 import hudson.maven.MavenModuleSet;
 import hudson.model.AbstractProject;
 import hudson.model.FreeStyleProject;
+import org.apache.commons.lang3.StringUtils;
 
 public class BuilderUtils {
+
+    private static final String BETWEEN_BRACES_REGEX = "^\\$\\{.*\\}$";
 
     /**
      * Utility method to check if the project type is supported by XrayJenkins plugin
@@ -28,4 +31,14 @@ public class BuilderUtils {
                 || MavenModuleSet.class.isAssignableFrom(jobType);
     }
 
+    /**
+     * Utility method to check if the test execution key is invalid
+     * @param testExecKey the test execution key
+     * @return <code>true</code> if the test execution key matches the regex or is null/empty, <code>false</code> otherwise
+     */
+    public static boolean isTestExecKeyInvalid(String testExecKey) {
+        if(StringUtils.isNotEmpty(testExecKey)) {
+            return testExecKey.trim().matches(BETWEEN_BRACES_REGEX);
+        } else return true;
+    }
 }
