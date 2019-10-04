@@ -29,6 +29,12 @@ public class BuilderUtils {
                 || MavenModuleSet.class.isAssignableFrom(jobType);
     }
 
+
+    /**
+     * Utility method to check if the endpoint supports glob expressions
+     * @param endpointValue the endpoint value
+     * @return <code>true</code> if the endpoint supports glob expressions , <code>false </code> otherwise
+     */
     public static boolean areGlobExpressionsSupported(Endpoint endpointValue) {
         return (Endpoint.JUNIT.equals(endpointValue)
                 || Endpoint.NUNIT.equals(endpointValue)
