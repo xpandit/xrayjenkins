@@ -12,8 +12,11 @@ import hudson.matrix.MatrixProject;
 import hudson.maven.MavenModuleSet;
 import hudson.model.AbstractProject;
 import hudson.model.FreeStyleProject;
+import org.apache.commons.lang3.StringUtils;
 
 public class BuilderUtils {
+
+    private static final String BETWEEN_BRACES_REGEX = "^\\$\\{.*\\}$";
 
     /**
      * Utility method to check if the project type is supported by XrayJenkins plugin
@@ -28,7 +31,6 @@ public class BuilderUtils {
                 || MatrixProject.class.isAssignableFrom(jobType)
                 || MavenModuleSet.class.isAssignableFrom(jobType);
     }
-
 
     /**
      * Utility method to check if the endpoint supports glob expressions
@@ -46,5 +48,13 @@ public class BuilderUtils {
                 || Endpoint.TESTNG_MULTIPART.equals(endpointValue)
                 || Endpoint.NUNIT_MULTIPART.equals(endpointValue));
     }
-
+  
+    /**
+     * Utility method to check if the given parameter is an undefined environment variable
+     * @param variable the variable
+     * @return <code>true</code> if is empty or the variable has no value <code>false</code> otherwise
+     */
+    public static boolean isEnvVariableUndefined(String variable) {
+        return (StringUtils.isEmpty(variable) || variable.trim().matches(BETWEEN_BRACES_REGEX));
+    }
 }
