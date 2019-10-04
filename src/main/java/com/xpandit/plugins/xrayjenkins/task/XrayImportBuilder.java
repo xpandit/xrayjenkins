@@ -467,12 +467,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 
 		Endpoint endpointValue = Endpoint.lookupBySuffix(this.endpointName);
 
-		if(Endpoint.JUNIT.equals(endpointValue)
-				|| Endpoint.NUNIT.equals(endpointValue)
-				|| Endpoint.TESTNG.equals(endpointValue)
-				|| Endpoint.ROBOT.equals(endpointValue)
-				|| Endpoint.XUNIT.equals(endpointValue)){
-
+		if(BuilderUtils.areGlobExpressionsSupported(endpointValue)){
 			UploadResult result;
 			ObjectMapper mapper = new ObjectMapper();
 			String key = null;

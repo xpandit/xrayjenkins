@@ -7,6 +7,7 @@
  */
 package com.xpandit.plugins.xrayjenkins.Utils;
 
+import com.xpandit.xray.model.Endpoint;
 import hudson.matrix.MatrixProject;
 import hudson.maven.MavenModuleSet;
 import hudson.model.AbstractProject;
@@ -26,6 +27,18 @@ public class BuilderUtils {
         return FreeStyleProject.class.isAssignableFrom(jobType)
                 || MatrixProject.class.isAssignableFrom(jobType)
                 || MavenModuleSet.class.isAssignableFrom(jobType);
+    }
+
+    public static boolean areGlobExpressionsSupported(Endpoint endpointValue) {
+        return (Endpoint.JUNIT.equals(endpointValue)
+                || Endpoint.NUNIT.equals(endpointValue)
+                || Endpoint.TESTNG.equals(endpointValue)
+                || Endpoint.ROBOT.equals(endpointValue)
+                || Endpoint.XUNIT.equals(endpointValue)
+                || Endpoint.JUNIT_MULTIPART.equals(endpointValue)
+                || Endpoint.ROBOT_MULTIPART.equals(endpointValue)
+                || Endpoint.TESTNG_MULTIPART.equals(endpointValue)
+                || Endpoint.NUNIT_MULTIPART.equals(endpointValue));
     }
 
 }
