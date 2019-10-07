@@ -31,6 +31,7 @@ import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import groovy.ui.SystemOutputInterceptor;
 import org.apache.commons.collections.MapUtils;
 import org.json.simple.JSONArray;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -106,6 +107,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 	private static final String FORMAT_SUFFIX = "formatSuffix";
 	private static final String CLOUD_DOC_URL = "https://confluence.xpand-it.com/display/XRAYCLOUD/Import+Execution+Results+-+REST";
 	private static final String SERVER_DOC_URL = "https://confluence.xpand-it.com/display/XRAY/Import+Execution+Results+-+REST";
+	private static final String MULTIPART = "multipart";
 
     private String formatSuffix; //value of format select
     private String serverInstance;//Configuration ID of the JIRA instance
@@ -390,11 +392,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 	}
 
 	private void addImportToSameExecField(Endpoint e, FormatBean bean){
-		if(Endpoint.JUNIT.equals(e)
-				|| Endpoint.TESTNG.equals(e)
-				|| Endpoint.NUNIT.equals(e)
-				|| Endpoint.ROBOT.equals(e)
-				|| Endpoint.XUNIT.equals(e)){
+		if(BuilderUtils.isGlobExpressionsSupported(e)){
 			ParameterBean pb = new ParameterBean(SAME_EXECUTION_CHECKBOX, "same exec text box", false);
 			pb.setConfiguration(importToSameExecution);
 			bean.getConfigurableFields().add(0, pb);
@@ -467,11 +465,10 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 
 		Endpoint endpointValue = Endpoint.lookupBySuffix(this.endpointName);
 
-		if(BuilderUtils.areGlobExpressionsSupported(endpointValue)){
+		if(BuilderUtils.isGlobExpressionsSupported(endpointValue)){
 			UploadResult result;
 			ObjectMapper mapper = new ObjectMapper();
 			String key = null;
-
 			for(FilePath fp : FileUtils.getFiles(workspace, resolved, listener)){
 				result = uploadResults(workspace, listener,client, fp, env, key);
 				if(key == null && "true".equals(importToSameExecution)){
@@ -526,9 +523,13 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		    Endpoint targetEndpoint = lookupForEndpoint();
 			Map<com.xpandit.xray.model.QueryParameter,String> queryParams = prepareQueryParam(env);
 
-			if(StringUtils.isBlank(this.testExecKey)
+			if( (StringUtils.isEmpty(this.testExecKey) || this.testExecKey.trim().matches("^\\$\\{.*\\}$"))
 					&& StringUtils.isNotBlank(sameTestExecutionKey)
 					&& "true".equals(importToSameExecution)){
+				if(targetEndpoint.getName().contains(MULTIPART)){
+					targetEndpoint = BuilderUtils.getGenericEndpointFromMultipartSuffix(targetEndpoint.getSuffix());
+				}
+
 				queryParams.put(com.xpandit.xray.model.QueryParameter.TEST_EXEC_KEY, sameTestExecutionKey);
 			}
 
@@ -727,11 +728,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         }
 
         private void addImportToSameExecField(Endpoint e, FormatBean bean){
-        	if(Endpoint.JUNIT.equals(e)
-					|| Endpoint.TESTNG.equals(e)
-					|| Endpoint.NUNIT.equals(e)
-					|| Endpoint.ROBOT.equals(e)
-					|| Endpoint.XUNIT.equals(e)){
+        	if(BuilderUtils.isGlobExpressionsSupported(e)){
 				ParameterBean pb = new ParameterBean(SAME_EXECUTION_CHECKBOX, "same exec text box", false);
 				bean.getConfigurableFields().add(0, pb);
 			}
