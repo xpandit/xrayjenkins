@@ -523,7 +523,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		    Endpoint targetEndpoint = lookupForEndpoint();
 			Map<com.xpandit.xray.model.QueryParameter,String> queryParams = prepareQueryParam(env);
 
-			if( (StringUtils.isEmpty(this.testExecKey) || this.testExecKey.trim().matches("^\\$\\{.*\\}$"))
+			if(BuilderUtils.isEnvVariableUndefined(this.testExecKey)
 					&& StringUtils.isNotBlank(sameTestExecutionKey)
 					&& "true".equals(importToSameExecution)){
 				if(targetEndpoint.getName().contains(MULTIPART)){

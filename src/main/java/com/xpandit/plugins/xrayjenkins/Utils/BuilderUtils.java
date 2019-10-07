@@ -13,12 +13,12 @@ import hudson.matrix.MatrixProject;
 import hudson.maven.MavenModuleSet;
 import hudson.model.AbstractProject;
 import hudson.model.FreeStyleProject;
-
-import java.util.Objects;
+import org.apache.commons.lang3.StringUtils;
 
 public class BuilderUtils {
 
     private static final String SLASH_SEPARATED_REGEX = "/";
+    private static final String BETWEEN_BRACES_REGEX = "^\\$\\{.*\\}$";
 
     /**
      * Utility method to check if the project type is supported by XrayJenkins plugin
@@ -33,7 +33,6 @@ public class BuilderUtils {
                 || MatrixProject.class.isAssignableFrom(jobType)
                 || MavenModuleSet.class.isAssignableFrom(jobType);
     }
-
 
     /**
      * Utility method to check if the endpoint supports glob expressions
@@ -64,9 +63,18 @@ public class BuilderUtils {
             String genericEndpointName = "/" + multipartEndpointSuffixSeparated[1];
             Endpoint newEndpoint = Endpoint.lookupBySuffix(genericEndpointName);
 
-            if(Objects.isNull(newEndpoint)){
+            if(newEndpoint == null){
                 throw new XrayJenkinsGenericException("No file path was specified");
             }
             return newEndpoint;
+    }
+  
+    /**
+     * Utility method to check if the given parameter is an undefined environment variable
+     * @param variable the variable
+     * @return <code>true</code> if is empty or the variable has no value <code>false</code> otherwise
+     */
+    public static boolean isEnvVariableUndefined(String variable) {
+        return (StringUtils.isEmpty(variable) || variable.trim().matches(BETWEEN_BRACES_REGEX));
     }
 }
