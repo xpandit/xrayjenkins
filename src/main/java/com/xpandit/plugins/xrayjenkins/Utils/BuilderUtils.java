@@ -48,11 +48,14 @@ public class BuilderUtils {
                 || Endpoint.JUNIT_MULTIPART.equals(endpointValue)
                 || Endpoint.ROBOT_MULTIPART.equals(endpointValue)
                 || Endpoint.TESTNG_MULTIPART.equals(endpointValue)
-                || Endpoint.NUNIT_MULTIPART.equals(endpointValue));
+                || Endpoint.NUNIT_MULTIPART.equals(endpointValue)
+                || Endpoint.XUNIT_MULTIPART.equals(endpointValue));
     }
 
     /**
      * Utility method to get the generic endpoint from the corresponding multipart endpoint.
+     * In example, for the junit multipart url: /junit/multipart
+     *             we extract the generic url: /junit
      * @param multipartEndpointSuffix the corresponding multipart endpoint suffix
      * @return the new generic endpoint
      */
