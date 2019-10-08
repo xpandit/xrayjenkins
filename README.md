@@ -1,12 +1,12 @@
-This add-on enables an easy integration between Jenkins and Xray for JIRA, providing the means for successful Continuous Integration by allowing users to report automated testing results.
-Refer to the [documentation](https://apps.xpand-it.com/confluence/display/RAVEN/Xray+-+%5BCI%5D+Jenkins+plugin), for more information.
+This add-on enables an easy integration between Jenkins and Xray Test Management for Jira, providing the means for successful Continuous Integration by allowing users to report automated testing results.
+Please refer to the [documentation](https://confluence.xpand-it.com/display/XRAY/Integration+with+Jenkins), for more information.
 
-Run the following command to launch a Jenkins instance
+If you need any further assistance or want to report a bug, please contact us in our [support system](http://xraysupport.xpand-it.com).
 
-mvn hpi:run -Djetty.port=8087
+======= *Useful links* =======
 
-Run the following command to execute Jenkins in debug mode
-
-mvnDebug hpi:run
-
+* Xray official website: [https://www.getxray.app](https://www.getxray.app)
+* Plugin Documentation: [https://confluence.xpand-it.com/display/XRAY/Integration+with+Jenkins](https://confluence.xpand-it.com/display/XRAY/Integration+with+Jenkins)
+* Support: [http://xraysupport.xpand-it.com](http://xraysupport.xpand-it.com)
+* Jira issue tracker: [https://jira.xpand-it.com/projects/XRAYJENKINS/issues](https://jira.xpand-it.com/projects/XRAYJENKINS/issues)
 

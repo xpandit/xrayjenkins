@@ -48,7 +48,7 @@ public class ConfigurationUtils {
     }
 
     /**
-     * Utility method to check if any xray jira server configuration exists
+     * Utility method to check if any xray Jira server configuration exists
      * @return <code>true</code> if any server configuration is available, <code>false</code> otherwise
      */
     public static boolean anyAvailableConfiguration(){

@@ -16,7 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
- * Represents a JIRA/Xray instance.
+ * Represents a Jira/Xray instance.
  */
 public class XrayInstance {
 	
