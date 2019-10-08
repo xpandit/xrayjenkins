@@ -8,7 +8,6 @@
 package com.xpandit.plugins.xrayjenkins.task;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonArray;
 import com.xpandit.plugins.xrayjenkins.Utils.FileUtils;
 import com.xpandit.plugins.xrayjenkins.Utils.ProxyUtil;
 import com.xpandit.plugins.xrayjenkins.model.HostingType;
@@ -32,7 +31,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.apache.commons.collections.MapUtils;
-import org.json.simple.JSONArray;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.DataBoundSetter;
@@ -106,6 +104,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 	private static final String FORMAT_SUFFIX = "formatSuffix";
 	private static final String CLOUD_DOC_URL = "https://confluence.xpand-it.com/display/XRAYCLOUD/Import+Execution+Results+-+REST";
 	private static final String SERVER_DOC_URL = "https://confluence.xpand-it.com/display/XRAY/Import+Execution+Results+-+REST";
+	private static final String MULTIPART = "multipart";
 
     private String formatSuffix; //value of format select
     private String serverInstance;//Configuration ID of the JIRA instance
@@ -390,11 +389,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 	}
 
 	private void addImportToSameExecField(Endpoint e, FormatBean bean){
-		if(Endpoint.JUNIT.equals(e)
-				|| Endpoint.TESTNG.equals(e)
-				|| Endpoint.NUNIT.equals(e)
-				|| Endpoint.ROBOT.equals(e)
-				|| Endpoint.XUNIT.equals(e)){
+		if(BuilderUtils.isGlobExpressionsSupported(e)){
 			ParameterBean pb = new ParameterBean(SAME_EXECUTION_CHECKBOX, "same exec text box", false);
 			pb.setConfiguration(importToSameExecution);
 			bean.getConfigurableFields().add(0, pb);
@@ -467,16 +462,10 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 
 		Endpoint endpointValue = Endpoint.lookupBySuffix(this.endpointName);
 
-		if(Endpoint.JUNIT.equals(endpointValue)
-				|| Endpoint.NUNIT.equals(endpointValue)
-				|| Endpoint.TESTNG.equals(endpointValue)
-				|| Endpoint.ROBOT.equals(endpointValue)
-				|| Endpoint.XUNIT.equals(endpointValue)){
-
+		if(BuilderUtils.isGlobExpressionsSupported(endpointValue)){
 			UploadResult result;
 			ObjectMapper mapper = new ObjectMapper();
 			String key = null;
-
 			for(FilePath fp : FileUtils.getFiles(workspace, resolved, listener)){
 				result = uploadResults(workspace, listener,client, fp, env, key);
 				if(key == null && "true".equals(importToSameExecution)){
@@ -534,6 +523,10 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 			if(BuilderUtils.isEnvVariableUndefined(this.testExecKey)
 					&& StringUtils.isNotBlank(sameTestExecutionKey)
 					&& "true".equals(importToSameExecution)){
+				if(isMultipartEndpoint(targetEndpoint)){
+					targetEndpoint = BuilderUtils.getGenericEndpointFromMultipartSuffix(targetEndpoint.getSuffix());
+				}
+
 				queryParams.put(com.xpandit.xray.model.QueryParameter.TEST_EXEC_KEY, sameTestExecutionKey);
 			}
 
@@ -576,6 +569,10 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
 		}finally{
 			client.shutdown();
 		}
+	}
+
+	private boolean isMultipartEndpoint(Endpoint endpoint) {
+		return endpoint.getName().contains(MULTIPART);
 	}
 
 	private Map<com.xpandit.xray.model.QueryParameter, String> prepareQueryParam(EnvVars env){
@@ -732,11 +729,7 @@ public class XrayImportBuilder extends Notifier implements SimpleBuildStep{
         }
 
         private void addImportToSameExecField(Endpoint e, FormatBean bean){
-        	if(Endpoint.JUNIT.equals(e)
-					|| Endpoint.TESTNG.equals(e)
-					|| Endpoint.NUNIT.equals(e)
-					|| Endpoint.ROBOT.equals(e)
-					|| Endpoint.XUNIT.equals(e)){
+        	if(BuilderUtils.isGlobExpressionsSupported(e)){
 				ParameterBean pb = new ParameterBean(SAME_EXECUTION_CHECKBOX, "same exec text box", false);
 				bean.getConfigurableFields().add(0, pb);
 			}
