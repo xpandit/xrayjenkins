@@ -19,6 +19,7 @@ public class BuilderUtils {
 
     private static final String SLASH_SEPARATED_REGEX = "/";
     private static final String BETWEEN_BRACES_REGEX = "^\\$\\{.*\\}$";
+    private static final int GENERIC_NAME_ARRAY_POSITION = 1;
 
     /**
      * Utility method to check if the project type is supported by XrayJenkins plugin
@@ -61,9 +62,12 @@ public class BuilderUtils {
      */
     public static Endpoint getGenericEndpointFromMultipartSuffix(String multipartEndpointSuffix) {
             String[] multipartEndpointSuffixSeparated = multipartEndpointSuffix.split(SLASH_SEPARATED_REGEX);
+            if(multipartEndpointSuffixSeparated.length < (GENERIC_NAME_ARRAY_POSITION)) {
+                throw new XrayJenkinsGenericException("The new endpoint suffix could not be extracted from the endpoint suffix received: " + multipartEndpointSuffix);
+            }
 
             //Build the suffix of the generic endpoint by extracting the endpoint name from the multipart one and adding a slash before.
-            String genericEndpointName = "/" + multipartEndpointSuffixSeparated[1];
+            String genericEndpointName = "/" + multipartEndpointSuffixSeparated[GENERIC_NAME_ARRAY_POSITION];
             Endpoint newEndpoint = Endpoint.lookupBySuffix(genericEndpointName);
 
             if(newEndpoint == null){
