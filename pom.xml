@@ -11,7 +11,7 @@
 	</parent>
 	
 	<groupId>com.xpandit.plugins</groupId>
-	<artifactId>xray-for-jira-connector</artifactId>
+	<artifactId>xray-connector</artifactId>
 	<version>2.1.0</version>
 	<packaging>hpi</packaging>
 
@@ -22,8 +22,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
-	<name>Xray for Jira Jenkins Plugin</name>
-	<description>Integrates Jenkins with Xray for Jira</description>
+	<name>Xray Connector Plugin</name>
+	<description>Integrates Jenkins with Xray</description>
 	<url>http://confluence.xpand-addons.com/display/XRAY/Xray+for+JIRA+Jenkins+Plugin</url>
 
 	<licenses>

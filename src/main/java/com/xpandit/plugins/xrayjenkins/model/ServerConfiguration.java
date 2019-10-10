@@ -91,6 +91,7 @@ public class ServerConfiguration extends GlobalConfiguration {
             @AncestorInPath Item item,
             @QueryParameter String value
     ) {
+        Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
         if (item == null) {
             if (!Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER)) {
                 return FormValidation.ok();
@@ -116,7 +117,8 @@ public class ServerConfiguration extends GlobalConfiguration {
                                            @QueryParameter("hosting") final String hosting,
 	                                       @QueryParameter("serverAddress") final String serverAddress,
                                            @QueryParameter("credentialId") final String credentialId) {
-	    
+
+        Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
         if (StringUtils.isBlank(credentialId)) {
             return FormValidation.error("Authentication not filled!");
         }
