@@ -91,17 +91,13 @@ public class ServerConfiguration extends GlobalConfiguration {
             @AncestorInPath Item item,
             @QueryParameter String value
     ) {
-        if (item == null) {
-            if (!Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER)) {
-                return FormValidation.ok();
-            }
-        } else {
-            if (!item.hasPermission(Item.EXTENDED_READ)
-                    && !item.hasPermission(CredentialsProvider.USE_ITEM)) {
-                return FormValidation.ok();
-            }
+        Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
+        if (item != null
+                && !item.hasPermission(Item.EXTENDED_READ)
+                && !item.hasPermission(CredentialsProvider.USE_ITEM)) {
+            return FormValidation.ok();
         }
-        
+            
         if (StringUtils.isBlank(value)) {
             return FormValidation.error("Authentication not filled!");
         }
@@ -116,7 +112,8 @@ public class ServerConfiguration extends GlobalConfiguration {
                                            @QueryParameter("hosting") final String hosting,
 	                                       @QueryParameter("serverAddress") final String serverAddress,
                                            @QueryParameter("credentialId") final String credentialId) {
-	    
+
+        Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
         if (StringUtils.isBlank(credentialId)) {
             return FormValidation.error("Authentication not filled!");
         }
