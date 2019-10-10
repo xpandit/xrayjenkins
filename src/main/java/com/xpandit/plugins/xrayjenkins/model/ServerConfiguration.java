@@ -92,17 +92,12 @@ public class ServerConfiguration extends GlobalConfiguration {
             @QueryParameter String value
     ) {
         Jenkins.getInstance().checkPermission(Jenkins.ADMINISTER);
-        if (item == null) {
-            if (!Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER)) {
-                return FormValidation.ok();
-            }
-        } else {
-            if (!item.hasPermission(Item.EXTENDED_READ)
-                    && !item.hasPermission(CredentialsProvider.USE_ITEM)) {
-                return FormValidation.ok();
-            }
+        if (item != null
+                && !item.hasPermission(Item.EXTENDED_READ)
+                && !item.hasPermission(CredentialsProvider.USE_ITEM)) {
+            return FormValidation.ok();
         }
-        
+            
         if (StringUtils.isBlank(value)) {
             return FormValidation.error("Authentication not filled!");
         }
