@@ -7,6 +7,7 @@
  */
 package com.xpandit.plugins.xrayjenkins.Utils;
 
+import com.google.common.collect.Sets;
 import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
 import hudson.FilePath;
 import hudson.model.TaskListener;
@@ -15,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import java.util.Collections;
 
@@ -52,6 +55,34 @@ public class FileUtils {
             throw new XrayJenkinsGenericException("The path is not a folder");
         }
         return paths;
+    }
+
+    /**
+     * This method will return all files with the ".feature" extension within a given build workspace and a path.
+     * 
+     * @param workspace the build's workspace
+     * @param path the relative or absolute path where to search for the feature files
+     * @param listener the lostener used to write some logs
+     * @return Unmodifiable set with the full absolute path of the feature files found
+     * @throws IOException Exception thrown when file/directory reading the operation fails
+     * @throws InterruptedException Exception thrown when file/directory reading the operation fails
+     */
+    public static Set<String> getFeatureFileNamesFromWorkspace(FilePath workspace,
+                                                               String path,
+                                                               TaskListener listener) throws IOException, InterruptedException {
+        final List<FilePath> filePaths = getFeatureFilesFromWorkspace(workspace, path, listener);
+        final Set<String> fileNames = Sets.newHashSet();
+        
+        if (CollectionUtils.isNotEmpty(filePaths)) {
+            for (FilePath fp : filePaths) {
+                String remoteFileName = fp.getRemote();
+                if (StringUtils.isNotBlank(remoteFileName)) {
+                    fileNames.add(remoteFileName);
+                }
+            }
+        }
+        
+        return Collections.unmodifiableSet(fileNames);
     }
 
     private static String getErrors(FilePath workspace,

@@ -7,23 +7,34 @@
  */
 package com.xpandit.plugins.xrayjenkins.model;
 
-import java.io.IOException;
+import com.cloudbees.plugins.credentials.CredentialsMatchers;
+import com.cloudbees.plugins.credentials.CredentialsProvider;
+import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
+import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
+import com.cloudbees.plugins.credentials.domains.DomainRequirement;
+import com.xpandit.plugins.xrayjenkins.Utils.ProxyUtil;
+import com.xpandit.xray.service.impl.XrayClientImpl;
+import com.xpandit.xray.service.impl.XrayCloudClientImpl;
+import com.xpandit.xray.service.impl.delegates.HttpRequestProvider;
+import hudson.Extension;
+import hudson.model.Item;
+import hudson.security.ACL;
+import hudson.util.FormValidation;
+import hudson.util.ListBoxModel;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-
-import javax.servlet.ServletException;
-
+import javax.annotation.Nullable;
+import jenkins.model.GlobalConfiguration;
+import jenkins.model.Jenkins;
+import net.sf.json.JSONObject;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
-import com.xpandit.xray.service.impl.XrayClientImpl;
-import com.xpandit.xray.service.impl.XrayCloudClientImpl;
-
-import hudson.Extension;
-import hudson.util.FormValidation;
-import jenkins.model.GlobalConfiguration;
-import net.sf.json.JSONObject;
-import org.apache.commons.lang3.StringUtils;
+import static com.cloudbees.plugins.credentials.CredentialsMatchers.withId;
 
 @Extension
 public class ServerConfiguration extends GlobalConfiguration {
@@ -63,37 +74,79 @@ public class ServerConfiguration extends GlobalConfiguration {
 	public static ServerConfiguration get() {
 	    return GlobalConfiguration.all().get(ServerConfiguration.class);
 	}
+
+    public ListBoxModel doFillCredentialIdItems(@AncestorInPath Item item, @QueryParameter String credentialId) {
+        
+        final StandardListBoxModel result = new StandardListBoxModel();
+
+        final List<StandardUsernamePasswordCredentials> credentials = getAllCredentials(item);
+
+        for (StandardUsernamePasswordCredentials credential : credentials) {
+            result.with(credential);
+        }
+        return result.includeCurrentValue(credentialId);
+    }
+
+    public FormValidation doCheckCredentialId(
+            @AncestorInPath Item item,
+            @QueryParameter String value
+    ) {
+        if (item == null) {
+            if (!Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER)) {
+                return FormValidation.ok();
+            }
+        } else {
+            if (!item.hasPermission(Item.EXTENDED_READ)
+                    && !item.hasPermission(CredentialsProvider.USE_ITEM)) {
+                return FormValidation.ok();
+            }
+        }
+        
+        if (StringUtils.isBlank(value)) {
+            return FormValidation.error("Authentication not filled!");
+        }
+        
+        if (!credentialExists(item, value)) {
+            return FormValidation.error("Cannot find currently selected credentials");
+        }
+        return FormValidation.ok();
+    }
 	
-	public FormValidation doTestConnection(@QueryParameter("hosting") final String hosting,
+	public FormValidation doTestConnection(@AncestorInPath final Item item,
+                                           @QueryParameter("hosting") final String hosting,
 	                                       @QueryParameter("serverAddress") final String serverAddress,
-                                           @QueryParameter("username") final String username,
-                                           @QueryParameter("password") final String password) throws IOException, ServletException {
-
-
-        if(StringUtils.isBlank(username) || StringUtils.isBlank(password)){
+                                           @QueryParameter("credentialId") final String credentialId) {
+	    
+        if (StringUtils.isBlank(credentialId)) {
             return FormValidation.error("Authentication not filled!");
         }
 
-        if(StringUtils.isBlank(hosting)){
+        if (StringUtils.isBlank(hosting)) {
             return FormValidation.error("Hosting type can't be blank.");
         }
 
+        final StandardUsernamePasswordCredentials credential = CredentialsMatchers.firstOrNull(getAllCredentials(item), withId(credentialId));
+        if (credential == null) {
+            return FormValidation.error("Cannot find currently selected credentials");
+        }
+        
+        final String username = credential.getUsername();
+        final String password = credential.getPassword().getPlainText();
+        final HttpRequestProvider.ProxyBean proxyBean = ProxyUtil.createProxyBean();
         boolean isConnectionOk;
 
-        if(StringUtils.isBlank(hosting)) {
-            return FormValidation.error("Hosting type can't be blank.");
-        } else if(hosting.equals(HostingType.CLOUD.getTypeName())) {
-            isConnectionOk = (new XrayCloudClientImpl(username, password)).testConnection();
-        } else if(hosting.equals(HostingType.SERVER.getTypeName())) {
+        if (hosting.equals(HostingType.CLOUD.getTypeName())) {
+            isConnectionOk = (new XrayCloudClientImpl(username, password, proxyBean)).testConnection();
+        } else if (hosting.equals(HostingType.SERVER.getTypeName())) {
             if(StringUtils.isBlank(serverAddress)) {
                 return FormValidation.error("Server address can't be empty");
             }
-            isConnectionOk = (new XrayClientImpl(serverAddress, username, password)).testConnection();
+            isConnectionOk = (new XrayClientImpl(serverAddress, username, password, proxyBean)).testConnection();
         } else {
             return FormValidation.error("Hosting type not recognized.");
         }
 
-        if(isConnectionOk) {
+        if (isConnectionOk) {
             return FormValidation.ok("Connection: Success!");
         } else {
             return FormValidation.error("Could not establish connection.");
@@ -106,5 +159,30 @@ public class ServerConfiguration extends GlobalConfiguration {
                 instance.setHosting(HostingType.getDefaultType());
             }
         }
+    }
+
+    private List<StandardUsernamePasswordCredentials> getAllCredentials(@Nullable final Item item) {
+        final List<StandardUsernamePasswordCredentials> credentials = CredentialsProvider.lookupCredentials(
+                StandardUsernamePasswordCredentials.class,
+                item,
+                ACL.SYSTEM,
+                Collections.<DomainRequirement>emptyList());
+        
+        if (CollectionUtils.isEmpty(credentials)) {
+            return Collections.emptyList();
+        }
+        return credentials;
+    }
+    
+    @Nullable
+    private StandardUsernamePasswordCredentials findCredential(@Nullable final Item item, @Nullable final String credentialId) {
+	    if (StringUtils.isBlank(credentialId)) {
+	        return null;
+        }
+        return CredentialsMatchers.firstOrNull(getAllCredentials(item), withId(credentialId));
+    }
+
+    private boolean credentialExists(@Nullable final Item item, @Nullable final String credentialId) {
+        return findCredential(item, credentialId) != null;
     }
 }

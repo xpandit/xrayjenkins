@@ -7,9 +7,11 @@
  */
 package com.xpandit.plugins.xrayjenkins.model;
 
-import java.util.UUID;
-
 import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
+import hudson.model.Run;
+import java.util.UUID;
+import javax.annotation.Nonnull;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -22,10 +24,10 @@ public class XrayInstance {
 	private String alias;
 	private String serverAddress;
 	private HostingType hosting;
-    private String username;
-    private String password;
+    private String credentialId;
+    private CredentialResolver credentialResolver;
 
-    public XrayInstance(String serverAddress, String hosting, String username, String password) {
+    public XrayInstance(String serverAddress, String hosting, String credentialId) {
     	this.configID =  "";
     	this.alias = serverAddress;
         this.serverAddress = serverAddress;
@@ -36,15 +38,14 @@ public class XrayInstance {
 			throw new XrayJenkinsGenericException("Hosting type not recognized");
 		}
 
-        this.username = username;
-        this.password = password;
+        this.credentialId = credentialId;
     }
 
 	@DataBoundConstructor
- 	public XrayInstance(String configID, String alias , String hosting, String serverAddress, String username, String password){
-    	this(serverAddress, hosting, username, password);
-    	
- 		this.configID = StringUtils.isBlank(configID) ? UUID.randomUUID().toString() : configID;
+ 	public XrayInstance(String configID, String alias , String hosting, String serverAddress, String credentialId) {
+    	this(serverAddress, hosting, credentialId);
+
+		this.configID = StringUtils.isBlank(configID) ? UUID.randomUUID().toString() : configID;
  		this.alias = alias;
  		
  	}
@@ -73,24 +74,22 @@ public class XrayInstance {
 		this.serverAddress = serverAddress;
 	}
 
-	public String getUsername() {
-		return username;
+	@Nonnull
+	public CredentialResolver getCredential(final Run<?, ?> runContext) {
+		this.credentialResolver = ObjectUtils.defaultIfNull(this.credentialResolver, new CredentialResolver(this.credentialId, runContext));
+		return this.credentialResolver;
 	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
+	
 	public HostingType getHosting() { return hosting; }
 
 	public void setHosting(HostingType hosting) { this.hosting = hosting; }
+
+	public String getCredentialId() {
+		return credentialId;
+	}
+
+	public void setCredentialId(String credentialId) {
+		this.credentialId = credentialId;
+	}
 }
 

@@ -11,16 +11,19 @@ import com.xpandit.plugins.xrayjenkins.Utils.BuilderUtils;
 import com.xpandit.plugins.xrayjenkins.Utils.ConfigurationUtils;
 import com.xpandit.plugins.xrayjenkins.Utils.FileUtils;
 import com.xpandit.plugins.xrayjenkins.Utils.FormUtils;
+import com.xpandit.plugins.xrayjenkins.Utils.ProxyUtil;
 import com.xpandit.plugins.xrayjenkins.exceptions.XrayJenkinsGenericException;
 import com.xpandit.plugins.xrayjenkins.model.HostingType;
 import com.xpandit.plugins.xrayjenkins.model.ServerConfiguration;
 import com.xpandit.plugins.xrayjenkins.model.XrayInstance;
+import com.xpandit.plugins.xrayjenkins.task.filefilters.OnlyFeatureFilesInPathFilter;
 import com.xpandit.xray.exception.XrayClientCoreGenericException;
 import com.xpandit.xray.model.FileStream;
 import com.xpandit.xray.model.UploadResult;
 import com.xpandit.xray.service.XrayTestImporter;
 import com.xpandit.xray.service.impl.XrayTestImporterCloudImpl;
 import com.xpandit.xray.service.impl.XrayTestImporterImpl;
+import com.xpandit.xray.service.impl.delegates.HttpRequestProvider;
 import hudson.AbortException;
 import hudson.Extension;
 import hudson.FilePath;
@@ -32,9 +35,12 @@ import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
+import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.Nonnull;
 import jenkins.tasks.SimpleBuildStep;
 import org.apache.commons.lang3.StringUtils;
@@ -47,7 +53,9 @@ import org.kohsuke.stapler.QueryParameter;
 /**
  * This class is responsible for performing the Xray: Cucumber Features Import Task
  */
-public class XrayImportFeatureBuilder extends Builder implements SimpleBuildStep{
+public class XrayImportFeatureBuilder extends Builder implements SimpleBuildStep {
+    
+    private static final String TMP_ZIP_FILENAME = "xray_cucumber_features.zip";
 
     private String serverInstance;
     private String folderPath;
@@ -103,6 +111,13 @@ public class XrayImportFeatureBuilder extends Builder implements SimpleBuildStep
                         @Nonnull Launcher launcher,
                         @Nonnull TaskListener listener) throws IOException, InterruptedException {
         XrayInstance xrayInstance = ConfigurationUtils.getConfiguration(this.serverInstance);
+
+        listener.getLogger().println("Starting XRAY: Cucumber Features Import Task...");
+
+        listener.getLogger().println("##########################################################");
+        listener.getLogger().println("####   Xray is importing the feature files  ####");
+        listener.getLogger().println("##########################################################");
+
         if(xrayInstance == null){
             listener.getLogger().println("The server instance is null");
             throw new AbortException();
@@ -115,14 +130,16 @@ public class XrayImportFeatureBuilder extends Builder implements SimpleBuildStep
             listener.getLogger().println("You must provide the directory path");
             throw new AbortException();
         }
+        
+        final HttpRequestProvider.ProxyBean proxyBean = ProxyUtil.createProxyBean();
         XrayTestImporter client;
-
         if (xrayInstance.getHosting() == HostingType.CLOUD) {
-            client = new XrayTestImporterCloudImpl(xrayInstance.getUsername(), xrayInstance.getPassword());
+            client = new XrayTestImporterCloudImpl(xrayInstance.getCredential(run).getUsername(), xrayInstance.getCredential(run).getPassword(), proxyBean);
         } else if (xrayInstance.getHosting() == null || xrayInstance.getHosting() == HostingType.SERVER) {
             client = new XrayTestImporterImpl(xrayInstance.getServerAddress(),
-                    xrayInstance.getUsername(),
-                    xrayInstance.getPassword());
+                    xrayInstance.getCredential(run).getUsername(),
+                    xrayInstance.getCredential(run).getPassword(),
+                    proxyBean);
         } else {
             throw new XrayJenkinsGenericException("Hosting type not recognized.");
         }
@@ -131,26 +148,22 @@ public class XrayImportFeatureBuilder extends Builder implements SimpleBuildStep
 
     }
 
-    private void processImport(FilePath workspace,
-                          XrayTestImporter client,
-                          TaskListener listener) throws IOException, InterruptedException {
-        List<FilePath> paths;
+    private void processImport(final FilePath workspace,
+                          final XrayTestImporter client,
+                          final TaskListener listener) throws IOException, InterruptedException {
+        
         try{
-            paths = FileUtils.getFeatureFilesFromWorkspace(workspace, this.folderPath, listener);
-        } catch (IOException | InterruptedException e){
-            listener.getLogger().println("An error occurred while getting the feature files");
-            throw e;
-        }
-        try{
-            for(FilePath fp : paths){
-                if(isApplicableAsModifiedFile(fp)){
-                    FileStream f = new com.xpandit.xray.model.FileStream(fp.getName(),
-                            fp.read(),
-                            ContentType.APPLICATION_JSON);
-                    UploadResult up = client.importFeatures(this.projectKey, f);
-                    listener.getLogger().println(up.getMessage());
-                }
-            }
+            final Set<String> validFilePath = FileUtils.getFeatureFileNamesFromWorkspace(workspace, this.folderPath, listener);
+            final FilePath zipFile = createZipFile(workspace);
+            
+            // Create Zip file in the workspace's root folder
+            workspace.zip(zipFile.write(), new OnlyFeatureFilesInPathFilter(validFilePath, lastModified));
+
+            // Uploads the Zip file to the Jira instance
+            uploadZipFile(client, listener, zipFile);
+            
+            // Deletes the Zip File
+            deleteFile(zipFile, listener);
 
         } catch(XrayClientCoreGenericException  e){
             listener.error(e.getMessage());
@@ -160,28 +173,28 @@ public class XrayImportFeatureBuilder extends Builder implements SimpleBuildStep
         }
 
     }
-
-    private boolean isApplicableAsModifiedFile(FilePath filePath) throws InterruptedException, IOException{
-        if(StringUtils.isBlank(lastModified)){
-            //the modified field is not used so we return true
-            return true;
+    
+    private void deleteFile(FilePath file, TaskListener listener) throws IOException, InterruptedException {
+        try {
+            file.delete();
+            listener.getLogger().println("Temporary file: " + file.getRemote() + " deleted");
+        } catch (IOException | InterruptedException e) {
+            listener.getLogger().println("Unable to delete temporary file: " + file.getRemote());
+            throw e;
         }
-        int lastModifiedIntValue = getLastModifiedIntValue();
-        Long diffInMillis = new Date().getTime() - filePath.lastModified();
-        Long diffInHour = diffInMillis /  DateUtils.MILLIS_PER_HOUR;
-        return diffInHour <= lastModifiedIntValue;
     }
 
-    private int getLastModifiedIntValue(){
-        try{
-            int m = Integer.parseInt(this.lastModified);
-            if(m <= 0){
-                throw new XrayJenkinsGenericException("last modified value must be a positive integer");
-            }
-            return m;
-        } catch (NumberFormatException e){
-            throw new XrayJenkinsGenericException("last modified value is not an integer");
-        }
+    private void uploadZipFile(XrayTestImporter client, TaskListener listener, FilePath zipFile) throws IOException, InterruptedException {
+        FileStream zipFileStream = new FileStream(
+                zipFile.getName(),
+                zipFile.read(),
+                ContentType.APPLICATION_JSON);
+        UploadResult uploadResult = client.importFeatures(this.projectKey, zipFileStream);
+        listener.getLogger().println(uploadResult.getMessage());
+    }
+
+    private FilePath createZipFile(final FilePath workspace) {
+        return new FilePath(workspace, TMP_ZIP_FILENAME);
     }
 
     @Extension
